@@ -1,6 +1,6 @@
 {
   "model_name": "hist_gradient_boosting",
-  "trained_at": "2026-10-26T16:45:54.652491+00:00",
+  "trained_at": "2026-10-26T18:06:00.407195+00:00",
   "n_train": 216000,
   "n_validation": 43200,
   "n_test": 43200,
@@ -83,87 +83,87 @@
     "smp_ekivalen"
   ],
   "metrics": {
-    "macro_f1": 0.8655,
-    "balanced_accuracy": 0.8509,
-    "accuracy": 0.901
+    "macro_f1": 0.9002,
+    "balanced_accuracy": 0.8853,
+    "accuracy": 0.9371
   },
   "baselines": {
     "majority_class": {
       "model": "DummyClassifier(strategy=most_frequent)",
-      "macro_f1": 0.0738,
+      "macro_f1": 0.071,
       "balanced_accuracy": 0.1111,
-      "accuracy": 0.4969
+      "accuracy": 0.4694
     },
     "rule_based": {
       "model": "features.rule_based_cause",
-      "macro_f1": 0.2699,
-      "balanced_accuracy": 0.2863,
-      "accuracy": 0.4962
+      "macro_f1": 0.173,
+      "balanced_accuracy": 0.2237,
+      "accuracy": 0.5597
     }
   },
   "per_class": [
     {
       "cause": "banjir",
-      "precision": 0.976,
-      "recall": 0.981,
-      "f1": 0.9785,
+      "precision": 0.9642,
+      "recall": 1.0,
+      "f1": 0.9818,
       "support": 3151
     },
     {
       "cause": "hujan",
-      "precision": 0.9891,
-      "recall": 0.4793,
-      "f1": 0.6457,
+      "precision": 0.9586,
+      "recall": 0.7745,
+      "f1": 0.8568,
       "support": 4728
     },
     {
       "cause": "kecelakaan",
-      "precision": 0.961,
-      "recall": 0.9521,
-      "f1": 0.9565,
+      "precision": 0.9959,
+      "recall": 0.9172,
+      "f1": 0.9549,
       "support": 1606
     },
     {
       "cause": "kendaraan_berat",
-      "precision": 0.8876,
-      "recall": 0.9372,
-      "f1": 0.9117,
-      "support": 3791
+      "precision": 0.9244,
+      "recall": 0.9751,
+      "f1": 0.9491,
+      "support": 3860
     },
     {
       "cause": "keramaian_event",
-      "precision": 0.5923,
-      "recall": 0.3408,
-      "f1": 0.4326,
+      "precision": 0.6081,
+      "recall": 0.3328,
+      "f1": 0.4302,
       "support": 1884
     },
     {
       "cause": "lampu_mati",
       "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
+      "recall": 0.998,
+      "f1": 0.999,
       "support": 989
     },
     {
       "cause": "normal",
-      "precision": 0.8754,
-      "recall": 0.993,
-      "f1": 0.9305,
-      "support": 21466
+      "precision": 0.925,
+      "recall": 0.9952,
+      "f1": 0.9588,
+      "support": 20280
     },
     {
       "cause": "perbaikan_jalan",
-      "precision": 0.9891,
-      "recall": 0.9955,
-      "f1": 0.9923,
+      "precision": 0.9953,
+      "recall": 0.9988,
+      "f1": 0.997,
       "support": 4203
     },
     {
       "cause": "volume_puncak",
-      "precision": 0.9057,
-      "recall": 0.9797,
-      "f1": 0.9413,
-      "support": 1382
+      "precision": 0.9733,
+      "recall": 0.976,
+      "f1": 0.9746,
+      "support": 2499
     }
   ],
   "confusion_matrix": {
@@ -180,186 +180,186 @@
     ],
     "matrix": [
       [
-        3091,
-        0,
-        60,
+        3151,
         0,
         0,
         0,
         0,
         0,
-        0
-      ],
-      [
-        1,
-        2266,
-        0,
-        120,
-        127,
-        0,
-        2131,
-        42,
-        41
-      ],
-      [
-        75,
-        0,
-        1529,
-        0,
-        0,
-        0,
-        0,
-        1,
-        1
-      ],
-      [
-        0,
-        0,
-        0,
-        3553,
-        226,
-        0,
-        0,
-        1,
-        11
-      ],
-      [
-        0,
-        25,
-        0,
-        324,
-        642,
-        0,
-        876,
-        0,
-        17
-      ],
-      [
-        0,
-        0,
-        0,
-        0,
-        0,
-        989,
         0,
         0,
         0
       ],
       [
         0,
+        3662,
+        1,
+        16,
+        248,
         0,
+        774,
+        2,
+        25
+      ],
+      [
+        117,
+        0,
+        1473,
+        0,
+        0,
+        0,
+        0,
+        16,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        3764,
+        92,
         0,
         4,
-        89,
         0,
-        21316,
-        1,
-        56
+        0
+      ],
+      [
+        0,
+        158,
+        0,
+        292,
+        627,
+        0,
+        801,
+        0,
+        6
       ],
       [
         0,
         0,
         2,
-        1,
         0,
         0,
-        1,
-        4184,
-        15
+        987,
+        0,
+        0,
+        0
       ],
       [
         0,
         0,
         0,
-        1,
+        0,
+        64,
+        0,
+        20182,
+        0,
+        34
+      ],
+      [
         0,
         0,
-        26,
-        1,
-        1354
+        0,
+        0,
+        0,
+        0,
+        3,
+        4198,
+        2
+      ],
+      [
+        0,
+        0,
+        3,
+        0,
+        0,
+        0,
+        55,
+        2,
+        2439
       ]
     ]
   },
   "feature_importance": [
     {
       "feature": "wait_time_min",
-      "importance": 0.407373
+      "importance": 0.450923
     },
     {
       "feature": "avg_speed_kmh",
-      "importance": 0.151999
+      "importance": 0.36822
     },
     {
       "feature": "proporsi_roda_6plus",
-      "importance": 0.113695
-    },
-    {
-      "feature": "vehicle_count_1min",
-      "importance": 0.10662
+      "importance": 0.153391
     },
     {
       "feature": "hour",
-      "importance": 0.070491
+      "importance": 0.127051
     },
     {
-      "feature": "jumlah_lajur",
-      "importance": 0.050298
-    },
-    {
-      "feature": "volume_veh_per_hour",
-      "importance": 0.048853
-    },
-    {
-      "feature": "roll15_std_queue_length_veh",
-      "importance": 0.014356
-    },
-    {
-      "feature": "roll60_std_queue_length_veh",
-      "importance": 0.011107
-    },
-    {
-      "feature": "roll15_mean_avg_speed_kmh",
-      "importance": 0.007048
-    },
-    {
-      "feature": "roll60_mean_avg_speed_kmh",
-      "importance": 0.006231
-    },
-    {
-      "feature": "minute",
-      "importance": 0.005778
+      "feature": "vehicle_count_1min",
+      "importance": 0.115783
     },
     {
       "feature": "weather_temp_c",
-      "importance": 0.004882
+      "importance": 0.044192
     },
     {
-      "feature": "roll15_mean_volume_veh_per_hour",
-      "importance": 0.003843
+      "feature": "roll60_mean_avg_speed_kmh",
+      "importance": 0.031681
     },
     {
-      "feature": "roll15_std_volume_veh_per_hour",
-      "importance": 0.003241
+      "feature": "volume_veh_per_hour",
+      "importance": 0.025399
     },
     {
-      "feature": "lag30_avg_speed_kmh",
-      "importance": 0.003054
+      "feature": "jumlah_lajur",
+      "importance": 0.024726
     },
     {
-      "feature": "roll60_mean_volume_veh_per_hour",
-      "importance": 0.002328
+      "feature": "roll60_std_avg_speed_kmh",
+      "importance": 0.009618
     },
     {
-      "feature": "lag1_avg_speed_kmh",
-      "importance": 0.00162
+      "feature": "roll60_std_volume_veh_per_hour",
+      "importance": 0.007669
     },
     {
       "feature": "lag15_avg_speed_kmh",
-      "importance": 0.001407
+      "importance": 0.007327
     },
     {
-      "feature": "lag1_volume_veh_per_hour",
-      "importance": 0.001139
+      "feature": "roll60_std_queue_length_veh",
+      "importance": 0.00501
+    },
+    {
+      "feature": "lag30_avg_speed_kmh",
+      "importance": 0.004454
+    },
+    {
+      "feature": "lag5_avg_speed_kmh",
+      "importance": 0.003394
+    },
+    {
+      "feature": "roll15_std_volume_veh_per_hour",
+      "importance": 0.003358
+    },
+    {
+      "feature": "roll15_std_queue_length_veh",
+      "importance": 0.002854
+    },
+    {
+      "feature": "roll60_mean_volume_veh_per_hour",
+      "importance": 0.00245
+    },
+    {
+      "feature": "lag60_avg_speed_kmh",
+      "importance": 0.002227
+    },
+    {
+      "feature": "density_percent",
+      "importance": 0.001853
     }
   ],
   "leakage_guard": [
@@ -375,6 +375,7 @@
     "Label berasal dari simulator sintetis (seed 42), bukan verifikasi lapangan; akurasi tidak menjamin kinerja pada lalu lintas nyata.",
     "Fitur yang diizinkan tidak memuat konteks kejadian mentah, sehingga kelas dengan gejala tumpang tindih (banjir vs kecelakaan vs hujan) sulit dipisahkan dan membatasi macro-F1.",
     "Kelas langka banjir (7,6%) dan lampu_mati (2,4%) punya recall paling rapuh dan paling mudah tertukar dengan kelas bergejala sama.",
+    "Recall lampu_mati dan banjir sangat tinggi (mendekati 1,0) karena jejak mekanismenya terbaca dari sensor yang diizinkan: green_seconds = 0 menandakan simpang tanpa kendali, sedangkan genangan menurunkan kecepatan sekaligus menaikkan kepadatan secara ekstrem. Itu deteksi mekanisme, bukan generalisasi ke kejadian yang belum pernah ada di data.",
     "Data mencakup 6 simpang, 30 ruas, 7 hari, satu zona waktu (WIB); tidak ada pengujian generalisasi lintas kota, musim, atau geometri jalan lain.",
     "Lag pada tick awal setiap ruas bernilai 0 karena tidak ada riwayat; ruas baru tanpa replay sejarah akan mendapat fitur lag kosong dan prediksinya tidak dapat dipercaya.",
     "Urutan prioritas aturan simulator bersifat deterministik; model probabilistik dapat memberi kelas kandidat kedua yang berbeda dari bottleneck_secondary pada data.",

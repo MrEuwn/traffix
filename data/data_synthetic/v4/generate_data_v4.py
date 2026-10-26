@@ -33,7 +33,8 @@ DEFAULT_DAYS = 7
 DEFAULT_OUT = Path(__file__).resolve().parent
 
 # ---------------------------------------------------------------- kalibrasi
-SAT_FLOW_VPH = 1900          # smp/jam/lajur pada kondisi jenuh (acuan MKJI)
+SAT_FLOW_VPH = 1900          # smp/jam/lajur pada kondisi jenuh (acuan MKJI, untuk kolom kapasitas)
+SAT_FLOW_VEH_PER_LANE = 3300  # kendaraan/jam/lajur (setara 1900 smp/jam pada komposisi ±0,57 smp/kendaraan)
 FREE_FLOW_SPEED = 60.0
 SPACE_PER_VEHICLE_M = 7.0    # ruang rata-rata per kendaraan saat macet penuh
 LANE_WIDTH_M = 3.5
@@ -97,17 +98,17 @@ SCHEDULED_DURATION: dict[str, tuple[int, int]] = {
 INTERSECTIONS = [
     # id, nama, tipe, koridor, lat, lon, elevasi_m, demand per lengan (veh/min pada puncak)
     ("INT-001", "Simpang Meruya Utara", "perempatan", "Jakarta Barat", -6.1870, 106.7350, 2.4,
-     {"N": 93.0, "E": 54.0, "S": 84.0, "W": 48.0}),
+     {"N": 31.0, "E": 17.0, "S": 28.0, "W": 15.0}),
     ("INT-002", "Simpang Tomang", "perempatan", "Jakarta Barat", -6.1760, 106.7900, 3.1,
-     {"N": 81.0, "E": 66.0, "S": 75.0, "W": 60.0}),
+     {"N": 27.0, "E": 21.0, "S": 25.0, "W": 19.0}),
     ("INT-003", "Pertigaan Cawang", "pertigaan", "Jakarta Timur", -6.2400, 106.8700, 5.2,
-     {"N": 78.0, "E": 63.0, "W": 69.0}),
+     {"N": 26.0, "E": 20.0, "W": 22.0}),
     ("INT-004", "Pertigaan Grogol", "pertigaan", "Jakarta Barat", -6.1660, 106.7890, 2.8,
-     {"N": 72.0, "E": 57.0, "W": 63.0}),
+     {"N": 24.0, "E": 18.0, "W": 20.0}),
     ("INT-005", "Simpang Kebayoran", "perempatan", "Jakarta Selatan", -6.2440, 106.7990, 4.4,
-     {"N": 87.0, "E": 51.0, "S": 78.0, "W": 45.0}),
+     {"N": 29.0, "E": 16.0, "S": 26.0, "W": 14.0}),
     ("INT-006", "Pertigaan Bekasi Barat", "pertigaan", "Bekasi", -6.2180, 106.9890, 2.1,
-     {"N": 66.0, "E": 54.0, "W": 60.0}),
+     {"N": 22.0, "E": 17.0, "W": 19.0}),
 ]
 
 # Koridor antar-simpang (mid-block, tanpa lampu)
@@ -125,14 +126,14 @@ CORRIDORS = [
 
 VEHICLE_SHARE = {
     # section_type: (roda_2, roda_3, roda_4, roda_6plus)
-    "approach": (0.545, 0.030, 0.345, 0.080),
-    "corridor": (0.480, 0.025, 0.365, 0.130),
+    "approach": (0.560, 0.030, 0.345, 0.065),
+    "corridor": (0.490, 0.025, 0.375, 0.110),
 }
 
-# Skala permintaan global (kalibrasi agar puncak mendekati kapasitas)
-DEMAND_SCALE = 1.15
+# Skala permintaan global (1,0 = puncak mendekati kapasitas simpang ber-lampu)
+DEMAND_SCALE = 1.55
 # Bagian lalu lintas kedua ujung simpang yang memakai satu tautan koridor
-CORRIDOR_LINK_FACTOR = 0.22
+CORRIDOR_LINK_FACTOR = 0.55
 
 
 def raised_cosine(x: float, start: float, peak: float, end: float) -> float:
@@ -415,7 +416,8 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
                     cap_mult *= FLOOD_CAPACITY_MULT
                 if weather == "Rain":
                     cap_mult *= 0.92
-                cap_per_min = sec["cap_smp"] / 60.0 * cap_mult
+                cap_per_min = SAT_FLOW_VEH_PER_LANE * sec["lanes"] / 60.0 * cap_mult
+                green_ratio_cap = 1.0
                 lane_closure = 1 if roadwork else 0
                 pct_lajur = 0.35 if roadwork else 0.0
                 durasi_kerja = max(state[e]["durasi_kerja"] for e in ends)
@@ -445,7 +447,11 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
                 if weather == "Rain":
                     cap_mult *= 0.92
                 effective_green = green if green > 0 else cycle  # lampu mati -> arus tanpa kendali
-                cap_per_min = sec["cap_smp"] / 60.0 * (effective_green / cycle) * cap_mult
+                green_ratio_cap = (effective_green / cycle) if cycle else 1.0
+                # kapasitas nyata (kendaraan/menit): arus jenuh lajur x pangsa hijau x faktor kejadian
+                cap_per_min = (
+                    SAT_FLOW_VEH_PER_LANE * sec["lanes"] / 60.0 * green_ratio_cap * cap_mult
+                )
 
             # antrean dibatasi daya tampung ruas (storage): kelebihan permintaan terdorong keluar (diversi)
             storage = max(1, int(sec["length_m"] * sec["lanes"] / SPACE_PER_VEHICLE_M))
@@ -468,7 +474,7 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
             # komposisi kendaraan
             total = int(round(arrivals))
             share = VEHICLE_SHARE[sec["section_type"]]
-            night_boost = 0.04 if (now.hour >= 21 or now.hour < 5) else 0.0
+            night_boost = 0.05 if (now.hour >= 21 or now.hour < 5) else 0.0
             s = np.array([
                 share[0] + rng.normal(0, 0.02),
                 share[1] + rng.normal(0, 0.004),
@@ -485,12 +491,9 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
                         + roda_4 * SMP_WEIGHT["roda_4"] + roda_6plus * SMP_WEIGHT["roda_6plus"], 2)
             proporsi_6 = round(roda_6plus / total, 4) if total else 0.0
 
-            # volume smp/jam terhadap kapasitas, dikoreksi faktor komposisi (pangsa motor)
-            mc_share = roda_2 / total if total else VEHICLE_SHARE[sec["section_type"]][0]
-            comp_factor = 1.0 - 0.35 * mc_share
-            smp_per_hour = smp * 60.0
-            vc_ratio = float(min(3.0, smp_per_hour / max(sec["cap_smp"] * comp_factor, 1.0)))
+            # volume terhadap kapasitas nyata (kendaraan/jam); kejadian ikut menurunkan kapasitas
             volume_vph = float(round(arrivals * 60.0, 2))
+            vc_ratio = float(min(3.0, volume_vph / max(cap_per_min * 60.0, 1.0)))
             los = _los(vc_ratio)
 
             # waktu tunggu: tundaan sinyal (uniform delay Webster/HCM) untuk ruas ber-lampu,

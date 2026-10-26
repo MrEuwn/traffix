@@ -42,31 +42,31 @@ Validasi:
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.7742 | 0.7993 | 0.8075 |
-| mlp | 0.4643 | 0.5759 | 0.4417 |
+| hist_gradient_boosting | 0.8349 | 0.8561 | 0.8933 |
+| mlp | 0.6793 | 0.7567 | 0.6754 |
 
 Hari uji (hari 7):
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.8655 | 0.8509 | 0.9010 |
-| majority_class | 0.0738 | 0.1111 | 0.4969 |
-| rule_based | 0.2699 | 0.2863 | 0.4962 |
+| hist_gradient_boosting | 0.9002 | 0.8853 | 0.9371 |
+| majority_class | 0.0710 | 0.1111 | 0.4694 |
+| rule_based | 0.1730 | 0.2237 | 0.5597 |
 
 Pemenang: **hist_gradient_boosting**.
 
-Recall kelas langka: `banjir` 0.9810 (support 3151),
-`lampu_mati` 1.0000 (support 989).
+Recall kelas langka: `banjir` 1.0000 (support 3151),
+`lampu_mati` 0.9980 (support 989).
 
 ## 6. Analisis kesalahan (dihitung dari confusion matrix hari uji)
 
 Pasangan paling sering tertukar:
 
-- `hujan` diprediksi `normal`: 2131 tick (45.1% dari seluruh tick berlabel `hujan`)
-- `keramaian_event` diprediksi `normal`: 876 tick (46.5% dari seluruh tick berlabel `keramaian_event`)
-- `keramaian_event` diprediksi `kendaraan_berat`: 324 tick (17.2% dari seluruh tick berlabel `keramaian_event`)
-- `kendaraan_berat` diprediksi `keramaian_event`: 226 tick (6.0% dari seluruh tick berlabel `kendaraan_berat`)
-- `hujan` diprediksi `keramaian_event`: 127 tick (2.7% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `normal`: 801 tick (42.5% dari seluruh tick berlabel `keramaian_event`)
+- `hujan` diprediksi `normal`: 774 tick (16.4% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `kendaraan_berat`: 292 tick (15.5% dari seluruh tick berlabel `keramaian_event`)
+- `hujan` diprediksi `keramaian_event`: 248 tick (5.2% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `hujan`: 158 tick (8.4% dari seluruh tick berlabel `keramaian_event`)
 
 Pola: kebingungan terbesar terjadi antar kelas yang **gejala lalu lintasnya tumpang tindih** —
 gangguan yang sama-sama menurunkan kecepatan dan menaikkan antrean. Fitur yang boleh dipakai tidak
@@ -76,14 +76,14 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 
 | # | Fitur | Importance (Δ macro-F1) |
 |---|---|---|
-| 1 | `wait_time_min` | 0.40737 |
-| 2 | `avg_speed_kmh` | 0.15200 |
-| 3 | `proporsi_roda_6plus` | 0.11370 |
-| 4 | `vehicle_count_1min` | 0.10662 |
-| 5 | `hour` | 0.07049 |
-| 6 | `jumlah_lajur` | 0.05030 |
-| 7 | `volume_veh_per_hour` | 0.04885 |
-| 8 | `roll15_std_queue_length_veh` | 0.01436 |
+| 1 | `wait_time_min` | 0.45092 |
+| 2 | `avg_speed_kmh` | 0.36822 |
+| 3 | `proporsi_roda_6plus` | 0.15339 |
+| 4 | `hour` | 0.12705 |
+| 5 | `vehicle_count_1min` | 0.11578 |
+| 6 | `weather_temp_c` | 0.04419 |
+| 7 | `roll60_mean_avg_speed_kmh` | 0.03168 |
+| 8 | `volume_veh_per_hour` | 0.02540 |
 
 ## 8. Penanganan ketidakseimbangan kelas
 

@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:render": "node scripts/render-check.mjs"
+    "check:render": "node scripts/render-check.mjs",
+    "check:e2e": "node scripts/render-check.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",

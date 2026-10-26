@@ -230,3 +230,7 @@ output_stage2_videos/
 __pycache__/
 
 frontend/node_modules
+
+# Screenshot hasil e2e (dibuat ulang tiap check)
+frontend/screenshots/
+scratch_*.log

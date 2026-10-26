@@ -615,9 +615,9 @@ Temporal split: days 1-5 train, day 6 validation, day 7 test.
 
 | Model | macro-F1 | balanced accuracy | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting (shipped) | **0.8655** | 0.8509 | 0.9010 |
-| rule-based heuristic (baseline) | 0.2699 | 0.2863 | 0.4962 |
-| majority class (baseline) | 0.0738 | 0.1111 | 0.4969 |
+| hist_gradient_boosting (shipped) | **0.9002** | 0.8853 | 0.9371 |
+| rule-based heuristic (baseline) | 0.1730 | 0.2237 | 0.5597 |
+| majority class (baseline) | 0.0710 | 0.1111 | 0.4694 |
 
 Exact per-class numbers, the confusion matrix, feature importances and the
 limitations list live in `backend/ml/bottleneck/artifacts/metrics.json` and are

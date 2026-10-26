@@ -75,10 +75,12 @@ target_volume_15m, target_volume_2h, target_volume_4h
 Keterangan penting:
 
 - `volume_veh_per_hour` = arus jam-an hasil ekstrapolasi tick 1 menit.
-- `vc_ratio` = volume dalam **smp/jam** dibanding kapasitas terkoreksi komposisi:
-  `vc_ratio = (smp_ekivalen × 60) / (kapasitas_smp_per_jam × (1 − 0,35 × pangsa_roda_2))`.
-  Faktor komposisi mencerminkan turunnya kapasitas efektif pada arus didominasi sepeda motor
-  (berdasarkan pangsa motor aktual tiap baris).
+- `vc_ratio` = volume kendaraan/jam dibanding **kapasitas nyata simpang ber-lampu**:
+  `vc_ratio = volume_veh_per_hour / (3300 × jumlah_lajur × green_seconds/cycle_length_s × faktor_kejadian × 60/60)`.
+  Arus jenuh 3.300 kendaraan/jam/lajur setara 1.900 smp/jam pada komposisi ±0,57 smp/kendaraan.
+  `faktor_kejadian` < 1 saat kecelakaan (0,55), banjir (0,35), perbaikan jalan (0,70), lampu mati (0,45),
+  hujan (0,92) — sehingga kejadian muncul sebagai kehilangan kapasitas. Ruas koridor (tanpa lampu)
+  memakai pangsa hijau 1,0.
 - `los` ∈ A,B,C,D,E,F dari `vc_ratio`: A ≤ 0,35; B ≤ 0,55; C ≤ 0,75; D ≤ 0,85; E ≤ 1,00; F > 1,00.
 - `roda_2/3/4/6plus` = jumlah kendaraan per jenis pada tick itu; `sum(roda_*) == vehicle_count_1min`.
 - `smp_ekivalen` = `0,25·roda_2 + 0,50·roda_3 + 1,00·roda_4 + 1,30·roda_6plus` (acuan MKJI).

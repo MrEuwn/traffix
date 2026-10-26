@@ -15,14 +15,14 @@
     "corridor_no_signal":true
   },
   "class_distribution_pct":{
-    "normal":51.85,
+    "normal":49.28,
     "hujan":11.21,
-    "kendaraan_berat":9.98,
+    "kendaraan_berat":10.81,
     "banjir":7.64,
     "perbaikan_jalan":6.41,
     "keramaian_event":4.49,
+    "volume_puncak":4.15,
     "kecelakaan":3.59,
-    "lampu_mati":2.42,
-    "volume_puncak":2.41
+    "lampu_mati":2.42
   }
 }

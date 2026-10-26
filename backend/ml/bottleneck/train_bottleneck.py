@@ -366,6 +366,10 @@ def main() -> None:
             "tumpang tindih (banjir vs kecelakaan vs hujan) sulit dipisahkan dan membatasi macro-F1.",
             "Kelas langka banjir (7,6%) dan lampu_mati (2,4%) punya recall paling rapuh dan paling "
             "mudah tertukar dengan kelas bergejala sama.",
+            "Recall lampu_mati dan banjir sangat tinggi (mendekati 1,0) karena jejak mekanismenya "
+            "terbaca dari sensor yang diizinkan: green_seconds = 0 menandakan simpang tanpa kendali, "
+            "sedangkan genangan menurunkan kecepatan sekaligus menaikkan kepadatan secara ekstrem. "
+            "Itu deteksi mekanisme, bukan generalisasi ke kejadian yang belum pernah ada di data.",
             "Data mencakup 6 simpang, 30 ruas, 7 hari, satu zona waktu (WIB); tidak ada pengujian "
             "generalisasi lintas kota, musim, atau geometri jalan lain.",
             "Lag pada tick awal setiap ruas bernilai 0 karena tidak ada riwayat; ruas baru tanpa replay "
