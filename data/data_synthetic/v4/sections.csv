@@ -1,0 +1,31 @@
+section_id,intersection_id,nama_ruas,section_type,approach,arah,panjang_m,jumlah_lajur,kecepatan_bebas_kmh,kapasitas_smp_per_jam,kapasitas_kendaraan,ruang_per_kendaraan_m
+SEC-001-N,INT-001,Pendekat N Simpang Meruya Utara,approach,N,N,595,3,60.0,5700,255,7.0
+SEC-001-E,INT-001,Pendekat E Simpang Meruya Utara,approach,E,E,496,2,60.0,3800,141,7.0
+SEC-001-S,INT-001,Pendekat S Simpang Meruya Utara,approach,S,S,200,3,60.0,5700,85,7.0
+SEC-001-W,INT-001,Pendekat W Simpang Meruya Utara,approach,W,W,244,2,60.0,3800,69,7.0
+SEC-002-N,INT-002,Pendekat N Simpang Tomang,approach,N,N,182,3,60.0,5700,78,7.0
+SEC-002-E,INT-002,Pendekat E Simpang Tomang,approach,E,E,533,2,60.0,3800,152,7.0
+SEC-002-S,INT-002,Pendekat S Simpang Tomang,approach,S,S,237,3,60.0,5700,101,7.0
+SEC-002-W,INT-002,Pendekat W Simpang Tomang,approach,W,W,281,2,60.0,3800,80,7.0
+SEC-003-N,INT-003,Pendekat N Pertigaan Cawang,approach,N,N,219,2,60.0,3800,62,7.0
+SEC-003-E,INT-003,Pendekat E Pertigaan Cawang,approach,E,E,570,2,60.0,3800,162,7.0
+SEC-003-W,INT-003,Pendekat W Pertigaan Cawang,approach,W,W,318,2,60.0,3800,90,7.0
+SEC-004-N,INT-004,Pendekat N Pertigaan Grogol,approach,N,N,256,2,60.0,3800,73,7.0
+SEC-004-E,INT-004,Pendekat E Pertigaan Grogol,approach,E,E,157,2,60.0,3800,44,7.0
+SEC-004-W,INT-004,Pendekat W Pertigaan Grogol,approach,W,W,355,2,60.0,3800,101,7.0
+SEC-005-N,INT-005,Pendekat N Simpang Kebayoran,approach,N,N,293,3,60.0,5700,125,7.0
+SEC-005-E,INT-005,Pendekat E Simpang Kebayoran,approach,E,E,194,2,60.0,3800,55,7.0
+SEC-005-S,INT-005,Pendekat S Simpang Kebayoran,approach,S,S,348,3,60.0,5700,149,7.0
+SEC-005-W,INT-005,Pendekat W Simpang Kebayoran,approach,W,W,392,2,60.0,3800,112,7.0
+SEC-006-N,INT-006,Pendekat N Pertigaan Bekasi Barat,approach,N,N,330,2,60.0,3800,94,7.0
+SEC-006-E,INT-006,Pendekat E Pertigaan Bekasi Barat,approach,E,E,231,2,60.0,3800,66,7.0
+SEC-006-W,INT-006,Pendekat W Pertigaan Bekasi Barat,approach,W,W,429,2,60.0,3800,122,7.0
+COR-001,COR-001,Jl. Meruya - Tomang,corridor,,INT-001->INT-002,620,3,60.0,5700,265,7.0
+COR-002,COR-002,Jl. Meruya - Kebayoran,corridor,,INT-001->INT-005,540,2,60.0,3800,154,7.0
+COR-003,COR-003,Jl. Tomang - Cawang,corridor,,INT-002->INT-003,780,3,60.0,5700,334,7.0
+COR-004,COR-004,Jl. Cawang - Bekasi Barat,corridor,,INT-003->INT-006,700,2,60.0,3800,200,7.0
+COR-005,COR-005,Jl. Grogol - Kebayoran,corridor,,INT-004->INT-005,460,2,60.0,3800,131,7.0
+COR-006,COR-006,Jl. Kebayoran - Bekasi Barat,corridor,,INT-005->INT-006,660,2,60.0,3800,188,7.0
+COR-007,COR-007,Jl. Tomang - Grogol,corridor,,INT-002->INT-004,380,2,60.0,3800,108,7.0
+COR-008,COR-008,Jl. Meruya - Grogol,corridor,,INT-001->INT-004,510,3,60.0,5700,218,7.0
+COR-009,COR-009,Jl. Cawang - Grogol,corridor,,INT-003->INT-004,590,2,60.0,3800,168,7.0

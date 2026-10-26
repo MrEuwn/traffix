@@ -1,0 +1,7 @@
+intersection_id,intersection_name,tipe_persimpangan,jumlah_lengan,koridor,lat,lon,elevasi_m,cycle_length_s,ada_lampu,kecepatan_bebas_kmh
+INT-001,Simpang Meruya Utara,perempatan,4,Jakarta Barat,-6.187,106.735,2.4,120,1,60.0
+INT-002,Simpang Tomang,perempatan,4,Jakarta Barat,-6.176,106.79,3.1,120,1,60.0
+INT-003,Pertigaan Cawang,pertigaan,3,Jakarta Timur,-6.24,106.87,5.2,80,1,60.0
+INT-004,Pertigaan Grogol,pertigaan,3,Jakarta Barat,-6.166,106.789,2.8,80,1,60.0
+INT-005,Simpang Kebayoran,perempatan,4,Jakarta Selatan,-6.244,106.799,4.4,120,1,60.0
+INT-006,Pertigaan Bekasi Barat,pertigaan,3,Bekasi,-6.218,106.989,2.1,80,1,60.0

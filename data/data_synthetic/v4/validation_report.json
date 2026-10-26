@@ -1,0 +1,28 @@
+{
+  "checks":{
+    "row_count":true,
+    "section_master_30":true,
+    "approach_21_corridor_9":true,
+    "intersections_6":true,
+    "tipe_3_3":true,
+    "roda_sum_matches":true,
+    "no_nan_core":true,
+    "density_range":true,
+    "speed_positive":true,
+    "targets_filled":true,
+    "all_9_classes_present":true,
+    "kelas_lengkap_hari_validasi_dan_uji":true,
+    "corridor_no_signal":true
+  },
+  "class_distribution_pct":{
+    "normal":51.85,
+    "hujan":11.21,
+    "kendaraan_berat":9.98,
+    "banjir":7.64,
+    "perbaikan_jalan":6.41,
+    "keramaian_event":4.49,
+    "kecelakaan":3.59,
+    "lampu_mati":2.42,
+    "volume_puncak":2.41
+  }
+}
