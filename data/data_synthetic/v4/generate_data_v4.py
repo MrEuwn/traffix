@@ -463,14 +463,21 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
             density = 100.0 * queue / storage
             density = float(max(0.0, min(100.0, density + rng.normal(0, 1.5))))
 
-            speed = FREE_FLOW_SPEED * (1.0 - 0.85 * density / 100.0)
-            speed -= WEATHER_SPEED_REDUCTION[weather]
-            if flood:
-                speed -= 22.0
-            if accident:
-                speed -= 12.0
-            speed = float(max(6.0, min(FREE_FLOW_SPEED, speed + rng.normal(0, 1.2))))
-
+            # kecepatan: turun mengikuti rasio volume/kapasitas (bukan hanya kepadatan ruas),
+            # ditambah penalti cuaca dan kejadian. Jenuh -> 20-25 km/jam, lengang -> 50-55.
+            vc_pre = float(arrivals / max(cap_per_min, 0.1))
+            speed = FREE_FLOW_SPEED * (1.0 - 0.75 * min(1.0, vc_pre) ** 1.5)
+            speed -= WEATHER_SPEED_REDUCTION[weather]
+            if flood:
+                speed -= 15.0
+            if accident:
+                speed -= 10.0
+            if roadwork:
+                speed -= 4.0
+            if outage:
+                speed -= 6.0
+            speed = float(max(6.0, min(FREE_FLOW_SPEED, speed + rng.normal(0, 1.2))))
+
             # komposisi kendaraan
             total = int(round(arrivals))
             share = VEHICLE_SHARE[sec["section_type"]]

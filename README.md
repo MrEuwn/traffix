@@ -615,8 +615,8 @@ Temporal split: days 1-5 train, day 6 validation, day 7 test.
 
 | Model | macro-F1 | balanced accuracy | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting (shipped) | **0.9002** | 0.8853 | 0.9371 |
-| rule-based heuristic (baseline) | 0.1730 | 0.2237 | 0.5597 |
+| hist_gradient_boosting (shipped) | **0.8473** | 0.8311 | 0.8916 |
+| rule-based heuristic (baseline) | 0.1757 | 0.2237 | 0.5506 |
 | majority class (baseline) | 0.0710 | 0.1111 | 0.4694 |
 
 Exact per-class numbers, the confusion matrix, feature importances and the

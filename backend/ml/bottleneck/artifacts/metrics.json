@@ -1,6 +1,6 @@
 {
   "model_name": "hist_gradient_boosting",
-  "trained_at": "2026-10-26T18:06:00.407195+00:00",
+  "trained_at": "2026-10-26T18:24:53.756326+00:00",
   "n_train": 216000,
   "n_validation": 43200,
   "n_test": 43200,
@@ -83,9 +83,9 @@
     "smp_ekivalen"
   ],
   "metrics": {
-    "macro_f1": 0.9002,
-    "balanced_accuracy": 0.8853,
-    "accuracy": 0.9371
+    "macro_f1": 0.8473,
+    "balanced_accuracy": 0.8311,
+    "accuracy": 0.8916
   },
   "baselines": {
     "majority_class": {
@@ -96,73 +96,73 @@
     },
     "rule_based": {
       "model": "features.rule_based_cause",
-      "macro_f1": 0.173,
+      "macro_f1": 0.1757,
       "balanced_accuracy": 0.2237,
-      "accuracy": 0.5597
+      "accuracy": 0.5598
     }
   },
   "per_class": [
     {
       "cause": "banjir",
-      "precision": 0.9642,
-      "recall": 1.0,
-      "f1": 0.9818,
+      "precision": 0.9206,
+      "recall": 0.9975,
+      "f1": 0.9575,
       "support": 3151
     },
     {
       "cause": "hujan",
-      "precision": 0.9586,
-      "recall": 0.7745,
-      "f1": 0.8568,
+      "precision": 0.9952,
+      "recall": 0.4361,
+      "f1": 0.6065,
       "support": 4728
     },
     {
       "cause": "kecelakaan",
-      "precision": 0.9959,
-      "recall": 0.9172,
-      "f1": 0.9549,
+      "precision": 0.9027,
+      "recall": 0.8207,
+      "f1": 0.8598,
       "support": 1606
     },
     {
       "cause": "kendaraan_berat",
-      "precision": 0.9244,
-      "recall": 0.9751,
-      "f1": 0.9491,
+      "precision": 0.9231,
+      "recall": 0.9728,
+      "f1": 0.9473,
       "support": 3860
     },
     {
       "cause": "keramaian_event",
-      "precision": 0.6081,
-      "recall": 0.3328,
-      "f1": 0.4302,
+      "precision": 0.6554,
+      "recall": 0.319,
+      "f1": 0.4291,
       "support": 1884
     },
     {
       "cause": "lampu_mati",
       "precision": 1.0,
-      "recall": 0.998,
-      "f1": 0.999,
+      "recall": 1.0,
+      "f1": 1.0,
       "support": 989
     },
     {
       "cause": "normal",
-      "precision": 0.925,
-      "recall": 0.9952,
-      "f1": 0.9588,
+      "precision": 0.862,
+      "recall": 0.9936,
+      "f1": 0.9232,
       "support": 20280
     },
     {
       "cause": "perbaikan_jalan",
-      "precision": 0.9953,
-      "recall": 0.9988,
-      "f1": 0.997,
+      "precision": 0.9681,
+      "recall": 0.9674,
+      "f1": 0.9677,
       "support": 4203
     },
     {
       "cause": "volume_puncak",
-      "precision": 0.9733,
-      "recall": 0.976,
-      "f1": 0.9746,
+      "precision": 0.899,
+      "recall": 0.9724,
+      "f1": 0.9343,
       "support": 2499
     }
   ],
@@ -180,9 +180,9 @@
     ],
     "matrix": [
       [
-        3151,
+        3143,
         0,
-        0,
+        8,
         0,
         0,
         0,
@@ -191,33 +191,33 @@
         0
       ],
       [
+        5,
+        2062,
         0,
-        3662,
-        1,
-        16,
-        248,
+        31,
+        137,
         0,
-        774,
-        2,
-        25
+        2166,
+        112,
+        215
       ],
       [
-        117,
+        266,
         0,
-        1473,
-        0,
-        0,
+        1318,
         0,
         0,
-        16,
-        0
+        0,
+        0,
+        18,
+        4
       ],
       [
         0,
         0,
         0,
-        3764,
-        92,
+        3755,
+        101,
         0,
         4,
         0,
@@ -225,22 +225,22 @@
       ],
       [
         0,
-        158,
+        10,
         0,
-        292,
-        627,
+        282,
+        601,
         0,
-        801,
+        990,
         0,
-        6
+        1
       ],
       [
         0,
         0,
-        2,
         0,
         0,
-        987,
+        0,
+        989,
         0,
         0,
         0
@@ -250,116 +250,116 @@
         0,
         0,
         0,
-        64,
+        75,
         0,
-        20182,
+        20151,
+        4,
+        50
+      ],
+      [
         0,
-        34
+        0,
+        134,
+        0,
+        0,
+        0,
+        0,
+        4066,
+        3
       ],
       [
         0,
         0,
         0,
         0,
-        0,
-        0,
-        3,
-        4198,
-        2
-      ],
-      [
-        0,
-        0,
         3,
         0,
+        66,
         0,
-        0,
-        55,
-        2,
-        2439
+        2430
       ]
     ]
   },
   "feature_importance": [
     {
       "feature": "wait_time_min",
-      "importance": 0.450923
-    },
-    {
-      "feature": "avg_speed_kmh",
-      "importance": 0.36822
+      "importance": 0.403273
     },
     {
       "feature": "proporsi_roda_6plus",
-      "importance": 0.153391
+      "importance": 0.142579
     },
     {
-      "feature": "hour",
-      "importance": 0.127051
+      "feature": "avg_speed_kmh",
+      "importance": 0.085243
     },
     {
       "feature": "vehicle_count_1min",
-      "importance": 0.115783
+      "importance": 0.050216
+    },
+    {
+      "feature": "hour",
+      "importance": 0.040957
     },
     {
       "feature": "weather_temp_c",
-      "importance": 0.044192
+      "importance": 0.036769
     },
     {
-      "feature": "roll60_mean_avg_speed_kmh",
-      "importance": 0.031681
+      "feature": "panjang_m",
+      "importance": 0.023722
     },
     {
-      "feature": "volume_veh_per_hour",
-      "importance": 0.025399
-    },
-    {
-      "feature": "jumlah_lajur",
-      "importance": 0.024726
-    },
-    {
-      "feature": "roll60_std_avg_speed_kmh",
-      "importance": 0.009618
-    },
-    {
-      "feature": "roll60_std_volume_veh_per_hour",
-      "importance": 0.007669
-    },
-    {
-      "feature": "lag15_avg_speed_kmh",
-      "importance": 0.007327
+      "feature": "lag60_volume_veh_per_hour",
+      "importance": 0.019513
     },
     {
       "feature": "roll60_std_queue_length_veh",
-      "importance": 0.00501
+      "importance": 0.016821
     },
     {
-      "feature": "lag30_avg_speed_kmh",
-      "importance": 0.004454
+      "feature": "roll60_std_avg_speed_kmh",
+      "importance": 0.008247
     },
     {
-      "feature": "lag5_avg_speed_kmh",
-      "importance": 0.003394
+      "feature": "lag5_volume_veh_per_hour",
+      "importance": 0.004278
     },
     {
-      "feature": "roll15_std_volume_veh_per_hour",
-      "importance": 0.003358
+      "feature": "roll15_mean_avg_speed_kmh",
+      "importance": 0.003205
     },
     {
-      "feature": "roll15_std_queue_length_veh",
-      "importance": 0.002854
+      "feature": "jumlah_lajur",
+      "importance": 0.002502
     },
     {
-      "feature": "roll60_mean_volume_veh_per_hour",
-      "importance": 0.00245
+      "feature": "lag5_queue_length_veh",
+      "importance": 0.002055
+    },
+    {
+      "feature": "roll15_std_avg_speed_kmh",
+      "importance": 0.001814
+    },
+    {
+      "feature": "lag15_avg_speed_kmh",
+      "importance": 0.001054
     },
     {
       "feature": "lag60_avg_speed_kmh",
-      "importance": 0.002227
+      "importance": 0.000904
     },
     {
-      "feature": "density_percent",
-      "importance": 0.001853
+      "feature": "lag30_queue_length_veh",
+      "importance": 0.00017
+    },
+    {
+      "feature": "lag30_avg_speed_kmh",
+      "importance": 5e-05
+    },
+    {
+      "feature": "lag60_queue_length_veh",
+      "importance": 2.6e-05
     }
   ],
   "leakage_guard": [

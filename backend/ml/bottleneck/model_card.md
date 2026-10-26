@@ -42,31 +42,31 @@ Validasi:
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.8349 | 0.8561 | 0.8933 |
-| mlp | 0.6793 | 0.7567 | 0.6754 |
+| hist_gradient_boosting | 0.7254 | 0.7641 | 0.7890 |
+| mlp | 0.6766 | 0.7406 | 0.6662 |
 
 Hari uji (hari 7):
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.9002 | 0.8853 | 0.9371 |
+| hist_gradient_boosting | 0.8473 | 0.8311 | 0.8916 |
 | majority_class | 0.0710 | 0.1111 | 0.4694 |
-| rule_based | 0.1730 | 0.2237 | 0.5597 |
+| rule_based | 0.1757 | 0.2237 | 0.5598 |
 
 Pemenang: **hist_gradient_boosting**.
 
-Recall kelas langka: `banjir` 1.0000 (support 3151),
-`lampu_mati` 0.9980 (support 989).
+Recall kelas langka: `banjir` 0.9975 (support 3151),
+`lampu_mati` 1.0000 (support 989).
 
 ## 6. Analisis kesalahan (dihitung dari confusion matrix hari uji)
 
 Pasangan paling sering tertukar:
 
-- `keramaian_event` diprediksi `normal`: 801 tick (42.5% dari seluruh tick berlabel `keramaian_event`)
-- `hujan` diprediksi `normal`: 774 tick (16.4% dari seluruh tick berlabel `hujan`)
-- `keramaian_event` diprediksi `kendaraan_berat`: 292 tick (15.5% dari seluruh tick berlabel `keramaian_event`)
-- `hujan` diprediksi `keramaian_event`: 248 tick (5.2% dari seluruh tick berlabel `hujan`)
-- `keramaian_event` diprediksi `hujan`: 158 tick (8.4% dari seluruh tick berlabel `keramaian_event`)
+- `hujan` diprediksi `normal`: 2166 tick (45.8% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `normal`: 990 tick (52.5% dari seluruh tick berlabel `keramaian_event`)
+- `keramaian_event` diprediksi `kendaraan_berat`: 282 tick (15.0% dari seluruh tick berlabel `keramaian_event`)
+- `kecelakaan` diprediksi `banjir`: 266 tick (16.6% dari seluruh tick berlabel `kecelakaan`)
+- `hujan` diprediksi `volume_puncak`: 215 tick (4.5% dari seluruh tick berlabel `hujan`)
 
 Pola: kebingungan terbesar terjadi antar kelas yang **gejala lalu lintasnya tumpang tindih** —
 gangguan yang sama-sama menurunkan kecepatan dan menaikkan antrean. Fitur yang boleh dipakai tidak
@@ -76,14 +76,14 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 
 | # | Fitur | Importance (Δ macro-F1) |
 |---|---|---|
-| 1 | `wait_time_min` | 0.45092 |
-| 2 | `avg_speed_kmh` | 0.36822 |
-| 3 | `proporsi_roda_6plus` | 0.15339 |
-| 4 | `hour` | 0.12705 |
-| 5 | `vehicle_count_1min` | 0.11578 |
-| 6 | `weather_temp_c` | 0.04419 |
-| 7 | `roll60_mean_avg_speed_kmh` | 0.03168 |
-| 8 | `volume_veh_per_hour` | 0.02540 |
+| 1 | `wait_time_min` | 0.40327 |
+| 2 | `proporsi_roda_6plus` | 0.14258 |
+| 3 | `avg_speed_kmh` | 0.08524 |
+| 4 | `vehicle_count_1min` | 0.05022 |
+| 5 | `hour` | 0.04096 |
+| 6 | `weather_temp_c` | 0.03677 |
+| 7 | `panjang_m` | 0.02372 |
+| 8 | `lag60_volume_veh_per_hour` | 0.01951 |
 
 ## 8. Penanganan ketidakseimbangan kelas
 
