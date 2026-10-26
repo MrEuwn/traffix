@@ -179,11 +179,11 @@ def rule_based_cause(frame: pd.DataFrame) -> np.ndarray:
     peak_hour = ((hour >= 6) & (hour <= 9)) | ((hour >= 16) & (hour <= 19))
     out = np.full(len(frame), "normal", dtype=object)
     out[(speed < 18) & (density > 90)] = "banjir"
-    out[(speed < 30) & (density > 70) & (density <= 90) & (wait > 12)] = "kecelakaan"
+    out[(speed < 30) & (density > 70) & (density <= 90) & (wait > 1.5)] = "kecelakaan"
     out[(speed < 40) & (density > 55) & (density <= 70)] = "hujan"
     out[(heavy >= 0.14) & (density <= 55)] = "kendaraan_berat"
     out[(volume > 6000) & peak_hour & (density > 40)] = "volume_puncak"
-    out[(wait > 20) & (speed < 25)] = "perbaikan_jalan"
+    out[(wait > 2.5) & (speed < 25)] = "perbaikan_jalan"
     return out
 
 

@@ -42,31 +42,31 @@ Validasi:
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.6583 | 0.6836 | 0.7767 |
-| mlp | 0.4803 | 0.5649 | 0.5822 |
+| hist_gradient_boosting | 0.7742 | 0.7993 | 0.8075 |
+| mlp | 0.4643 | 0.5759 | 0.4417 |
 
 Hari uji (hari 7):
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.7804 | 0.7919 | 0.8377 |
+| hist_gradient_boosting | 0.8655 | 0.8509 | 0.9010 |
 | majority_class | 0.0738 | 0.1111 | 0.4969 |
-| rule_based | 0.1422 | 0.1813 | 0.2311 |
+| rule_based | 0.2699 | 0.2863 | 0.4962 |
 
 Pemenang: **hist_gradient_boosting**.
 
-Recall kelas langka: `banjir` 0.9759 (support 3151),
-`lampu_mati` 0.9990 (support 989).
+Recall kelas langka: `banjir` 0.9810 (support 3151),
+`lampu_mati` 1.0000 (support 989).
 
 ## 6. Analisis kesalahan (dihitung dari confusion matrix hari uji)
 
 Pasangan paling sering tertukar:
 
-- `hujan` diprediksi `perbaikan_jalan`: 1579 tick (33.4% dari seluruh tick berlabel `hujan`)
-- `perbaikan_jalan` diprediksi `normal`: 877 tick (20.9% dari seluruh tick berlabel `perbaikan_jalan`)
-- `normal` diprediksi `perbaikan_jalan`: 745 tick (3.5% dari seluruh tick berlabel `normal`)
-- `perbaikan_jalan` diprediksi `kendaraan_berat`: 694 tick (16.5% dari seluruh tick berlabel `perbaikan_jalan`)
-- `keramaian_event` diprediksi `normal`: 582 tick (30.9% dari seluruh tick berlabel `keramaian_event`)
+- `hujan` diprediksi `normal`: 2131 tick (45.1% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `normal`: 876 tick (46.5% dari seluruh tick berlabel `keramaian_event`)
+- `keramaian_event` diprediksi `kendaraan_berat`: 324 tick (17.2% dari seluruh tick berlabel `keramaian_event`)
+- `kendaraan_berat` diprediksi `keramaian_event`: 226 tick (6.0% dari seluruh tick berlabel `kendaraan_berat`)
+- `hujan` diprediksi `keramaian_event`: 127 tick (2.7% dari seluruh tick berlabel `hujan`)
 
 Pola: kebingungan terbesar terjadi antar kelas yang **gejala lalu lintasnya tumpang tindih** —
 gangguan yang sama-sama menurunkan kecepatan dan menaikkan antrean. Fitur yang boleh dipakai tidak
@@ -76,14 +76,14 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 
 | # | Fitur | Importance (Δ macro-F1) |
 |---|---|---|
-| 1 | `avg_speed_kmh` | 0.28448 |
-| 2 | `proporsi_roda_6plus` | 0.12338 |
-| 3 | `vehicle_count_1min` | 0.10286 |
-| 4 | `jumlah_lajur` | 0.06829 |
-| 5 | `hour` | 0.04308 |
-| 6 | `volume_veh_per_hour` | 0.04136 |
-| 7 | `weather_temp_c` | 0.04088 |
-| 8 | `density_percent` | 0.03831 |
+| 1 | `wait_time_min` | 0.40737 |
+| 2 | `avg_speed_kmh` | 0.15200 |
+| 3 | `proporsi_roda_6plus` | 0.11370 |
+| 4 | `vehicle_count_1min` | 0.10662 |
+| 5 | `hour` | 0.07049 |
+| 6 | `jumlah_lajur` | 0.05030 |
+| 7 | `volume_veh_per_hour` | 0.04885 |
+| 8 | `roll15_std_queue_length_veh` | 0.01436 |
 
 ## 8. Penanganan ketidakseimbangan kelas
 

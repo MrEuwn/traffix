@@ -465,10 +465,6 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
                 speed -= 12.0
             speed = float(max(6.0, min(FREE_FLOW_SPEED, speed + rng.normal(0, 1.2))))
 
-            discharge = max(speed / 10.0, 0.1)
-            penalty = 1.0 + ((density / 100.0) ** 1.5) * 2.0
-            wait_time = float(min(60.0, (queue / discharge) * penalty))
-
             # komposisi kendaraan
             total = int(round(arrivals))
             share = VEHICLE_SHARE[sec["section_type"]]
@@ -496,6 +492,34 @@ def simulate(days: int, seed: int) -> pd.DataFrame:
             vc_ratio = float(min(3.0, smp_per_hour / max(sec["cap_smp"] * comp_factor, 1.0)))
             volume_vph = float(round(arrivals * 60.0, 2))
             los = _los(vc_ratio)
+
+            # waktu tunggu: tundaan sinyal (uniform delay Webster/HCM) untuk ruas ber-lampu,
+            # tundaan perjalanan untuk ruas antar-simpang (mid-block), keduanya ditambah
+            # penalti kejadian. Nilai dalam menit.
+            incident_penalty_s = 0.0
+            if flood:
+                incident_penalty_s += 90.0
+            if accident:
+                incident_penalty_s += 75.0
+            if roadwork:
+                incident_penalty_s += 30.0
+            if outage:
+                incident_penalty_s += 45.0
+
+            if is_corridor:
+                travel_actual_s = (sec["length_m"] / 1000.0) / max(speed, 5.0) * 3600.0
+                travel_free_s = (sec["length_m"] / 1000.0) / FREE_FLOW_SPEED * 3600.0
+                wait_time = (max(0.0, travel_actual_s - travel_free_s) + incident_penalty_s) / 60.0
+            else:
+                green_ratio = green / cycle if cycle else 1.0
+                saturation = min(1.0, vc_ratio)
+                uniform_s = (
+                    0.5 * cycle * (1.0 - green_ratio) ** 2
+                    / max(0.15, 1.0 - saturation * green_ratio)
+                )
+                overflow_s = max(0.0, vc_ratio - 1.0) * cycle * 1.5
+                wait_time = (uniform_s + overflow_s + incident_penalty_s) / 60.0
+            wait_time = float(round(min(15.0, max(0.0, wait_time)), 3))
 
             genangan = 0.0
             if flood:
