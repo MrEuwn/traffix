@@ -86,3 +86,182 @@ export interface SimulationResult {
   risk_after: number;
   summary: string;
 }
+
+/* ─────────────── v4 analytics (SCHEMA-v4 §5) ─────────────── */
+
+export interface BottleneckCause {
+  cause: string;
+  sections: number;
+  share: number;
+  avg_vc_ratio: number;
+  avg_queue_veh: number;
+  avg_wait_time_min: number;
+}
+
+export interface BottleneckPerIntersection {
+  intersection_id: string;
+  intersection_name: string;
+  tipe_persimpangan: "perempatan" | "pertigaan";
+  dominant_cause: string;
+  confidence: number;
+  probabilities: Record<string, number>;
+  top3: { cause: string; probability: number }[];
+  drivers: string[];
+  model_available?: boolean;
+  /** hanya pada GET /bottlenecks/{id} */
+  history?: {
+    tick: number;
+    timestamp_wib: string;
+    dominant_cause: string;
+    confidence: number;
+    vc_ratio: number;
+    queue_length_veh: number;
+    avg_speed_kmh: number;
+  }[];
+  /** hanya pada GET /bottlenecks/{id} */
+  sections?: SegmentItem[];
+}
+
+export interface BottleneckResponse {
+  tick: number;
+  timestamp_wib: string;
+  section_count: number;
+  affected_section_count: number;
+  dominant_cause: string;
+  causes: BottleneckCause[];
+  per_intersection: BottleneckPerIntersection[];
+}
+
+export interface SegmentVehicleMix {
+  roda_2: number;
+  roda_3: number;
+  roda_4: number;
+  roda_6plus: number;
+  total: number;
+  smp_ekivalen: number;
+  persen: {
+    roda_2: number;
+    roda_3: number;
+    roda_4: number;
+    roda_6plus: number;
+  };
+}
+
+export interface SegmentItem {
+  section_id: string;
+  nama_ruas: string;
+  section_type: "approach" | "corridor" | string;
+  intersection_id: string;
+  /** kosong untuk section_type corridor */
+  tipe_persimpangan: string;
+  /** kosong untuk section_type corridor */
+  approach: string;
+  panjang_m: number;
+  jumlah_lajur: number;
+  kapasitas_smp_per_jam: number;
+  kapasitas_kendaraan: number;
+  volume_veh_per_hour: number;
+  vc_ratio: number;
+  los: string;
+  avg_speed_kmh: number;
+  queue_length_veh: number;
+  wait_time_min: number;
+  kendaraan: SegmentVehicleMix;
+  bottleneck_cause: string;
+  penyebab_dominan: string;
+}
+
+export interface SegmentsResponse {
+  tick: number;
+  count: number;
+  total_capacity_vehicles: number;
+  items: SegmentItem[];
+}
+
+export interface SegmentsSummaryResponse {
+  tick: number;
+  section_count: number;
+  approach_count: number;
+  corridor_count: number;
+  total_capacity_vehicles: number;
+  total_capacity_smp_per_jam: number;
+  total_kendaraan: SegmentVehicleMix;
+  avg_vc_ratio: number;
+  avg_speed_kmh: number;
+  los_distribution: Record<string, number>;
+  per_intersection: { intersection_id: string; section_count: number }[];
+}
+
+export interface SignalPerIntersection {
+  intersection_id: string;
+  intersection_name: string;
+  tipe_persimpangan: "perempatan" | "pertigaan";
+  jumlah_lengan: number;
+  cycle_length_s: number;
+  avg_green_s: number;
+  avg_red_s: number;
+  avg_wait_time_min: number;
+  avg_queue_veh: number;
+  avg_delay_s: number;
+}
+
+export interface SignalsSummaryResponse {
+  scope: string;
+  timestamp_wib: string;
+  intersection_count: number;
+  section_count: number;
+  cycle_length_s: number;
+  avg_green_s: number;
+  avg_red_s: number;
+  avg_wait_time_min: number;
+  avg_queue_veh: number;
+  avg_delay_s: number;
+  /** agregat per scope (perempatan / pertigaan) */
+  items: {
+    scope: string;
+    intersection_count: number;
+    section_count: number;
+    cycle_length_s: number;
+    avg_green_s: number;
+    avg_red_s: number;
+    avg_wait_time_min: number;
+    avg_queue_veh: number;
+    avg_delay_s: number;
+  }[];
+  per_intersection: SignalPerIntersection[];
+}
+
+export interface ModelBaselineScore {
+  model: string;
+  macro_f1: number;
+  balanced_accuracy: number;
+  accuracy: number;
+}
+
+export interface ModelPerClassScore {
+  cause: string;
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+}
+
+/** Semua field turunan artefak opsional: backend mengirim `available: false` bila model belum ada. */
+export interface ModelEvaluationResponse {
+  available: boolean;
+  model_name: string;
+  trained_at?: string;
+  classes?: string[];
+  split?: { train: string; validation: string; test: string; protocol: string };
+  metrics?: { macro_f1: number; balanced_accuracy: number; accuracy: number };
+  baselines?: {
+    majority_class: ModelBaselineScore;
+    rule_based: ModelBaselineScore;
+  };
+  per_class?: ModelPerClassScore[];
+  confusion_matrix?: { labels: string[]; matrix: number[][] };
+  feature_importance?: { feature: string; importance: number }[];
+  leakage_guard?: string[];
+  limitations?: string[];
+  artifacts?: { model: string; metrics: string };
+}

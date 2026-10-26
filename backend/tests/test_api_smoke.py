@@ -29,10 +29,10 @@ def test_live_intersections_endpoint(api_client):
     response = api_client.get("/api/v1/intersections")
     assert response.status_code == 200
     data = _data(response)
-    assert data["count"] == 4
+    assert data["count"] == 6
     first = data["intersections"][0]
     assert first["intersection_id"].startswith("INT-")
-    assert first["intersection_name"] == "GT MERUYA 2B"
+    assert first["intersection_name"] == "Simpang Meruya Utara"
     assert "ai_predictions" in first
     assert first["ai_insight"]
     assert first["recommendation"]
@@ -59,7 +59,7 @@ def test_recommendations_weather_and_camera_routes(api_client):
     recommendations = api_client.get("/api/v1/recommendations")
     assert recommendations.status_code == 200
     recommendation_data = _data(recommendations)
-    assert recommendation_data["count"] == 4
+    assert recommendation_data["count"] == 6
     first_recommendation = recommendation_data["recommendations"][0]
     assert "recommended_green_seconds" in first_recommendation
     assert first_recommendation["ai_insight"]

@@ -4,6 +4,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { Dashboard } from "./pages/Dashboard";
 import { Settings } from "./pages/Settings";
 import { LiveMap } from "./pages/Livemap";
+import { ModelEvaluation } from "./pages/ModelEvaluation";
 import { LoginPage } from "./pages/Login";
 import { ThemeProvider } from "./lib/ThemeContext";
 import { AuthProvider, useAuth } from "./lib/AuthContext";
@@ -32,6 +33,7 @@ function AppShell() {
       <main style={{ flex: 1, overflow: "auto" }}>
         {page === "dashboard" && <Dashboard />}
         {page === "map" && <LiveMap />}
+        {page === "model" && <ModelEvaluation />}
         {page === "settings" && <Settings />}
       </main>
     </div>

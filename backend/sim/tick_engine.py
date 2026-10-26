@@ -3,6 +3,8 @@
 import asyncio
 from typing import Literal
 
+import pandas as pd
+
 from app.state_store import LiveIntersectionUpdate, WeatherCondition, state_store
 from core.config import settings
 from core.logger import get_logger
@@ -105,6 +107,7 @@ class TickEngine:
         """
         batch = self._replay_controller.next_batch()
         self._tick_count += 1
+        self._publish_analytics_tick(batch)
 
         updated_count = 0
         for row in batch:
@@ -126,6 +129,29 @@ class TickEngine:
             get_current_wib_time(),
         )
         return updated_count
+
+    def _publish_analytics_tick(self, batch: list[DatasetRow]) -> None:
+        """Keep the v4 analytics endpoints on the same instant as the live replay.
+
+        The replay cursor advances one dataset minute per batch; the analytics
+        loader is told that tick so `/bottlenecks`, `/segments` and
+        `/signals/summary` default to the moment the dashboard is showing.
+
+        Args:
+            batch: Rows of the tick that was just replayed.
+        """
+        if not batch:
+            return
+        try:
+            from sim.analytics_loader import analytics_loader
+
+            first_timestamp = analytics_loader.load_ticks()["timestamp_wib"].iloc[0]
+            elapsed = int(
+                (batch[0].timestamp - pd.Timestamp(first_timestamp)).total_seconds() // 60,
+            )
+            analytics_loader.tick_for_elapsed_minutes(max(0, elapsed))
+        except Exception:  # pragma: no cover - analytics overlay is optional
+            simulation_logger.debug("Analytics tick publish skipped", exc_info=True)
 
     def _update_state_from_row(self, row: DatasetRow) -> bool:
         """Update the state store from one dataset row.

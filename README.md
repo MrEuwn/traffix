@@ -566,3 +566,82 @@ npm run lint
 - `data/data_process/aggregation_rules.md` — synthetic data aggregation rules.
 - `data/data_process/dataset_validation.md` — synthetic dataset validation notes.
 - `inference_data/data_video/video_data.md` — CCTV video data processing pipeline documentation.
+- `docs/SCHEMA-v4.md` — frozen contract for the v4 dataset, the bottleneck-cause label rules, the new API responses and the model feature/leakage policy.
+- `backend/ml/bottleneck/model_card.md` — model card for the cause classifier (split protocol, metrics, error analysis, limitations).
+
+---
+
+## Traffix v4 — Bottleneck Cause Diagnosis
+
+v4 adds three operational parameters on top of the volume forecast, and turns the
+second one into the headline modeling claim:
+
+1. **Bottleneck cause** — every section-minute is labelled with one of 9 causes
+   (`normal`, `volume_puncak`, `perbaikan_jalan`, `hujan`, `banjir`, `kecelakaan`,
+   `keramaian_event`, `lampu_mati`, `kendaraan_berat`) resolved by an explicit
+   priority order, and a classifier predicts the cause from physical traffic
+   state only.
+2. **Red-light timing averages** — cycle length, average green, average red,
+   average wait, queue and delay per intersection type (`perempatan` vs
+   `pertigaan`) plus the combined average of every monitored signal.
+3. **Road sections** — 30 sections (21 signalised approaches + 9 mid-block
+   corridors) with geometry, capacity in SMP/hour, storage capacity in vehicles
+   (`kapasitas_kendaraan`), volume, V/C ratio, level of service A–F and the
+   vehicle composition split into roda 2 / 3 / 4 / 6+ with SMP equivalents.
+
+### Data (simulated, disclosed)
+
+`python data/data_synthetic/v4/generate_data_v4.py` writes
+`data/data_synthetic/v4/`:
+
+| File | Rows | Content |
+|---|---|---|
+| `ticks_v4.csv.gz` | 302,400 | section-level 1-minute series, 7 days, 51 columns |
+| `live_replay_7d.csv.gz` | 60,480 | intersection-level replay file (legacy contract) |
+| `intersections.csv` | 6 | 3 `perempatan` + 3 `pertigaan` |
+| `sections.csv` | 30 | 21 approaches + 9 corridors |
+
+Deterministic (seed 42). Features are calibrated against the real YOLO
+distribution and Open-Meteo weather model; SMP values, capacities and LOS
+thresholds follow MKJI 1997. **Cause labels come from the simulator's causal
+rules, not from field measurement** — this is disclosed in the UI badge
+(`data sintetis · seed 42`) and in the model card.
+
+### Model
+
+`backend/ml/bottleneck/train_bottleneck.py` trains a 9-class cause classifier on
+46 features (sensor state plus backward-looking lags/rolling windows only).
+Temporal split: days 1-5 train, day 6 validation, day 7 test.
+
+| Model | macro-F1 | balanced accuracy | accuracy |
+|---|---|---|---|
+| hist_gradient_boosting (shipped) | **0.7804** | 0.7919 | 0.8377 |
+| rule-based heuristic (baseline) | 0.1422 | 0.1813 | 0.2311 |
+| majority class (baseline) | 0.0738 | 0.1111 | 0.4969 |
+
+### New endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /api/v1/bottlenecks` | dominant cause, per-class shares, per-intersection confidence, top-3 and drivers |
+| `GET /api/v1/bottlenecks/{intersection_id}` | one intersection: probabilities, 60-tick history, sections |
+| `GET /api/v1/segments` | 30 sections with capacity, V/C, LOS and vehicle composition |
+| `GET /api/v1/segments/summary` | section counts, total capacity in vehicles, fleet composition, LOS spread |
+| `GET /api/v1/signals/summary?scope=all\|perempatan\|pertigaan` | red-light timing averages |
+| `GET /api/v1/model/evaluation` | model vs both baselines, per-class metrics, confusion matrix, leakage guard, limitations |
+
+All acceptance endpoints accept `?tick=`; by default they follow the live replay
+cursor, so every panel shows the same instant. The backend sets
+`REPLAY_START_TICK` (default 360 = 06:00 WIB) so a demo opens in the morning peak
+instead of midnight.
+
+### Dashboard
+
+`BottleneckPanel`, `SignalTimingCard` and `SegmentTable` sit on the Dashboard;
+`ModelEvaluation` (`Evaluasi Model` tab) renders the model-vs-baseline evidence.
+Verify the panels render real API numbers headlessly:
+
+```bash
+cd frontend && npm run check:render     # backend must be running
+```
+

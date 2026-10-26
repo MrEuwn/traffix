@@ -9,11 +9,14 @@ SignalState: TypeAlias = Literal["RED", "YELLOW", "GREEN"]
 WeatherCondition: TypeAlias = Literal["Sunny", "Cloudy", "Rain", "Storm"]
 StateValue: TypeAlias = str | int | float
 
+# v4 dataset intersections (names from data/data_synthetic/v4/intersections.csv).
 DEFAULT_INTERSECTIONS: Final[tuple[tuple[str, str], ...]] = (
-    ("INT-001", "GT MERUYA 2B"),
-    ("INT-002", "KM 00+600"),
-    ("INT-003", "KM 04+600"),
-    ("INT-004", "KM 07+200"),
+    ("INT-001", "Simpang Meruya Utara"),
+    ("INT-002", "Simpang Tomang"),
+    ("INT-003", "Pertigaan Cawang"),
+    ("INT-004", "Pertigaan Grogol"),
+    ("INT-005", "Simpang Kebayoran"),
+    ("INT-006", "Pertigaan Bekasi Barat"),
 )
 
 UPDATABLE_FIELDS: Final[frozenset[str]] = frozenset(
@@ -131,7 +134,7 @@ class LiveIntersectionStateStore:
         }
 
     def seed_default_states(self) -> None:
-        """Seed the store with four default Surabaya intersections."""
+        """Seed the store with the six default v4 intersections."""
         with self._lock:
             self._states = {
                 intersection_id: self._build_default_state(

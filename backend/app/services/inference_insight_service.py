@@ -6,6 +6,7 @@ from typing import Any
 
 from app.services.camera_service import camera_service
 from app.state_store import state_store
+from sim.intersection_mapping import camera_labels_for
 
 InsightPayload = dict[str, Any]
 
@@ -27,7 +28,10 @@ class InferenceInsightService:
         if state is None:
             return None
 
-        camera = self._camera_for_intersection_name(state["intersection_name"])
+        camera = self._camera_for_intersection_name(
+            state["intersection_id"],
+            state["intersection_name"],
+        )
         if camera is None:
             return None
 
@@ -64,13 +68,25 @@ class InferenceInsightService:
 
     def _camera_for_intersection_name(
         self,
+        intersection_id: str,
         intersection_name: str,
     ) -> dict[str, Any] | None:
-        """Find the latest camera payload for a dashboard intersection name."""
-        target = intersection_name.strip().casefold()
+        """Find the latest camera payload for a dashboard intersection.
+
+        Args:
+            intersection_id: Intersection identifier such as INT-001.
+            intersection_name: Display name of the intersection.
+
+        Returns:
+            Matching camera payload, or None when no CCTV row maps to it.
+        """
+        targets = {
+            name.strip().casefold()
+            for name in camera_labels_for(intersection_id, intersection_name)
+        }
         for camera in camera_service.list_cameras():
             name = str(camera.get("intersection_name") or "").strip().casefold()
-            if name == target:
+            if name in targets:
                 return camera
         return None
 

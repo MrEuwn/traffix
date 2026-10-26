@@ -14,6 +14,9 @@ import { RecommendationPanel } from "../components/dashboard/RecommendationPanel
 import { PredictionChart } from "../components/dashboard/PredictionChart";
 import type { Intersection } from "../types";
 import { ManualSignalAdjust } from "../components/dashboard/ManualSignalAdjust";
+import { BottleneckPanel } from "../components/dashboard/BottleneckPanel";
+import { SignalTimingCard } from "../components/dashboard/SignalTimingCard";
+import { SegmentTable } from "../components/dashboard/SegmentTable";
 
 export const Dashboard = () => {
   const { data: intersections = [], isLoading } = useIntersections();
@@ -123,7 +126,7 @@ export const Dashboard = () => {
           gridTemplateColumns: "1fr 320px",
           gap: 12,
           flex: 1,
-          minHeight: 0,
+          minHeight: 420,
         }}
       >
         {/* ── Left: Intersection Grid ── */}
@@ -271,6 +274,44 @@ export const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* ── Row 3: Analitik dataset v4 ── */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginTop: 2,
+        }}
+      >
+        <p
+          style={{
+            fontSize: 11,
+            color: "var(--text-dim)",
+            textTransform: "uppercase",
+            letterSpacing: ".08em",
+          }}
+        >
+          Analitik Dataset v4 · 6 simpang · 30 ruas
+        </p>
+        <p style={{ fontSize: 10, color: "var(--text-muted)" }}>
+          Bottleneck · sinyal · ruas &amp; komposisi kendaraan
+        </p>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          alignItems: "start",
+        }}
+      >
+        <BottleneckPanel />
+        <SignalTimingCard />
+      </div>
+
+      <SegmentTable />
 
       {/* Modal */}
       {selected && (

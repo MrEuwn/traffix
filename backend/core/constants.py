@@ -20,8 +20,21 @@ HORIZON_MINUTES: Final[dict[str, int]] = {
 # Traffic signal phase states.
 SIGNAL_STATES: Final[list[str]] = ["RED", "YELLOW", "GREEN"]
 
-# Default number of intersections in simulation.
-DEFAULT_INTERSECTION_COUNT: int = 4
+# Default number of intersections in simulation (v4 dataset: INT-001..INT-006).
+DEFAULT_INTERSECTION_COUNT: int = 6
+
+# Bottleneck cause classes of the v4 dataset (docs/SCHEMA-v4.md §1).
+BOTTLENECK_CAUSES: Final[list[str]] = [
+    "banjir",
+    "kecelakaan",
+    "lampu_mati",
+    "perbaikan_jalan",
+    "keramaian_event",
+    "hujan",
+    "kendaraan_berat",
+    "volume_puncak",
+    "normal",
+]
 
 # Simulation tick rate.
 DEFAULT_TICK_INTERVAL_SECONDS: int = 2

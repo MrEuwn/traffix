@@ -217,6 +217,13 @@ class Settings(BaseSettings):
         default=4,
         description="Number of intersections in the simulation",
     )
+    replay_start_tick: int = Field(
+        default=360,
+        description=(
+            "Replay start position in dataset minutes (default 360 = 06:00, jam sibuk pagi, "
+            "supaya demo langsung menampilkan kondisi puncak)"
+        ),
+    )
 
     # Weather
     bmkg_api_url: str = Field(

@@ -77,6 +77,7 @@ export const Navbar = ({ page, onNavigate }: Props) => {
       {[
         { id: "dashboard", label: "Dashboard" },
         { id: "map", label: "Live Map" },
+        { id: "model", label: "Evaluasi Model" },
         { id: "settings", label: "Settings" },
       ].map((tab) => (
         <button

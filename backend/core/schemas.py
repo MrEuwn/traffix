@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Literal, TypeAlias
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -839,3 +839,270 @@ class SystemVersionInfoResponse(BaseModel):
     app_name: str = Field(description="Application name")
     version: str = Field(description="Application semantic version")
     environment: str = Field(description="Runtime environment")
+
+
+# --- v4 analytics contracts (docs/SCHEMA-v4.md §3.3) -------------------------
+
+
+class BottleneckCauseItem(BaseModel):
+    """Per-cause bottleneck aggregate for one tick.
+
+    Attributes:
+        cause: Bottleneck cause label.
+        sections: Number of sections carrying that cause.
+        share: Share of all sections in the tick.
+        avg_vc_ratio: Mean volume/capacity ratio of the affected sections.
+        avg_queue_veh: Mean queue length in vehicles.
+        avg_wait_time_min: Mean wait time in minutes.
+    """
+
+    cause: str = Field(description="Bottleneck cause label")
+    sections: int = Field(description="Affected sections")
+    share: float = Field(description="Share of all sections")
+    avg_vc_ratio: float | None = Field(default=None)
+    avg_queue_veh: float | None = Field(default=None)
+    avg_wait_time_min: float | None = Field(default=None)
+
+
+class BottleneckTopCause(BaseModel):
+    """One (cause, probability) pair from the per-intersection ranking."""
+
+    cause: str = Field(description="Bottleneck cause label")
+    probability: float = Field(description="Class probability")
+
+
+class BottleneckPerIntersection(BaseModel):
+    """Per-intersection bottleneck diagnosis for one tick.
+
+    Attributes:
+        intersection_id: Intersection identifier.
+        intersection_name: Human-readable intersection name.
+        tipe_persimpangan: `perempatan` or `pertigaan`.
+        dominant_cause: Most likely cause for the intersection.
+        confidence: Probability of the dominant cause (0 when no model artifact).
+        probabilities: Probability per cause class (sums to ~1).
+        top3: Three most likely causes.
+        drivers: Human-readable Indonesian reasons from allowed features.
+    """
+
+    intersection_id: str
+    intersection_name: str
+    tipe_persimpangan: str
+    dominant_cause: str
+    confidence: float
+    probabilities: dict[str, float]
+    top3: list[BottleneckTopCause]
+    drivers: list[str]
+
+
+class BottlenecksResponse(BaseModel):
+    """Network-level bottleneck diagnosis for one tick."""
+
+    tick: int
+    timestamp_wib: str | None = None
+    section_count: int
+    affected_section_count: int
+    dominant_cause: str
+    causes: list[BottleneckCauseItem]
+    per_intersection: list[BottleneckPerIntersection]
+    model_available: bool = Field(description="Trained artifact loaded")
+    synthetic_data: bool = Field(description="Synthetic dataset disclosure flag")
+    disclosure: str = Field(description="Synthetic dataset disclosure text")
+
+
+class BottleneckHistoryPoint(BaseModel):
+    """One replayed tick in a per-intersection bottleneck history."""
+
+    tick: int
+    timestamp_wib: str | None = None
+    dominant_cause: str
+    confidence: float
+    vc_ratio: float | None = None
+    queue_length_veh: float | None = None
+    avg_speed_kmh: float | None = None
+
+
+class BottleneckSectionRow(BaseModel):
+    """Per-section bottleneck row attached to the intersection detail view."""
+
+    section_id: str
+    nama_ruas: str
+    section_type: str
+    approach: str
+    vc_ratio: float | None = None
+    los: str
+    avg_speed_kmh: float | None = None
+    queue_length_veh: int
+    wait_time_min: float | None = None
+    bottleneck_cause: str
+
+
+class BottleneckDetailResponse(BottleneckPerIntersection):
+    """Per-intersection bottleneck diagnosis with history and sections."""
+
+    history: list[BottleneckHistoryPoint]
+    sections: list[BottleneckSectionRow]
+
+
+class SegmentVehicleMix(BaseModel):
+    """Hourly vehicle composition of a section or of the whole network."""
+
+    roda_2: int
+    roda_3: int
+    roda_4: int
+    roda_6plus: int
+    total: int
+    smp_ekivalen: float
+    persen: dict[str, float]
+
+
+class SegmentItem(BaseModel):
+    """One section row for a tick, with vehicle composition."""
+
+    section_id: str
+    nama_ruas: str
+    section_type: str
+    intersection_id: str
+    tipe_persimpangan: str
+    approach: str
+    panjang_m: int
+    jumlah_lajur: int
+    kapasitas_smp_per_jam: int
+    kapasitas_kendaraan: int
+    volume_veh_per_hour: float | None = None
+    vc_ratio: float | None = None
+    los: str
+    avg_speed_kmh: float | None = None
+    queue_length_veh: int
+    wait_time_min: float | None = None
+    kendaraan: SegmentVehicleMix
+    bottleneck_cause: str
+    penyebab_dominan: str
+
+
+class SegmentsResponse(BaseModel):
+    """Section-level segment payload for one tick."""
+
+    tick: int
+    count: int
+    total_capacity_vehicles: int
+    items: list[SegmentItem]
+
+
+class SegmentIntersectionSummary(BaseModel):
+    """Aggregated segment metrics for one intersection or corridor."""
+
+    intersection_id: str
+    section_count: int
+    approach_count: int
+    corridor_count: int
+    total_capacity_vehicles: int
+    total_capacity_smp_per_jam: int
+    kendaraan: SegmentVehicleMix
+    avg_vc_ratio: float | None = None
+    avg_speed_kmh: float | None = None
+
+
+class SegmentsSummaryResponse(BaseModel):
+    """Network-level segment summary for one tick."""
+
+    tick: int
+    section_count: int
+    approach_count: int
+    corridor_count: int
+    total_capacity_vehicles: int
+    total_capacity_smp_per_jam: int
+    total_kendaraan: SegmentVehicleMix
+    avg_vc_ratio: float | None = None
+    avg_speed_kmh: float | None = None
+    los_distribution: dict[str, int]
+    per_intersection: list[SegmentIntersectionSummary]
+
+
+class SignalScopeItem(BaseModel):
+    """Signal timing aggregate for one scope (`perempatan` or `pertigaan`)."""
+
+    scope: str
+    intersection_count: int
+    section_count: int
+    cycle_length_s: float
+    avg_green_s: float
+    avg_red_s: float
+    avg_wait_time_min: float
+    avg_queue_veh: float
+    avg_delay_s: float
+
+
+class SignalPerIntersection(BaseModel):
+    """Signal timing metrics for one intersection (approach sections only)."""
+
+    intersection_id: str
+    intersection_name: str
+    tipe_persimpangan: str
+    jumlah_lengan: int
+    section_count: int
+    cycle_length_s: float
+    avg_green_s: float
+    avg_red_s: float
+    avg_wait_time_min: float
+    avg_queue_veh: float
+    avg_delay_s: float
+
+
+class SignalsSummaryResponse(BaseModel):
+    """Signal timing summary for one tick; corridor sections are excluded."""
+
+    scope: str
+    timestamp_wib: str | None = None
+    intersection_count: int
+    section_count: int
+    cycle_length_s: float
+    avg_green_s: float
+    avg_red_s: float
+    avg_wait_time_min: float
+    avg_queue_veh: float
+    avg_delay_s: float
+    items: list[SignalScopeItem]
+    per_intersection: list[SignalPerIntersection]
+
+
+class ModelBaselineScore(BaseModel):
+    """Baseline metrics row from the training artifact."""
+
+    model_config = ConfigDict(extra="allow")
+
+    model: str | None = None
+    macro_f1: float | None = None
+    balanced_accuracy: float | None = None
+    accuracy: float | None = None
+
+
+class ModelPerClassScore(BaseModel):
+    """Per-class precision/recall/F1 row from the training artifact."""
+
+    cause: str
+    precision: float | None = None
+    recall: float | None = None
+    f1: float | None = None
+    support: int | None = None
+
+
+class ModelEvaluationResponse(BaseModel):
+    """Bottleneck classifier evaluation report (pass-through of metrics.json)."""
+
+    model_config = ConfigDict(extra="allow")
+
+    available: bool = True
+    reason: str | None = None
+    model_name: str | None = None
+    trained_at: str | None = None
+    classes: list[str] | None = None
+    split: dict[str, Any] | None = None
+    metrics: dict[str, float] | None = None
+    baselines: dict[str, ModelBaselineScore] | None = None
+    per_class: list[ModelPerClassScore] | None = None
+    confusion_matrix: dict[str, Any] | None = None
+    feature_importance: list[dict[str, Any]] | None = None
+    leakage_guard: list[str] | None = None
+    limitations: list[str] | None = None
+    artifacts: dict[str, str] | None = None

@@ -36,7 +36,7 @@ def test_dataset_loader_normalizes_data_team_csv():
     loader = HybridTrafficDatasetLoader()
     metadata = loader.get_dataset_metadata()
     assert metadata.rows > 0
-    assert metadata.intersections == 4
+    assert metadata.intersections == 6
 
     rows = loader.get_rows()
     assert rows[0].intersection_id == "INT-001"
@@ -45,6 +45,8 @@ def test_dataset_loader_normalizes_data_team_csv():
         "INT-002",
         "INT-003",
         "INT-004",
+        "INT-005",
+        "INT-006",
     }
 
 

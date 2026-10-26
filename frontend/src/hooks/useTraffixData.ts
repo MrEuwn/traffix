@@ -2,15 +2,23 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, unwrap } from "../lib/api";
 import type {
+  BottleneckPerIntersection,
+  BottleneckResponse,
   Intersection,
+  ModelEvaluationResponse,
   Prediction,
   Recommendation,
+  SegmentsResponse,
+  SegmentsSummaryResponse,
+  SignalsSummaryResponse,
   SimulationResult,
   Weather,
   SystemStatus,
 } from "../types";
 
 const POLL = 1000;
+/** Poling analitik v4 (dataset replay) — lebih lambat dari live metrics. */
+const ANALYTICS_POLL = 5000;
 
 export const useSystemStatus = () =>
   useQuery({
@@ -198,6 +206,57 @@ export const useClearManualOverride = () => {
     },
   });
 };
+
+/* ─────────────── Analitik v4 (SCHEMA-v4 §3.3) ─────────────── */
+
+export const useBottlenecks = () =>
+  useQuery({
+    queryKey: ["bottlenecks"],
+    queryFn: () => api.get("/api/v1/bottlenecks").then(unwrap<BottleneckResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
+
+export const useBottlenecksByIntersection = (intersectionId: string) =>
+  useQuery({
+    queryKey: ["bottlenecks", intersectionId],
+    queryFn: () =>
+      api
+        .get(`/api/v1/bottlenecks/${intersectionId}`)
+        .then(unwrap<BottleneckPerIntersection>),
+    refetchInterval: ANALYTICS_POLL,
+    enabled: !!intersectionId,
+  });
+
+export const useSegments = () =>
+  useQuery({
+    queryKey: ["segments"],
+    queryFn: () => api.get("/api/v1/segments").then(unwrap<SegmentsResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
+
+export const useSegmentsSummary = () =>
+  useQuery({
+    queryKey: ["segments-summary"],
+    queryFn: () => api.get("/api/v1/segments/summary").then(unwrap<SegmentsSummaryResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
+
+export const useSignalsSummary = (scope: "all" | "perempatan" | "pertigaan" = "all") =>
+  useQuery({
+    queryKey: ["signals-summary", scope],
+    queryFn: () =>
+      api
+        .get(`/api/v1/signals/summary?scope=${scope}`)
+        .then(unwrap<SignalsSummaryResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
+
+export const useModelEvaluation = () =>
+  useQuery({
+    queryKey: ["model-evaluation"],
+    queryFn: () => api.get("/api/v1/model/evaluation").then(unwrap<ModelEvaluationResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
 
 // Notifikasi dari perubahan intersection state
 export interface Notification {

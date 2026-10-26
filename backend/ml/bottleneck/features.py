@@ -120,8 +120,8 @@ def build_feature_frame(df: pd.DataFrame, *, with_lags: bool = True) -> pd.DataF
         out[col] = frame[col].astype(float)
     out["hour"] = ts.dt.hour
     out["minute"] = ts.dt.minute
-    out["day_of_week"] = ts.dt.dayofweek
-    out["is_weekend"] = (ts.dt.dayofweek >= 5).astype(int)
+    out["day_of_week"] = ts.dt.day_of_week
+    out["is_weekend"] = (ts.dt.day_of_week >= 5).astype(int)
     out["section_type_is_corridor"] = (frame["section_type"] == "corridor").astype(int)
     out["tipe_is_perempatan"] = (frame["tipe_persimpangan"] == "perempatan").astype(int)
 
