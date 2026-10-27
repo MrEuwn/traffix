@@ -148,14 +148,14 @@ export const SegmentTable = () => {
               <thead>
                 <tr>
                   <Th>Ruas jalan</Th>
-                  <Th align="right">Panjang m</Th>
-                  <Th align="right">Lajur</Th>
-                  <Th align="right">Kapasitas smp/jam</Th>
-                  <Th align="right">Kapasitas kend</Th>
+                  <Th align="right" className="hidden xl:table-cell">Panjang m</Th>
+                  <Th align="right" className="hidden xl:table-cell">Lajur</Th>
+                  <Th align="right">Kap. smp/jam</Th>
+                  <Th align="right">Kap. kend</Th>
                   <Th align="right">Volume smp/jam</Th>
                   <Th align="right">V/C</Th>
                   <Th>LOS</Th>
-                  <Th>Komposisi R2/R3/R4/R6+</Th>
+                  <Th>Komposisi</Th>
                 </tr>
               </thead>
               <tbody>
@@ -181,10 +181,10 @@ export const SegmentTable = () => {
                         </span>
                       </span>
                     </Td>
-                    <Td align="right">
+                    <Td align="right" className="hidden xl:table-cell">
                       <span className="num">{fmtInt(s.panjang_m)}</span>
                     </Td>
-                    <Td align="right">
+                    <Td align="right" className="hidden xl:table-cell">
                       <span className="num">{fmtInt(s.jumlah_lajur)}</span>
                     </Td>
                     <Td align="right">

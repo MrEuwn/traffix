@@ -313,6 +313,7 @@ export const Field = ({
   label,
   hint,
   error,
+  className = "",
   ...rest
 }: { label: string; hint?: string; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
   <label className="block">
@@ -321,6 +322,7 @@ export const Field = ({
       className={cn(
         "h-11 w-full rounded-control border bg-surface px-3 text-body text-ink outline-none transition-colors",
         error ? "border-crit" : "border-line focus:border-primary",
+        className,
       )}
       aria-invalid={!!error}
       {...rest}

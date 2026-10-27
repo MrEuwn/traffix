@@ -320,12 +320,11 @@ export const LiveMap = () => {
             zoom={12}
             zoomControl
             attributionControl={false}
-            className="h-full w-full !bg-base"
+            className="h-full w-full !bg-base map-dark"
           >
             <TileLayer
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-              subdomains="abcd"
-              attribution="© OpenStreetMap · CARTO"
+              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution="© OpenStreetMap"
             />
             <Recenter target={selCoords} />
             <MapMiss onMiss={missMap} />

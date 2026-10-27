@@ -121,7 +121,7 @@ export const Settings = () => {
               <Row label="Layanan backend" sub={s.service}>
                 <StatusPill
                   tone={s.status === "ok" ? "ok" : "warn"}
-                  label={s.status}
+                  label={s.status === "ok" ? "Operasional" : `Terbatas (${s.status})`}
                   icon={s.status === "ok" ? "check-circle" : "alert-triangle"}
                 />
               </Row>

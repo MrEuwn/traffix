@@ -32,7 +32,7 @@ REQUIRED: dict[str, list[str]] = {
 AUDIT_JS = r"""
 () => {
   const out = { small: [], emoji: [], targets: [], numFont: null, bodyFont: null,
-                numCount: 0, inkCount: 0, sizes: {} };
+                numCount: 0, inkCount: 0, sizes: {}, clipped: [] };
   out.bodyFont = getComputedStyle(document.body).fontFamily;
   const emojiRe = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
   for (const el of document.querySelectorAll('body *')) {
@@ -54,6 +54,11 @@ AUDIT_JS = r"""
       out.numCount++;
       if (!out.numFont) out.numFont = cs.fontFamily;
     }
+    if (el.tagName === 'TH' && el.offsetParent !== null) {
+      if (el.scrollWidth > el.clientWidth + 2) {
+        out.clipped.push({ t: (el.innerText || '').trim().slice(0, 40), need: el.scrollWidth, have: el.clientWidth });
+      }
+    }
     if (el.tagName === 'BUTTON' && el.offsetParent !== null) {
       const r = el.getBoundingClientRect();
       if (r.height > 0) out.targets.push({ h: Math.round(r.height), label: (el.innerText || el.getAttribute('aria-label') || '').trim().slice(0, 30) });
@@ -74,13 +79,31 @@ def main() -> int:
         page = browser.new_page(viewport={"width": 1600, "height": 1100})
         console_errors: list[str] = []
         failed: list[str] = []
+        tiles: list[str] = []
         page.on("console", lambda m: console_errors.append(m.text) if m.type == "error" else None)
         page.on("requestfailed", lambda r: failed.append(f"{r.method} {r.url} ({r.failure})"))
+        page.on("response", lambda r: tiles.append(r.url) if "tile" in r.url and r.ok else None)
 
         page.goto(URL, wait_until="networkidle")
         page.screenshot(path=str(SHOTS / "login.png"), full_page=True)
         if not page.get_by_text("Traffix", exact=False).first.is_visible():
             failures.append("halaman login tidak menampilkan merek Traffix")
+
+        # Formulir masuk: target sentuh 44px dan latar token gelap (bukan putih bawaan UA).
+        field = page.evaluate(
+            """() => {
+              const i = document.querySelector('input');
+              const cs = getComputedStyle(i);
+              return { h: Math.round(i.getBoundingClientRect().height), bg: cs.backgroundColor, cls: i.className };
+            }"""
+        )
+        if field["h"] < 44:
+            failures.append(f"Login: tinggi input {field['h']}px (< 44px)")
+        if field["bg"] in ("rgb(255, 255, 255)", "rgba(0, 0, 0, 0)"):
+            failures.append(f"Login: latar input '{field['bg']}' — kelas primitif tertimpa (className)")
+        body_bg = page.evaluate("() => getComputedStyle(document.body).backgroundColor")
+        if body_bg != field["bg"] and field["bg"] != "rgb(17, 24, 35)":
+            notes.append(f"Login: latar input {field['bg']} — periksa apakah sesuai token surface")
 
         # Masuk: cari field lewat label, lalu tombol "Masuk".
         for label, value in (("Nama pengguna", "admin"), ("Kata sandi", "admin123")):
@@ -121,6 +144,8 @@ def main() -> int:
             small_targets = [t for t in audit["targets"] if t["h"] < 40]
             if small_targets:
                 notes.append(f"{tab}: {len(small_targets)} tombol < 40px (mis. {small_targets[:3]})")
+            if audit["clipped"]:
+                notes.append(f"{tab}: header tabel terpotong → {audit['clipped'][:3]}")
             notes.append(
                 f"{tab}: ukuran teks {audit['sizes']} · .num {audit['numCount']} elemen · tombol {len(audit['targets'])}"
             )
@@ -173,6 +198,15 @@ def main() -> int:
                 page.wait_for_timeout(600)
 
         api_failed = [f for f in failed if "/api/" in f and "/cameras/videos/" not in f]
+
+        # Peta: basemap tidak boleh bergantung API key (CARTO menolak tanpa key) —
+        # dan minimal satu tile harus benar-benar terunduh.
+        tiles_seen = [u for u in tiles]
+        if any("basemaps.cartocdn.com" in u for u in tiles_seen):
+            failures.append("Live Map: basemap masih memakai tile CARTO ber-API key")
+        if not any("tile.openstreetmap.org" in u for u in tiles_seen):
+            failures.append("Live Map: tidak ada tile peta yang terunduh")
+        notes.append(f"Live Map: {len(tiles_seen)} permintaan tile berhasil")
 
         # Tidak boleh ada luber horizontal pada lebar desktop yang didukung.
         for width in (1600, 1440, 1280):
