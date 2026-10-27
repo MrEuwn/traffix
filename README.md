@@ -340,6 +340,8 @@ scraper needs Playwright browsers.
 
 - `docs/PETA-PROYEK-END-TO-END.md`: orientation doc. How the pieces connect, what is
   finished, how to demo it, and what is still open.
+- `docs/PEMBELAJARAN-PR1.md`: twelve lessons from replaying the D2 pull request, each one
+  tied to a file or a number in this repo.
 - `docs/SCHEMA-v4.md`: frozen contract. Nine causes, priority rules, forbidden
   features, API shapes.
 - `backend/ml/bottleneck/model_card.md`: split protocol, metrics, error analysis,
