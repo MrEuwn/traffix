@@ -119,10 +119,10 @@ Fase 4, backend. Endpoint v4 ditambahkan tanpa merusak yang lama. `REPLAY_START_
 disetel 360 (06:00 WIB) supaya demo dibuka saat jam sibuk pagi, bukan tengah malam.
 
 Fase 5, frontend. Versi pertama UI masih pakai inline style dan font Poppins. Lalu dirombak
-total: desain dibuat di Google Stitch, diaudit terhadap aturan keras, baru ditulis ulang ke
-React. Token warna, tipografi Inter + JetBrains Mono, kumpulan primitif bersama, dan empat
-halaman ditulis ulang di atas primitif itu. Sekarang ada dua skrip yang menjaga hasilnya
-(bagian 8).
+total: rancangan visual dikerjakan terpisah lebih dulu dan diaudit terhadap aturan keras,
+baru ditulis ulang ke React. Token warna, tipografi Inter + JetBrains Mono, kumpulan primitif
+bersama, dan empat halaman ditulis ulang di atas primitif itu. Sekarang ada dua skrip yang
+menjaga hasilnya (bagian 8).
 
 Fase 6, modul pendukung dan kemasan lomba (dikerjakan di cabang `d2-competition`, masuk lewat
 PR #1). Tiga hal ditambahkan: modul peramalan LSTM dengan halaman evaluasinya sendiri
@@ -281,7 +281,7 @@ terakhir), dan klaim akurasi lapangan (labelnya dari simulator).
 | badge Settings berbahasa Inggris | enum backend ditampilkan mentah | dipetakan ke "Operasional" / "Terbatas" |
 | header tabel terpotong jadi "TUNGGU MENI" | tabel lebih lebar dari panelnya | header dipendekkan, kolom Panjang dan Lajur disembunyikan di bawah 1280 px |
 | input login jadi kotak putih 20 px | `Field` menyebar `{...rest}` setelah `className`, jadi kelas pemanggil menimpa kelas dasar | `className` di-destructure dan digabung paling akhir |
-| edit desain di Stitch sudah "sukses" tapi ekspor HTML tidak berubah | jalur DOM op hanya mengubah kanvas, file ekspor tidak diterbitkan ulang | bandingkan hash `htmlCode.name` dari `get_screen`, minta republish layar penuh |
+| edit desain di kanvas tidak ikut terbit ke berkas ekspor | jalur penyuntingan hanya mengubah kanvas, berkas ekspor tidak diterbitkan ulang | minta ekspor ulang layar penuh dari penyedia alat desain |
 
 ## 12. Yang belum selesai
 

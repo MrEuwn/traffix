@@ -340,8 +340,6 @@ scraper needs Playwright browsers.
 
 - `docs/PETA-PROYEK-END-TO-END.md`: orientation doc. How the pieces connect, what is
   finished, how to demo it, and what is still open.
-- `docs/PEMBELAJARAN-PR1.md`: twelve lessons from replaying the D2 pull request, each one
-  tied to a file or a number in this repo.
 - `docs/SCHEMA-v4.md`: frozen contract. Nine causes, priority rules, forbidden
   features, API shapes.
 - `backend/ml/bottleneck/model_card.md`: split protocol, metrics, error analysis,
@@ -352,8 +350,6 @@ scraper needs Playwright browsers.
 - `data/data_process/data_dictionary.md`, `aggregation_rules.md` and
   `dataset_validation.md`: column definitions, and how the synthetic data was put
   together and checked.
-- `docs/STITCH-AUDIT-A.md` and `docs/STITCH-AUDIT-A-rerun.md`: design audit before
-  and after the interface rebuild.
 - `docs/RENCANA-TRAFFIX-v2-D2-ROBCOM2026.pdf`: the D2 development plan.
 - `docs/D2_RESEARCH_PROTOCOL.md`: the frozen research question, split, baselines,
   metrics and claim boundary.

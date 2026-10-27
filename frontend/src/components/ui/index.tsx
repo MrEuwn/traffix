@@ -1,4 +1,4 @@
-/* Primitif UI bersama hasil rombak Stitch. Tanpa library baru, Tailwind + SVG inline.
+/* Primitif UI bersama. Tanpa library baru, Tailwind + SVG inline.
    Aturan: 1 aksen interaksi, 2 warna teks per panel, semua state setinggi sama,
    target sentuh >=44px, fokus ring terlihat. */
 import {

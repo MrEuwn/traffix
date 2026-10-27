@@ -1,4 +1,4 @@
-/** Token warna/tipe hasil Stitch "Traffix Ops — Control Room" + layer "Editorial Control Room".
+/** Token warna/tipe konsol Traffix + layer "Editorial Control Room".
  *  Semua warna menunjuk CSS var (di-set ThemeProvider) supaya mode gelap/terang tetap jalan. */
 const v = (name) => `rgb(var(${name}) / <alpha-value>)`;
 

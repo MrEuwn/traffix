@@ -121,7 +121,7 @@ kamera memutar ulang frame rekaman. Keduanya diberi label "replay" atau "bukan l
 
 ## Pengungkapan penggunaan AI (untuk slide/deklarasi)
 
-- Asisten AI (Claude Code) dipakai untuk:
+- Asisten AI dipakai untuk:
   - mengaudit repo;
   - menulis pipeline evaluasi, test, integrasi UI, dan konfigurasi Docker;
   - menyusun draf dokumen ini.

@@ -1,6 +1,6 @@
 import { StateBlock } from "../ui";
 
-/* Kerangka state panel dashboard — tinggi tetap 176px (parity Stitch)
+/* Kerangka state panel dashboard, tinggi tetap 176px
    supaya tata letak tidak bergeser antara loading / kosong / galat.
    Dipakai juga oleh halaman Evaluasi Model. */
 export const PanelState = ({

@@ -17,9 +17,9 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 /* ── Token maps ── */
-/* Lama (dipakai file yang belum dirombak) + baru (Stitch "Traffix — Control Room",
+/* Lama (dipakai file yang belum dirombak) + baru ("Traffix Control Room",
    dipakai lewat tailwind.config.js sebagai rgb(var(--c-*)) supaya opacity modifier tetap jalan). */
-const stichDark = {
+const darkTokens = {
   "--c-base": "11 15 20",
   "--c-surface": "17 24 35",
   "--c-raised": "24 32 42",
@@ -39,7 +39,7 @@ const stichDark = {
   "--c-crit": "229 83 75",
 };
 
-const stichLight = {
+const lightTokens = {
   "--c-base": "244 246 249",
   "--c-surface": "255 255 255",
   "--c-raised": "240 243 247",
@@ -61,7 +61,7 @@ const stichLight = {
 
 const tokens = {
   dark: {
-    ...stichDark,
+    ...darkTokens,
     // Backgrounds — deep navy with subtle blue tint
     "--bg-base": "#060b18",
     "--bg-card": "#0c1525",
@@ -102,7 +102,7 @@ const tokens = {
     "--stat-value": "#e8eeff",
   },
   light: {
-    ...stichLight,
+    ...lightTokens,
     // Backgrounds — soft lavender/blue tinted whites
     "--bg-base": "#eef2f9",
     "--bg-card": "#ffffff",

@@ -1,4 +1,4 @@
-# Kontrak UI — Traffix (hasil rombak Stitch)
+# Kontrak UI Traffix
 
 Baca ini dulu sebelum menyentuh halaman. Berkas ini beku; jangan diubah.
 
