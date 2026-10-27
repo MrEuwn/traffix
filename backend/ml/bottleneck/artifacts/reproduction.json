@@ -1,0 +1,767 @@
+{
+  "generated_at": "2026-10-27T09:05:04+00:00",
+  "git_commit": "2de9216b328b97d7e452477578704d97f820d5e6",
+  "git_dirty": true,
+  "model_name": "hist_gradient_boosting",
+  "splits": {
+    "validation": {
+      "macro_f1": 0.7228,
+      "balanced_accuracy": 0.7658,
+      "accuracy": 0.7899,
+      "n": 43200,
+      "per_class": [
+        {
+          "cause": "banjir",
+          "precision": 0.9977,
+          "recall": 0.9238,
+          "f1": 0.9594,
+          "support": 2389
+        },
+        {
+          "cause": "hujan",
+          "precision": 0.0883,
+          "recall": 0.0071,
+          "f1": 0.0131,
+          "support": 5224
+        },
+        {
+          "cause": "kecelakaan",
+          "precision": 0.9884,
+          "recall": 0.9674,
+          "f1": 0.9778,
+          "support": 1411
+        },
+        {
+          "cause": "kendaraan_berat",
+          "precision": 0.8426,
+          "recall": 0.9896,
+          "f1": 0.9102,
+          "support": 3845
+        },
+        {
+          "cause": "keramaian_event",
+          "precision": 0.6704,
+          "recall": 0.197,
+          "f1": 0.3045,
+          "support": 3676
+        },
+        {
+          "cause": "lampu_mati",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 1142
+        },
+        {
+          "cause": "normal",
+          "precision": 0.7906,
+          "recall": 0.9788,
+          "f1": 0.8747,
+          "support": 22486
+        },
+        {
+          "cause": "perbaikan_jalan",
+          "precision": 0.6063,
+          "recall": 0.8658,
+          "f1": 0.7131,
+          "support": 827
+        },
+        {
+          "cause": "volume_puncak",
+          "precision": 0.6175,
+          "recall": 0.9627,
+          "f1": 0.7524,
+          "support": 2200
+        }
+      ],
+      "confusion_matrix": {
+        "labels": [
+          "banjir",
+          "hujan",
+          "kecelakaan",
+          "kendaraan_berat",
+          "keramaian_event",
+          "lampu_mati",
+          "normal",
+          "perbaikan_jalan",
+          "volume_puncak"
+        ],
+        "matrix": [
+          [
+            2207,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            181,
+            0
+          ],
+          [
+            0,
+            37,
+            0,
+            68,
+            187,
+            0,
+            3915,
+            92,
+            925
+          ],
+          [
+            5,
+            0,
+            1365,
+            0,
+            0,
+            0,
+            0,
+            41,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            3805,
+            38,
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            185,
+            0,
+            643,
+            724,
+            0,
+            1847,
+            18,
+            259
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1142,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            179,
+            0,
+            0,
+            120,
+            0,
+            22009,
+            132,
+            46
+          ],
+          [
+            0,
+            0,
+            15,
+            0,
+            1,
+            0,
+            13,
+            716,
+            82
+          ],
+          [
+            0,
+            17,
+            0,
+            0,
+            10,
+            0,
+            55,
+            0,
+            2118
+          ]
+        ]
+      }
+    },
+    "test": {
+      "macro_f1": 0.8475,
+      "balanced_accuracy": 0.8317,
+      "accuracy": 0.8928,
+      "n": 43200,
+      "per_class": [
+        {
+          "cause": "banjir",
+          "precision": 0.9156,
+          "recall": 0.9978,
+          "f1": 0.9549,
+          "support": 3151
+        },
+        {
+          "cause": "hujan",
+          "precision": 0.9954,
+          "recall": 0.4564,
+          "f1": 0.6259,
+          "support": 4728
+        },
+        {
+          "cause": "kecelakaan",
+          "precision": 0.8889,
+          "recall": 0.812,
+          "f1": 0.8487,
+          "support": 1606
+        },
+        {
+          "cause": "kendaraan_berat",
+          "precision": 0.9238,
+          "recall": 0.9801,
+          "f1": 0.9511,
+          "support": 3860
+        },
+        {
+          "cause": "keramaian_event",
+          "precision": 0.6576,
+          "recall": 0.3089,
+          "f1": 0.4204,
+          "support": 1884
+        },
+        {
+          "cause": "lampu_mati",
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 989
+        },
+        {
+          "cause": "normal",
+          "precision": 0.8645,
+          "recall": 0.9926,
+          "f1": 0.9241,
+          "support": 20280
+        },
+        {
+          "cause": "perbaikan_jalan",
+          "precision": 0.9679,
+          "recall": 0.9624,
+          "f1": 0.9652,
+          "support": 4203
+        },
+        {
+          "cause": "volume_puncak",
+          "precision": 0.9029,
+          "recall": 0.9748,
+          "f1": 0.9375,
+          "support": 2499
+        }
+      ],
+      "confusion_matrix": {
+        "labels": [
+          "banjir",
+          "hujan",
+          "kecelakaan",
+          "kendaraan_berat",
+          "keramaian_event",
+          "lampu_mati",
+          "normal",
+          "perbaikan_jalan",
+          "volume_puncak"
+        ],
+        "matrix": [
+          [
+            3144,
+            0,
+            7,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            5,
+            2158,
+            0,
+            35,
+            128,
+            0,
+            2079,
+            112,
+            211
+          ],
+          [
+            285,
+            0,
+            1304,
+            0,
+            0,
+            0,
+            0,
+            14,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            3783,
+            73,
+            0,
+            4,
+            0,
+            0
+          ],
+          [
+            0,
+            10,
+            0,
+            277,
+            582,
+            0,
+            1015,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            989,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            95,
+            0,
+            20130,
+            8,
+            47
+          ],
+          [
+            0,
+            0,
+            156,
+            0,
+            0,
+            0,
+            1,
+            4045,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            7,
+            0,
+            56,
+            0,
+            2436
+          ]
+        ]
+      }
+    }
+  },
+  "baselines_test": {
+    "majority_class": {
+      "macro_f1": 0.071,
+      "balanced_accuracy": 0.1111,
+      "accuracy": 0.4694,
+      "n": 43200,
+      "per_class": [
+        {
+          "cause": "banjir",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3151
+        },
+        {
+          "cause": "hujan",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4728
+        },
+        {
+          "cause": "kecelakaan",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1606
+        },
+        {
+          "cause": "kendaraan_berat",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 3860
+        },
+        {
+          "cause": "keramaian_event",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1884
+        },
+        {
+          "cause": "lampu_mati",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 989
+        },
+        {
+          "cause": "normal",
+          "precision": 0.4694,
+          "recall": 1.0,
+          "f1": 0.6389,
+          "support": 20280
+        },
+        {
+          "cause": "perbaikan_jalan",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4203
+        },
+        {
+          "cause": "volume_puncak",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2499
+        }
+      ],
+      "confusion_matrix": {
+        "labels": [
+          "banjir",
+          "hujan",
+          "kecelakaan",
+          "kendaraan_berat",
+          "keramaian_event",
+          "lampu_mati",
+          "normal",
+          "perbaikan_jalan",
+          "volume_puncak"
+        ],
+        "matrix": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3151,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4728,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1606,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3860,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1884,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            989,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            20280,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            4203,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            2499,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "rule_based": {
+      "macro_f1": 0.1757,
+      "balanced_accuracy": 0.2237,
+      "accuracy": 0.5598,
+      "n": 43200,
+      "per_class": [
+        {
+          "cause": "banjir",
+          "precision": 0.6667,
+          "recall": 0.0019,
+          "f1": 0.0038,
+          "support": 3151
+        },
+        {
+          "cause": "hujan",
+          "precision": 0.1155,
+          "recall": 0.0061,
+          "f1": 0.0116,
+          "support": 4728
+        },
+        {
+          "cause": "kecelakaan",
+          "precision": 0.0486,
+          "recall": 0.0056,
+          "f1": 0.0101,
+          "support": 1606
+        },
+        {
+          "cause": "kendaraan_berat",
+          "precision": 0.6965,
+          "recall": 1.0,
+          "f1": 0.8211,
+          "support": 3860
+        },
+        {
+          "cause": "keramaian_event",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1884
+        },
+        {
+          "cause": "lampu_mati",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 989
+        },
+        {
+          "cause": "normal",
+          "precision": 0.5811,
+          "recall": 1.0,
+          "f1": 0.7351,
+          "support": 20280
+        },
+        {
+          "cause": "perbaikan_jalan",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 4203
+        },
+        {
+          "cause": "volume_puncak",
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 2499
+        }
+      ],
+      "confusion_matrix": {
+        "labels": [
+          "banjir",
+          "hujan",
+          "kecelakaan",
+          "kendaraan_berat",
+          "keramaian_event",
+          "lampu_mati",
+          "normal",
+          "perbaikan_jalan",
+          "volume_puncak"
+        ],
+        "matrix": [
+          [
+            6,
+            22,
+            69,
+            204,
+            0,
+            0,
+            844,
+            2006,
+            0
+          ],
+          [
+            0,
+            29,
+            0,
+            113,
+            0,
+            0,
+            4586,
+            0,
+            0
+          ],
+          [
+            3,
+            18,
+            9,
+            252,
+            0,
+            0,
+            1013,
+            311,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            3860,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            449,
+            0,
+            0,
+            1435,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            36,
+            0,
+            0,
+            953,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            20279,
+            0,
+            0
+          ],
+          [
+            0,
+            49,
+            14,
+            628,
+            0,
+            0,
+            3511,
+            0,
+            1
+          ],
+          [
+            0,
+            132,
+            93,
+            0,
+            0,
+            0,
+            2274,
+            0,
+            0
+          ]
+        ]
+      }
+    }
+  },
+  "matches_stored_metrics": true,
+  "stored_metrics": {
+    "macro_f1": 0.8475,
+    "balanced_accuracy": 0.8317,
+    "accuracy": 0.8928
+  },
+  "class_share_test": {
+    "banjir": 3151,
+    "hujan": 4728,
+    "kecelakaan": 1606,
+    "kendaraan_berat": 3860,
+    "keramaian_event": 1884,
+    "lampu_mati": 989,
+    "normal": 20280,
+    "perbaikan_jalan": 4203,
+    "volume_puncak": 2499
+  }
+}

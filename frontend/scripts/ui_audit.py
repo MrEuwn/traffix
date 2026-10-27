@@ -13,20 +13,29 @@ Jalankan (backend :8000 + vite :5173 hidup):
 """
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
-URL = "http://localhost:5173"
+URL = os.environ.get("TRAFFIX_URL", "http://localhost:5173")  # Docker: http://localhost:8080
 SHOTS = Path("frontend/screenshots")
 
 REQUIRED: dict[str, list[str]] = {
-    "Dashboard": ["Keyakinan model", "smp/jam", "kend", "LOS", "Jejak audit", "Sekarang", "data sintetis"],
+    "Dashboard": ["Keyakinan model", "smp/jam", "kend", "LOS", "Jejak audit", "Sekarang", "data sintetis",
+                  "Prakiraan volume simpang", "Replay rekaman", "Kotak terdeteksi"],
     "Live Map": ["Semua penyebab", "Sematkan", "kend", "data sintetis"],
-    "Evaluasi Model": ["Rule-based", "Presisi", "Recall", "Batasan", "metrics.json"],
+    "Evaluasi Model": ["Peramalan volume", "Baseline terkuat", "Uji transfer", "Batasan", "forecast_evaluation.json",
+                       "Model yang sedang melayani"],
     "Settings": ["Status Sistem", "Sumber Data", "Tema", "seed 42"],
+}
+
+# Sub-tab Evaluasi Model -> teks wajib (model pendukung).
+EVAL_SUBTABS: dict[str, list[str]] = {
+    "Penyebab bottleneck": ["Rule-based", "Presisi", "Recall", "metrics.json", "bukan diagnosis"],
+    "Deteksi YOLO": ["Validasi · bukan uji", "mAP50", "Inferensi nyata"],
 }
 
 AUDIT_JS = r"""
@@ -151,7 +160,29 @@ def main() -> int:
             )
             page.screenshot(path=str(SHOTS / f"ops-{tab.lower().replace(' ', '-')}.png"), full_page=True)
 
+            if tab == "Evaluasi Model":
+                for sub, needles in EVAL_SUBTABS.items():
+                    page.get_by_role("button", name=re.compile(sub, re.I)).first.click()
+                    page.wait_for_timeout(2500)
+                    sub_low = page.inner_text("body").lower()
+                    for needle in needles:
+                        if needle.lower() not in sub_low:
+                            failures.append(f"Evaluasi Model/{sub}: teks wajib '{needle}' tidak ditemukan")
+                    page.screenshot(path=str(SHOTS / f"ops-evaluasi-{sub.split()[0].lower()}.png"), full_page=True)
+                page.get_by_role("button", name=re.compile("Peramalan volume", re.I)).first.click()
+                page.wait_for_timeout(1000)
+
             if tab == "Dashboard":
+                live = page.get_by_role("button", name=re.compile("Jalankan YOLO sekarang", re.I)).first
+                if live.count() and live.is_enabled():
+                    live.click()
+                    page.wait_for_timeout(8000)
+                    if "inferensi langsung" not in page.inner_text("body").lower():
+                        failures.append("Dashboard: inferensi YOLO langsung tidak mengubah label ke 'Inferensi langsung'")
+                    else:
+                        page.screenshot(path=str(SHOTS / "ops-cctv-yolo-live.png"), full_page=True)
+                else:
+                    notes.append("Dashboard: tombol YOLO langsung tidak aktif (image tanpa ultralytics?)")
                 approve = page.get_by_role("button", name=re.compile("setujui rekomendasi", re.I)).first
                 opened = False
                 if approve.count() and approve.is_enabled():
@@ -197,7 +228,13 @@ def main() -> int:
                 page.keyboard.press("Escape")
                 page.wait_for_timeout(600)
 
-        api_failed = [f for f in failed if "/api/" in f and "/cameras/videos/" not in f]
+        # Autoplay changes the frame <img> src every 2.5 s; the browser aborts the previous
+        # download (client-side cancel, not a server failure).
+        api_failed = [
+            f for f in failed
+            if "/api/" in f and "/cameras/videos/" not in f
+            and not ("/cameras/frames/" in f and "ERR_ABORTED" in f)
+        ]
 
         # Peta: basemap tidak boleh bergantung API key (CARTO menolak tanpa key) —
         # dan minimal satu tile harus benar-benar terunduh.
@@ -209,7 +246,7 @@ def main() -> int:
         notes.append(f"Live Map: {len(tiles_seen)} permintaan tile berhasil")
 
         # Tidak boleh ada luber horizontal pada lebar desktop yang didukung.
-        for width in (1600, 1440, 1280):
+        for width in (1600, 1440, 1280, 390):
             page.set_viewport_size({"width": width, "height": 1000})
             page.wait_for_timeout(1500)
             for tab in ("Dashboard", "Live Map", "Evaluasi Model", "Settings"):

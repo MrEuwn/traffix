@@ -1,0 +1,833 @@
+{
+  "generated_at": "2026-10-27T09:05:04+00:00",
+  "git_commit": "2de9216b328b97d7e452477578704d97f820d5e6",
+  "git_dirty": true,
+  "datasets": [
+    {
+      "dataset": "hybrid_traffic_7d (mentah, per approach)",
+      "path": "data/data_synthetic/hybrid_traffic_7d.csv",
+      "bytes": 4596340,
+      "sha256": "4688e910ff8042895dcb5425434e314433fbde63907a033dbd113e0e4886f8e8",
+      "rows": 40320,
+      "columns": 19,
+      "provenance": "sintetis — simulator hybrid v3 (generate_data_hybrid.py, seed 42) yang dikalibrasi dengan distribusi hitungan YOLO; bukan pengukuran lapangan",
+      "dtypes": {
+        "timestamp_wib": "str",
+        "tick": "int64",
+        "intersectionId": "str",
+        "approach": "str",
+        "vehicle_count_1min": "int64",
+        "volume_veh_per_hour": "float64",
+        "avg_speed_kmh": "float64",
+        "queue_length_veh": "int64",
+        "wait_time_min": "float64",
+        "green_seconds": "int64",
+        "density_percent": "float64",
+        "weather_condition": "str",
+        "weather_temp_c": "float64",
+        "accident_count": "int64",
+        "roadwork_flag": "int64",
+        "event_flag": "int64",
+        "target_volume_15m": "float64",
+        "target_volume_2h": "float64",
+        "target_volume_4h": "float64"
+      },
+      "missing_values": {},
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "intersectionId",
+        "tick",
+        "approach"
+      ],
+      "target_lineage": "target_volume_* di file mentah dihitung generator per approach; pipeline D2 menghitung ulang target dari volume agregat (shift -15/-120/-240 menit)",
+      "supports_claim": "Mendukung klaim kinerja peramalan PADA SIMULATOR ini saja.",
+      "non_finite_values": 0,
+      "range_checks": {
+        "volume_veh_per_hour": {
+          "min": 0.0,
+          "max": 5220.87,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "vehicle_count_1min": {
+          "min": 0.0,
+          "max": 87.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "avg_speed_kmh": {
+          "min": 10.0,
+          "max": 60.0,
+          "rule": [
+            0,
+            130
+          ],
+          "violations": 0
+        },
+        "density_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "rule": [
+            0,
+            100
+          ],
+          "violations": 0
+        },
+        "queue_length_veh": {
+          "min": 0.0,
+          "max": 628.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "green_seconds": {
+          "min": 20.0,
+          "max": 42.0,
+          "rule": [
+            0,
+            180
+          ],
+          "violations": 0
+        }
+      },
+      "time_range": [
+        "2026-05-01 00:00:00+07:00",
+        "2026-05-07 23:59:00+07:00"
+      ],
+      "timezone": "UTC+07:00",
+      "chronological_within_entity": true,
+      "entities": {
+        "column": "approach",
+        "unique": 4,
+        "counts": {
+          "N": 10080,
+          "E": 10080,
+          "S": 10080,
+          "W": 10080
+        }
+      }
+    },
+    {
+      "dataset": "traffix_lstm_ready (fitur siap model, notebook Data team)",
+      "path": "data/data_process/traffix_lstm_ready.csv",
+      "bytes": 4769719,
+      "sha256": "ff48bc8220af32fbd7826e4d738f3f56ab3c9ff88acce5a90c2b42638f7c01b6",
+      "rows": 10980,
+      "columns": 52,
+      "provenance": "turunan dari hybrid_traffic_7d + 1.500 menit 'low traffic' acak (np.random seed 42) yang ditambahkan di notebook sebagai seri JKT-TMG-SIM-01",
+      "dtypes": {
+        "tick": "int64",
+        "timestamp_wib": "str",
+        "intersectionId": "str",
+        "vehicle_count_1min": "int64",
+        "volume_veh_per_hour": "float64",
+        "avg_speed_kmh": "float64",
+        "queue_length_veh": "int64",
+        "wait_time_min": "float64",
+        "green_seconds": "float64",
+        "density_percent": "float64",
+        "weather_temp_c": "float64",
+        "accident_count": "int64",
+        "roadwork_flag": "int64",
+        "event_flag": "int64",
+        "date_only": "str",
+        "is_holiday": "int64",
+        "is_weekend": "int64",
+        "day_name": "str",
+        "hour": "int64",
+        "minute": "int64",
+        "day": "int64",
+        "day_of_week": "int64",
+        "month": "int64",
+        "hour_sin": "float64",
+        "hour_cos": "float64",
+        "traffic_period": "str",
+        "congestion_level": "str",
+        "lag_1": "float64",
+        "lag_5": "float64",
+        "lag_15": "float64",
+        "lag_30": "float64",
+        "lag_60": "float64",
+        "lag_speed_15": "float64",
+        "lag_queue_15": "float64",
+        "roll_mean_15": "float64",
+        "roll_std_15": "float64",
+        "roll_min_15": "float64",
+        "roll_max_15": "float64",
+        "roll_median_15": "float64",
+        "roll_mean_60": "float64",
+        "roll_std_60": "float64",
+        "roll_min_60": "float64",
+        "roll_max_60": "float64",
+        "delta_volume": "float64",
+        "weather_condition_Clear": "int64",
+        "weather_condition_Cloudy": "int64",
+        "weather_condition_Hot": "int64",
+        "weather_condition_Rain": "int64",
+        "target_volume_15m": "float64",
+        "target_volume_2h": "float64",
+        "target_volume_4h": "float64",
+        "weather_condition": "str"
+      },
+      "missing_values": {},
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "intersectionId",
+        "tick"
+      ],
+      "target_lineage": "target_volume_{15m,2h,4h} = volume_veh_per_hour digeser -15/-120/-240 baris per intersection (diverifikasi selisih 0)",
+      "supports_claim": "Dipakai untuk mereproduksi angka notebook; tidak dipakai di protokol D2 karena split barisnya tidak kronologis.",
+      "non_finite_values": 0,
+      "range_checks": {
+        "volume_veh_per_hour": {
+          "min": 0.0,
+          "max": 10344.7,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "vehicle_count_1min": {
+          "min": 0.0,
+          "max": 172.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "avg_speed_kmh": {
+          "min": 10.0,
+          "max": 78.91584523515606,
+          "rule": [
+            0,
+            130
+          ],
+          "violations": 0
+        },
+        "density_percent": {
+          "min": 0.0,
+          "max": 100.0,
+          "rule": [
+            0,
+            100
+          ],
+          "violations": 0
+        },
+        "queue_length_veh": {
+          "min": 0.0,
+          "max": 1414.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "green_seconds": {
+          "min": 21.75,
+          "max": 38.0,
+          "rule": [
+            0,
+            180
+          ],
+          "violations": 0
+        }
+      },
+      "time_range": [
+        "2026-05-01 01:00:00+07:00",
+        "2026-05-08 20:59:00+07:00"
+      ],
+      "timezone": "UTC+07:00",
+      "chronological_within_entity": true,
+      "entities": {
+        "column": "intersectionId",
+        "unique": 2,
+        "counts": {
+          "TMG-1012": 9780,
+          "JKT-TMG-SIM-01": 1200
+        }
+      }
+    },
+    {
+      "dataset": "live_replay_7d v4 (input replay aplikasi)",
+      "path": "data/data_synthetic/v4/live_replay_7d.csv.gz",
+      "bytes": 1861358,
+      "sha256": "417780f6249a7d216a052f315318c51f9da03276210dda0fdc9941277c3d6f92",
+      "rows": 60480,
+      "columns": 19,
+      "provenance": "sintetis — simulator v4 (generate_data_v4.py, seed 42), 6 simpang, agregat semua lengan",
+      "dtypes": {
+        "timestamp_wib": "str",
+        "tick": "int64",
+        "intersectionId": "str",
+        "approach": "str",
+        "vehicle_count_1min": "int64",
+        "volume_veh_per_hour": "float64",
+        "avg_speed_kmh": "float64",
+        "queue_length_veh": "int64",
+        "wait_time_min": "float64",
+        "green_seconds": "int64",
+        "density_percent": "float64",
+        "weather_condition": "str",
+        "weather_temp_c": "float64",
+        "accident_count": "int64",
+        "roadwork_flag": "int64",
+        "event_flag": "int64",
+        "target_volume_15m": "float64",
+        "target_volume_2h": "float64",
+        "target_volume_4h": "float64"
+      },
+      "missing_values": {},
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "intersectionId",
+        "tick"
+      ],
+      "target_lineage": "target_volume_* di file ini = RATA-RATA volume per ruas, sedangkan volume_veh_per_hour = JUMLAH; skala berbeda, sehingga kolom target ini tidak dipakai sebagai label",
+      "supports_claim": "Input demo dan uji transfer antarsimulator; bukan bukti kinerja dunia nyata.",
+      "non_finite_values": 0,
+      "range_checks": {
+        "volume_veh_per_hour": {
+          "min": 756.8,
+          "max": 12874.63,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "vehicle_count_1min": {
+          "min": 12.0,
+          "max": 214.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "avg_speed_kmh": {
+          "min": 6.0,
+          "max": 59.17,
+          "rule": [
+            0,
+            130
+          ],
+          "violations": 0
+        },
+        "density_percent": {
+          "min": 0.0,
+          "max": 92.06,
+          "rule": [
+            0,
+            100
+          ],
+          "violations": 0
+        },
+        "queue_length_veh": {
+          "min": 0.0,
+          "max": 507.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "green_seconds": {
+          "min": 0.0,
+          "max": 33.0,
+          "rule": [
+            0,
+            180
+          ],
+          "violations": 0
+        }
+      },
+      "time_range": [
+        "2026-05-01 00:00:00+07:00",
+        "2026-05-07 23:59:00+07:00"
+      ],
+      "timezone": "UTC+07:00",
+      "chronological_within_entity": true,
+      "entities": {
+        "column": "intersectionId",
+        "unique": 6,
+        "counts": {
+          "INT-001": 10080,
+          "INT-002": 10080,
+          "INT-003": 10080,
+          "INT-004": 10080,
+          "INT-005": 10080,
+          "INT-006": 10080
+        }
+      }
+    },
+    {
+      "dataset": "ticks_v4 (per ruas per menit, label penyebab)",
+      "path": "data/data_synthetic/v4/ticks_v4.csv.gz",
+      "bytes": 11747324,
+      "sha256": "96246bbcf90b6297d5c53224204a01868f2978afc404fe72fe25cf54f7ca6355",
+      "rows": 302400,
+      "columns": 51,
+      "provenance": "sintetis — simulator v4 seed 42; label bottleneck_cause dari aturan prioritas simulator",
+      "dtypes": {
+        "tick": "int64",
+        "timestamp_wib": "str",
+        "intersection_id": "str",
+        "tipe_persimpangan": "str",
+        "jumlah_lengan": "int64",
+        "section_id": "str",
+        "nama_ruas": "str",
+        "section_type": "str",
+        "approach": "str",
+        "jumlah_lajur": "int64",
+        "panjang_m": "int64",
+        "kapasitas_smp_per_jam": "int64",
+        "kapasitas_kendaraan": "int64",
+        "vehicle_count_1min": "int64",
+        "volume_veh_per_hour": "float64",
+        "avg_speed_kmh": "float64",
+        "queue_length_veh": "int64",
+        "wait_time_min": "float64",
+        "green_seconds": "int64",
+        "red_seconds": "int64",
+        "cycle_length_s": "int64",
+        "density_percent": "float64",
+        "vc_ratio": "float64",
+        "los": "str",
+        "roda_2": "int64",
+        "roda_3": "int64",
+        "roda_4": "int64",
+        "roda_6plus": "int64",
+        "smp_ekivalen": "float64",
+        "proporsi_roda_6plus": "float64",
+        "weather_condition": "str",
+        "weather_temp_c": "float64",
+        "curah_hujan_mm_jam": "float64",
+        "tinggi_genangan_cm": "float64",
+        "durasi_hujan_menit": "int64",
+        "accident_count": "int64",
+        "roadwork_flag": "int64",
+        "lane_closure": "int64",
+        "pct_lajur_tertutup": "float64",
+        "durasi_kerja_jalan_menit": "int64",
+        "event_flag": "int64",
+        "lampu_operasional": "int64",
+        "bottleneck_cause": "str",
+        "bottleneck_rule": "str",
+        "bottleneck_secondary": "str",
+        "target_volume_15m": "float64",
+        "target_volume_2h": "float64",
+        "target_volume_4h": "float64",
+        "_hour": "int64",
+        "_dow": "int64",
+        "_is_weekend": "int64"
+      },
+      "missing_values": {
+        "approach": 90720,
+        "bottleneck_secondary": 254872
+      },
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "section_id",
+        "tick"
+      ],
+      "target_lineage": "bottleneck_cause ditetapkan aturan simulator (docs/SCHEMA-v4.md §1), bukan anotasi manusia",
+      "supports_claim": "Mendukung klaim 'model memulihkan mekanisme simulator', bukan diagnosis penyebab nyata.",
+      "non_finite_values": 0,
+      "range_checks": {},
+      "time_range": [
+        "2026-05-01 00:00:00+07:00",
+        "2026-05-07 23:59:00+07:00"
+      ],
+      "timezone": "UTC+07:00",
+      "chronological_within_entity": true,
+      "entities": {
+        "column": "section_id",
+        "unique": 30,
+        "counts": {
+          "SEC-001-N": 10080,
+          "SEC-001-E": 10080,
+          "SEC-001-S": 10080,
+          "SEC-001-W": 10080,
+          "SEC-002-N": 10080,
+          "SEC-002-E": 10080,
+          "SEC-002-S": 10080,
+          "SEC-002-W": 10080,
+          "SEC-003-N": 10080,
+          "SEC-003-E": 10080,
+          "SEC-003-W": 10080,
+          "SEC-004-N": 10080,
+          "SEC-004-E": 10080,
+          "SEC-004-W": 10080,
+          "SEC-005-N": 10080,
+          "SEC-005-E": 10080,
+          "SEC-005-S": 10080,
+          "SEC-005-W": 10080,
+          "SEC-006-N": 10080,
+          "SEC-006-E": 10080,
+          "SEC-006-W": 10080,
+          "COR-001": 10080,
+          "COR-002": 10080,
+          "COR-003": 10080,
+          "COR-004": 10080,
+          "COR-005": 10080,
+          "COR-006": 10080,
+          "COR-007": 10080,
+          "COR-008": 10080,
+          "COR-009": 10080
+        }
+      },
+      "label_distribution": {
+        "normal": 149022,
+        "hujan": 33908,
+        "kendaraan_berat": 32678,
+        "banjir": 23105,
+        "perbaikan_jalan": 19379,
+        "keramaian_event": 13588,
+        "volume_puncak": 12552,
+        "kecelakaan": 10861,
+        "lampu_mati": 7307
+      }
+    },
+    {
+      "dataset": "vehicle_count (keluaran inferensi YOLO notebook)",
+      "path": "inference/inference_yolo/vehicle_count.csv",
+      "bytes": 21314,
+      "sha256": "44307e813b6ad123ff077885ad8398fad4d75fd9593562da6d95a737eb4cbce8",
+      "rows": 100,
+      "columns": 17,
+      "provenance": "turunan — keluaran YOLO notebook atas video CCTV publik Bina Marga; kecepatan, densitas, antrean adalah estimasi berbasis aturan",
+      "dtypes": {
+        "camera_id": "str",
+        "source_video": "str",
+        "date": "str",
+        "time": "str",
+        "period": "str",
+        "latitude": "float64",
+        "longitude": "float64",
+        "weather": "str",
+        "weather_temp_c": "float64",
+        "vehicle_count": "int64",
+        "vehicle_count_1min": "int64",
+        "volume_veh_per_hour": "int64",
+        "avg_speed_kmh": "float64",
+        "density_percent": "float64",
+        "queue_length_veh": "int64",
+        "congestion_level": "str",
+        "detected_video_path": "str"
+      },
+      "missing_values": {},
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "source_video"
+      ],
+      "target_lineage": "tidak ada label acuan; angka adalah keluaran model",
+      "supports_claim": "Bukti alur inferensi, bukan bukti akurasi hitung.",
+      "non_finite_values": 0,
+      "range_checks": {
+        "vehicle_count": {
+          "min": 0.0,
+          "max": 922.0,
+          "rule": [
+            0,
+            null
+          ],
+          "violations": 0
+        },
+        "avg_speed_kmh": {
+          "min": 2.46,
+          "max": 96.51,
+          "rule": [
+            0,
+            130
+          ],
+          "violations": 0
+        },
+        "density_percent": {
+          "min": 0.0,
+          "max": 57.54,
+          "rule": [
+            0,
+            100
+          ],
+          "violations": 0
+        }
+      },
+      "entities": {
+        "column": "camera_id",
+        "unique": 12,
+        "counts": {
+          "CAM_011": 13,
+          "CAM_001": 10,
+          "CAM_005": 10,
+          "CAM_002": 9,
+          "CAM_007": 9,
+          "CAM_004": 9,
+          "CAM_003": 9,
+          "CAM_012": 8,
+          "CAM_010": 8,
+          "CAM_009": 7,
+          "CAM_008": 7,
+          "CAM_006": 1
+        }
+      }
+    },
+    {
+      "dataset": "video_weather_data (metadata CCTV)",
+      "path": "inference_data/data_video/metadata/video_weather_data.csv",
+      "bytes": 44289,
+      "sha256": "54e7f7cc7d1e7f5ba43b6bd6f525da8f59f25df90cae0e89b9cc5ab0972454f0",
+      "rows": 100,
+      "columns": 40,
+      "provenance": "observasi publik — overlay CCTV Bina Marga dibaca manual; koordinat manual (Google Maps); cuaca Open-Meteo per jam",
+      "dtypes": {
+        "no": "int64",
+        "period": "str",
+        "period_from_filename": "str",
+        "cctv_id": "str",
+        "overlay_date": "str",
+        "overlay_time": "str",
+        "timestamp_wib": "str",
+        "ruas": "str",
+        "video_file": "str",
+        "selected_frame_path": "str",
+        "selected_frame_second": "int64",
+        "selected_frame_file": "str",
+        "location_type": "str",
+        "location_text": "str",
+        "km_text": "str",
+        "km_decimal": "float64",
+        "manual_status": "str",
+        "filename_parse_status": "str",
+        "notes": "str",
+        "camera_label": "str",
+        "camera_key": "str",
+        "camera_id": "str",
+        "lat": "float64",
+        "lon": "float64",
+        "coordinate_source": "str",
+        "confidence": "str",
+        "coordinate_notes": "float64",
+        "coordinate_status": "str",
+        "coordinate_issues": "float64",
+        "join_coordinate_status": "str",
+        "weather_hour": "str",
+        "temperature_2m": "float64",
+        "relative_humidity_2m": "int64",
+        "precipitation": "float64",
+        "rain": "float64",
+        "cloud_cover": "int64",
+        "wind_speed_10m": "float64",
+        "weather_code": "int64",
+        "weather_status": "str",
+        "weather_error": "float64"
+      },
+      "missing_values": {
+        "km_text": 10,
+        "km_decimal": 10,
+        "notes": 21,
+        "coordinate_notes": 100,
+        "coordinate_issues": 100,
+        "weather_error": 100
+      },
+      "duplicate_rows": 0,
+      "duplicate_keys": 0,
+      "key": [
+        "video_file"
+      ],
+      "target_lineage": "tidak ada target",
+      "supports_claim": "Konteks lokasi/cuaca untuk frame demo.",
+      "non_finite_values": 0,
+      "range_checks": {},
+      "entities": {
+        "column": "period",
+        "unique": 3,
+        "counts": {
+          "malam": 39,
+          "siang": 33,
+          "pagi": 28
+        }
+      }
+    }
+  ],
+  "cleaning": {
+    "rules": [
+      "Agregasi approach -> simpang per menit: volume/jumlah kendaraan/antrean/waktu tunggu dijumlah, kecepatan/hijau/kepadatan/suhu dirata-rata, cuaca = modus, flag kejadian = maksimum (data/data_process/aggregation_rules.md).",
+      "Seri harus kontinu 1 menit per simpang; celah atau duplikat menggagalkan pipeline (assert_contiguous).",
+      "Baris dengan riwayat < 60 menit (lag_60/roll_60 kosong) dan baris yang targetnya melewati akhir seri dibuang, bukan diimputasi.",
+      "Tidak ada outlier yang dibuang; nilai di luar rentang fisik dicatat di range_checks.",
+      "Seri augmentasi JKT-TMG-SIM-01 (8 Mei) tidak dipakai di protokol D2 karena dibuat acak di notebook dan tanggalnya sesudah periode uji."
+    ]
+  },
+  "lineage": {
+    "feature_recompute_max_abs_diff": 3.0831870390102267e-10,
+    "rows_compared": 9780,
+    "future_perturbation_max_change": 0.0,
+    "forbidden_input_columns": "target_* dan future_* (features.assert_no_leakage)",
+    "splits": {
+      "v4_replay": {
+        "15m": {
+          "train": {
+            "n": 42396,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 23:44:00+07:00",
+            "target_from": "2026-05-01 02:14:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 8550,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 23:44:00+07:00",
+            "target_from": "2026-05-06 00:15:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 8550,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 23:44:00+07:00",
+            "target_from": "2026-05-07 00:15:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        },
+        "2h": {
+          "train": {
+            "n": 41766,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 21:59:00+07:00",
+            "target_from": "2026-05-01 03:59:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 7920,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 21:59:00+07:00",
+            "target_from": "2026-05-06 02:00:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 7920,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 21:59:00+07:00",
+            "target_from": "2026-05-07 02:00:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        },
+        "4h": {
+          "train": {
+            "n": 41046,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 19:59:00+07:00",
+            "target_from": "2026-05-01 05:59:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 7200,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 19:59:00+07:00",
+            "target_from": "2026-05-06 04:00:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 7200,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 19:59:00+07:00",
+            "target_from": "2026-05-07 04:00:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        }
+      },
+      "hybrid_tmg": {
+        "15m": {
+          "train": {
+            "n": 7066,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 23:44:00+07:00",
+            "target_from": "2026-05-01 02:14:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 1425,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 23:44:00+07:00",
+            "target_from": "2026-05-06 00:15:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 1425,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 23:44:00+07:00",
+            "target_from": "2026-05-07 00:15:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        },
+        "2h": {
+          "train": {
+            "n": 6961,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 21:59:00+07:00",
+            "target_from": "2026-05-01 03:59:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 1320,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 21:59:00+07:00",
+            "target_from": "2026-05-06 02:00:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 1320,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 21:59:00+07:00",
+            "target_from": "2026-05-07 02:00:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        },
+        "4h": {
+          "train": {
+            "n": 6841,
+            "issue_from": "2026-05-01 01:59:00+07:00",
+            "issue_to": "2026-05-05 19:59:00+07:00",
+            "target_from": "2026-05-01 05:59:00+07:00",
+            "target_to": "2026-05-05 23:59:00+07:00"
+          },
+          "validation": {
+            "n": 1200,
+            "issue_from": "2026-05-06 00:00:00+07:00",
+            "issue_to": "2026-05-06 19:59:00+07:00",
+            "target_from": "2026-05-06 04:00:00+07:00",
+            "target_to": "2026-05-06 23:59:00+07:00"
+          },
+          "test": {
+            "n": 1200,
+            "issue_from": "2026-05-07 00:00:00+07:00",
+            "issue_to": "2026-05-07 19:59:00+07:00",
+            "target_from": "2026-05-07 04:00:00+07:00",
+            "target_to": "2026-05-07 23:59:00+07:00"
+          }
+        }
+      }
+    },
+    "checks": [
+      "41 fitur dihitung ulang dari data mentah hybrid identik dengan traffix_lstm_ready.csv (TMG-1012); fungsi yang sama dipakai untuk replay v4 dan untuk inferensi runtime.",
+      "Mengubah data sesudah menit t tidak mengubah satu pun fitur pada menit <= t.",
+      "Target tiap sampel berada di hari split yang sama dengan waktu terbit (purging di batas hari).",
+      "Scaler fitur dan target di-fit hanya pada baris latih.",
+      "Pemilihan model/konfigurasi hanya memakai MAE validasi; hari uji dinilai sekali."
+    ]
+  }
+}

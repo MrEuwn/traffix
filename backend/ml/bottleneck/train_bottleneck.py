@@ -2,7 +2,7 @@
 
 Contract: `docs/SCHEMA-v4.md` §4. Single runnable entry point:
 
-    ./.venv/Scripts/python.exe backend/ml/bottleneck/train_bottleneck.py
+    python backend/ml/bottleneck/train_bottleneck.py   (from the repo root)
 
 Split is temporal by day (1-5 train, 6 validation, 7 test) — never random.
 Labels come from the synthetic simulator (seed 42, `generate_data_v4.py`).
@@ -240,8 +240,8 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 ## 11. Cara reproduksi
 
 ```bash
-cd {"C:/Users/prafasta/Documents/traffix"}
-./.venv/Scripts/python.exe backend/ml/bottleneck/train_bottleneck.py
+cd <root-repo-traffix>
+python backend/ml/bottleneck/train_bottleneck.py
 ```
 
 Menulis ulang `backend/ml/bottleneck/artifacts/bottleneck_classifier.joblib`, `metrics.json`, dan

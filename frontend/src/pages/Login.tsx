@@ -10,6 +10,9 @@ const FACTS = [
   "Data sintetis seed 42 · 6 simpang · 30 ruas, mulai 2026-05-01 WIB.",
 ];
 
+/** Akun demo (sama dengan DUMMY_USERS di AuthContext) untuk tombol isi otomatis. */
+const DEMO_LOGIN = { username: "admin", password: "admin123" };
+
 const wibClock = () =>
   new Intl.DateTimeFormat("id-ID", {
     hour: "2-digit",
@@ -39,6 +42,12 @@ export const LoginPage = () => {
       return;
     }
     setError(login(username, password));
+  };
+
+  const fillDemoLogin = () => {
+    setUsername(DEMO_LOGIN.username);
+    setPassword(DEMO_LOGIN.password);
+    setError(null);
   };
 
   return (
@@ -143,6 +152,9 @@ export const LoginPage = () => {
 
             <Btn type="submit" variant="primary" className="w-full">
               Masuk
+            </Btn>
+            <Btn type="button" variant="ghost" onClick={fillDemoLogin} className="w-full">
+              Isi akun admin
             </Btn>
           </form>
 

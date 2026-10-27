@@ -234,3 +234,16 @@ frontend/node_modules
 # Screenshot hasil e2e (dibuat ulang tiap check)
 frontend/screenshots/
 scratch_*.log
+
+# Docker compose overrides (copy of .env.docker.example)
+.env.docker
+
+# Nested downloaded repo
+Traffix.id-main/
+
+# Pretrained third-party weights
+yolo pipeline/model/yolov8m_coco.pt
+
+# Claude implementation prompts / scratch guides
+Traffix_D2_Claude_Code_Implementation_Prompt_v2_Docker.md
+

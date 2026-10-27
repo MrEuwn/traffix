@@ -19,16 +19,12 @@ depend on a live CCTV feed, a Google Drive credential, or the room's wifi.
 Worth stating before any number, because a traffic project can look impressive
 while being unfalsifiable.
 
-Real, with the training artifacts in this repo:
-
-| Model | Metric |
-|---|---|
-| YOLOv8 vehicle detection | precision 0.867, recall 0.884, F1 0.876, mAP50 0.926, mAP50-95 0.532 |
-| LSTM 15-minute horizon | test MAPE about 21.8% |
-| LSTM 2-hour horizon | test MAPE about 27.0% |
-| LSTM 4-hour horizon | test MAPE about 32.5% |
-
-Simulated, disclosed in the interface and in the model card:
+Every training and test set behind the forecasting and cause models is **synthetic**.
+The only observed data is 123 frames from public Bina Marga toll-road CCTV
+recordings, used to demonstrate YOLO inference. Numbers below are benchmark results
+on simulated traffic, not measurements of Jakarta traffic. All of them come from
+`python backend/scripts/run_d2_evaluation.py`; the generated one-page summary is
+`docs/pitch/D2_METRICS_BRIEF.md`.
 
 The v4 dataset behind the cause classifier is generated (`data/data_synthetic/v4/`,
 seed 42, 302,400 section-minutes over 7 days). Its cause labels come from the
@@ -44,22 +40,75 @@ from a stored day of data. The panel says that instead of pretending otherwise.
 
 ## Model results
 
+### Primary D2 task: volume forecasting (LSTM)
+
+Six intersections of the v4 replay, days 1-5 train, day 6 validate, day 7 test
+(scored once). Target: intersection volume at t+h in veh/hour. MAE on the test day,
+in veh/hour:
+
+| Model | 15 min (n=8,550) | 2 h (n=7,920) | 4 h (n=7,200) |
+|---|---|---|---|
+| **LSTM (served)** | **364.9** | **577.8** | **703.7** |
+| persistence | 435.3 | 1,761.9 | 1,579.2 |
+| mean of last 15 min | 492.6 | 1,778.8 | 1,496.7 |
+| seasonal naive (yesterday, same time) | 369.4 | 372.6 | 379.4 |
+| ridge | 325.2 | 1,007.5 | 1,082.1 |
+| HistGradientBoosting | 274.3 | 356.0 | 397.0 |
+
+The honest reading:
+- LSTM beats persistence at every horizon.
+- LSTM is level with the seasonal naive baseline at 15 minutes (+1.2%, 95% block
+  bootstrap CI includes zero).
+- LSTM is significantly worse than seasonal naive at 2 and 4 hours.
+- HistGradientBoosting was already best on the validation day, so that conclusion
+  does not lean on the test set.
+
+The notebook's older figures (test MAPE 21.8 / 27.0 / 32.5%) reproduce exactly, but
+their protocol had five problems (row-order split, 16/121/241-minute effective
+horizons, a persistence baseline that read the future, baselines only for 15
+minutes, no purging), so they are not used as a claim. Details are in
+`backend/ml/forecast/model_card.md` and `docs/D2_RESEARCH_PROTOCOL.md`.
+
+### Supporting: bottleneck cause classifier (simulator labels)
+
 Trained by `backend/ml/bottleneck/train_bottleneck.py` on 46 features, temporal
-split (days 1 to 5 train, day 6 validate, day 7 test):
+split (days 1 to 5 train, day 6 validate, day 7 test). Retrained in the pinned
+environment so the stored metrics match what the API runs:
 
 | Model | macro-F1 | balanced accuracy | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting (shipped) | 0.8473 | 0.8311 | 0.8916 |
-| rule-based heuristic baseline | 0.1757 | 0.2237 | 0.5506 |
+| hist_gradient_boosting (shipped) | 0.8475 | 0.8317 | 0.8928 |
+| rule-based heuristic baseline | 0.1757 | 0.2237 | 0.5598 |
 | majority class baseline | 0.0710 | 0.1111 | 0.4694 |
+
+Validation-day macro-F1 is 0.7228, so performance varies a lot between days.
+
+### Supporting: YOLOv8 (validation only)
+
+YOLOv8 was evaluated on a 100-image Kaggle validation set (493 objects, one class:
+`car`):
+
+| Metric | Value |
+|---|---|
+| mAP50 | 0.926 |
+| mAP50-95 | 0.532 |
+| precision / recall at IoU ≥ 0.5, conf 0.25 | 0.867 / 0.884 |
+
+There is no independent test set, and the validation set also picked the best epoch.
+On toll-road CCTV the team model misses most small distant vehicles (1.3 boxes per
+frame on average). The camera demo therefore runs the official Ultralytics YOLOv8m
+COCO checkpoint (`yolo pipeline/model/yolov8m_coco.pt`, not trained by the team,
+AGPL-3.0), restricted to car/motorcycle/bus/truck at 1280 px. It finds 7.6 boxes per
+frame on the same 123 frames. Without reference labels these are detection counts, not
+accuracy. See `backend/ml/detection/model_card.md`.
 
 Class balance is ugly: `normal` is 20,280 of the 43,200 test rows while
 `lampu_mati` is 989, which is why macro-F1 and balanced accuracy lead the table
 and plain accuracy does not. Per-class precision/recall/F1, the 9x9 confusion
 matrix, feature importances and the limitations list are in
 `backend/ml/bottleneck/artifacts/metrics.json` and served live by
-`GET /api/v1/model/evaluation`. The Evaluasi Model tab renders that endpoint, and
-it is the page the competition claim rests on.
+`GET /api/v1/model/evaluation`, rendered in the "Penyebab bottleneck" sub-tab of
+Evaluasi Model. The competition claim rests on the "Peramalan volume · utama" sub-tab.
 
 ## The three parameters added in v4
 
@@ -126,12 +175,16 @@ cp .env.example .env             # defaults already fit this folder layout
 python scripts/run_dev.py        # http://localhost:8000, docs at /docs
 ```
 
-On startup the backend loads the v4 replay file, tries to load the LSTM artifacts
-from `LSTM Training/artifacts/`, and starts its tick engine. Without TensorFlow
-installed, `ML_ALLOW_FALLBACK=true` keeps the API answering with heuristic values
-rather than failing. `REPLAY_START_TICK` (default 360) decides where the replay
-begins; 360 is 06:00 WIB, so a demo opens in the morning peak instead of at
-midnight.
+On startup the backend loads the v4 replay file, builds the forecast feature windows,
+loads the LSTM artifacts from `backend/ml/forecast/artifacts/models/`, and starts its
+tick engine. Without the model files or TensorFlow, `ML_ALLOW_FALLBACK=true` keeps
+the API answering with a moving-average heuristic labelled `heuristic` rather than
+failing. `REPLAY_START_TICK` (default 9000) decides where the replay begins; 9000 is
+day 7 at 06:00 WIB, the held-out test day, in the morning peak.
+
+For live YOLO inference on the recorded CCTV frames, also install
+`backend/requirements-yolo.txt` (CPU torch first:
+`pip install torch --index-url https://download.pytorch.org/whl/cpu`).
 
 ```bash
 cd frontend
@@ -143,6 +196,23 @@ Log in with `admin` / `admin123`. That login is client-side only, there is no au
 endpoint on the backend. The header holds the four tabs, a status pill, the clock
 in WIB and the theme switch. If the API lives somewhere else, put
 `VITE_API_URL=http://host:port` in `frontend/.env`.
+
+## Running it with Docker (competition demo)
+
+```bash
+docker compose up -d --build        # images: traffix-backend:competition, traffix-frontend:competition
+docker compose ps                   # wait until both are "healthy"
+# UI   http://localhost:8080   (Nginx serves the SPA and proxies /api, /health, /docs)
+# API  http://localhost:8000   (direct, for debugging)
+docker compose logs --tail=200 backend frontend
+docker compose down                 # no volumes: models and data are baked into the image
+```
+
+After the images are built, nothing needs internet, CCTV or credentials. The replay
+starts on day 7 at 06:00 (`REPLAY_START_TICK=9000`), the held-out test day, so the
+forecasts on screen are not in-sample. Build with `WITH_YOLO=false` for a smaller
+backend that serves only the stored detections. Details are in
+`docs/DOCKER_DEPLOYMENT.md`.
 
 ## Checks
 
@@ -179,10 +249,17 @@ GitHub Actions runs the backend suite on every push that touches `backend/`.
 | `GET /api/v1/segments` | the 30 sections with capacity, V/C, LOS and vehicle mix |
 | `GET /api/v1/segments/summary` | section counts, total capacity, fleet split, LOS spread |
 | `GET /api/v1/signals/summary?scope=all\|perempatan\|pertigaan` | red light timing averages |
-| `GET /api/v1/model/evaluation` | model against both baselines, per-class metrics, confusion matrix, leakage guard, limitations |
+| `GET /api/v1/model/evaluation` | cause classifier against both baselines, per-class metrics, confusion matrix, leakage guard, limitations, reproduction check |
+| `GET /api/v1/model/evaluation/forecast` | D2 primary task: LSTM vs five comparators per horizon, bootstrap CI, error analysis, transfer test, notebook reproduction, runtime status |
+| `GET /api/v1/model/evaluation/forecast/{h}/series?intersection=` | saved per-sample test predictions (actual, LSTM, baseline) |
+| `GET /api/v1/model/evaluation/detection` | YOLO validation metrics (recorded, labelled validation) and frame-inference summary |
+| `GET /api/v1/model/status` | which forecaster is serving (`lstm` / `heuristic_fallback` / `disabled`) and whether its sha256 matches the evaluated files |
 | `GET /api/v1/weather/current` | current weather context |
 | `GET /api/v1/simulation/status`, `POST /api/v1/simulation/start\|stop` | replay controls |
 | `GET /api/v1/cameras` | camera slots per intersection |
+| `GET /api/v1/cameras/frames` | recorded public CCTV frames with stored YOLO detections |
+| `GET /api/v1/cameras/frames/{id}/image?annotated=` | the frame JPEG, with or without boxes |
+| `POST /api/v1/cameras/frames/{id}/infer` | runs YOLO now on that frame (503 when the image was built without YOLO) |
 
 Every analytics endpoint takes `?tick=`. Without it they follow the live replay
 cursor, so all panels show the same instant.
@@ -227,12 +304,16 @@ GPU runtime. The Kaggle dataset downloads itself through `kagglehub`. It writes
 `inference/inference_yolo/traffix_yolo_inference.ipynb` and needs the CCTV video
 folder mounted in a `pagi` / `siang` / `malam` structure.
 
-LSTM: `LSTM Training/traffix_lstm_final.ipynb`. Upload `traffix_lstm_ready.csv` and
-`feature_columns.json` from `data/data_process/`, and it grid searches the 15-minute
-horizon before training all three. Artifacts land in `LSTM Training/artifacts/`,
-which is where the backend reads them, so a full clone needs no download step.
-Current config: `seq_len=15`, standard scalers, learning rate 0.001, batch 32,
-dropout 0.1, MAE loss, `lstm_light` architecture.
+LSTM (served model): `python backend/scripts/run_d2_evaluation.py`. It trains and
+selects the LSTM on days 1-5 / 6 of the v4 replay, scores day 7 once against five
+comparators, and writes the served models to `backend/ml/forecast/artifacts/models/`.
+The original notebook `LSTM Training/traffix_lstm_final.ipynb` and its artifacts in
+`LSTM Training/artifacts/` are kept for the reproduction check only; the pipeline
+re-scores them and lists the protocol issues it found.
+
+Cause classifier: `python backend/ml/bottleneck/train_bottleneck.py` (seed 42).
+
+YOLO on the recorded CCTV frames: `python backend/scripts/run_yolo_frames.py`.
 
 ## Camera data collection
 
@@ -272,14 +353,27 @@ scraper needs Playwright browsers.
 - `docs/STITCH-AUDIT-A.md` and `docs/STITCH-AUDIT-A-rerun.md`: design audit before
   and after the interface rebuild.
 - `docs/RENCANA-TRAFFIX-v2-D2-ROBCOM2026.pdf`: the D2 development plan.
+- `docs/D2_RESEARCH_PROTOCOL.md`: the frozen research question, split, baselines,
+  metrics and claim boundary.
+- `docs/D2_REPO_AUDIT.md`, `docs/D2_VERIFICATION_REPORT.md`,
+  `docs/D2_REQUIREMENTS_TRACEABILITY.md`: what was found, what was run, and where each
+  competition requirement is evidenced.
+- `docs/evidence/d2/`: generated evaluation summary, data quality report and figures.
+- `docs/pitch/`: generated metrics brief, demo runbook, Q&A brief.
+- `docs/DOCKER_DEPLOYMENT.md`: container topology, ports, health checks,
+  troubleshooting.
+- `backend/ml/forecast/model_card.md`, `backend/ml/detection/model_card.md`.
 
 ## Known limits
 
-Cause labels come from simulator rules, so the classifier demonstrates mechanism
-recovery rather than field accuracy. LSTM inference without TensorFlow installed
-falls back to heuristics, which makes `ml_mode` in `/api/v1/system/status` worth
-reading before calling a forecast real. Camera video needs Google Drive credentials
-that are not in this repo, so the console shows no video. Green time is reported as
+Every training and test set is synthetic, so every model number is a benchmark
+result, not a measurement of Jakarta traffic. Cause labels come from simulator rules,
+so the classifier demonstrates mechanism recovery rather than field accuracy. Without
+the model files the API serves a labelled moving-average heuristic, and
+`/api/v1/model/status` says so. The camera panel replays recorded public CCTV frames,
+not a live feed. The team's YOLO recognises only `car`, has validation metrics but no
+independent test set, and fails on toll-road cameras. The demo detector is a COCO
+checkpoint that has no reference labels on these frames either. Green time is reported as
 one number per intersection rather than per approach, because the simulator does
 not expose per-phase splits; the confirmation modal says so where it matters. And
 the legacy replay file still describes four intersections while the v4 dataset has

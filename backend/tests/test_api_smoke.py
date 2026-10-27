@@ -48,7 +48,7 @@ def test_predictions_endpoint_fallback_safe(api_client):
     assert data["intersection_id"] == "INT-001"
     assert len(data["predictions"]) == 3
     assert {item["horizon"] for item in data["predictions"]} == {"15m", "2h", "4h"}
-    assert all(item["source"] in {"lstm", "dataset", "heuristic"} for item in data["predictions"])
+    assert all(item["source"] in {"lstm", "heuristic"} for item in data["predictions"])
     assert data["ai_insight"]
     assert data["recommendation"]
     assert data["recommended_green_seconds"] is not None

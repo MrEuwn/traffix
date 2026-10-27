@@ -11,6 +11,7 @@ from app.services.camera_service import camera_service
 from core.config import settings
 from core.constants import HORIZONS
 from core.responses import success_response
+from ml.forecast.status import forecaster_status
 from ml.model_loader import ml_fallback_active, models_loaded
 from sim.tick_engine import tick_engine
 from core.schemas import (
@@ -122,6 +123,7 @@ async def v1_status(request: Request) -> JSONResponse:
             "ml_models_loaded": models_loaded(),
             "ml_fallback_active": ml_fallback_active(),
             "ml_mode": snapshot["ml_mode"],
+            "forecaster": forecaster_status(),
             "weather_ready": True,
             "simulation_ready": snapshot["simulation_ready"],
             "simulation_active": tick_engine.is_running(),

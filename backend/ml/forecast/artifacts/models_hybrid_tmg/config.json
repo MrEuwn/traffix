@@ -1,0 +1,77 @@
+{
+  "experiment": "hybrid_tmg",
+  "feature_columns": [
+    "vehicle_count_1min",
+    "volume_veh_per_hour",
+    "avg_speed_kmh",
+    "queue_length_veh",
+    "wait_time_min",
+    "green_seconds",
+    "density_percent",
+    "weather_temp_c",
+    "accident_count",
+    "roadwork_flag",
+    "event_flag",
+    "hour",
+    "minute",
+    "day",
+    "day_of_week",
+    "month",
+    "is_holiday",
+    "is_weekend",
+    "hour_sin",
+    "hour_cos",
+    "delta_volume",
+    "lag_1",
+    "lag_5",
+    "lag_15",
+    "lag_30",
+    "lag_60",
+    "lag_speed_15",
+    "lag_queue_15",
+    "roll_mean_15",
+    "roll_std_15",
+    "roll_min_15",
+    "roll_max_15",
+    "roll_median_15",
+    "roll_mean_60",
+    "roll_std_60",
+    "roll_min_60",
+    "roll_max_60",
+    "weather_condition_Clear",
+    "weather_condition_Cloudy",
+    "weather_condition_Hot",
+    "weather_condition_Rain"
+  ],
+  "seq_len": {
+    "15m": 15,
+    "2h": 15,
+    "4h": 15
+  },
+  "horizons_minutes": {
+    "15m": 15,
+    "2h": 120,
+    "4h": 240
+  },
+  "window": "baris t-seq_len+1 .. t (inklusif), target = volume pada t+h",
+  "target_unit": "kend/jam (laju arus 1 menit, total semua lengan simpang)",
+  "trained_on": "TMG-1012 hari 1-5 (hybrid_traffic_7d.csv)",
+  "models": {
+    "15m": {
+      "file": "lstm_15m.keras",
+      "sha256": "bb2fa4105506ed4ba25f6ba911824fd34e8acbb125c9f86c397c98e32a96f155"
+    },
+    "2h": {
+      "file": "lstm_2h.keras",
+      "sha256": "e87316545f20337e4cda650c6d0bf298ccac2b93c8d7a490be8a50802da22301"
+    },
+    "4h": {
+      "file": "lstm_4h.keras",
+      "sha256": "0a94183540609dec3aebe05e58424e89d3566595737a5ee7e5c988086aba83a6"
+    }
+  },
+  "scalers_sha256": {
+    "feat_scaler.joblib": "fc3fa08c04957fce93b9bc692cb147b74cc1ec16cc5dd970c782fa196922056f",
+    "target_scalers.joblib": "533a20be9c0fc821ec9c608b937bf4f30950109ab854a57da26e85bf603a60c2"
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "generated_at": "2026-10-27T11:37:44+00:00",
+  "git_commit": "2de9216b328b97d7e452477578704d97f820d5e6",
+  "git_dirty": true,
+  "recorded_validation": {
+    "split": "validation",
+    "source": "yolo pipeline/code/traffix_yolo_pipeline_revised.ipynb (output sel tersimpan, Colab Tesla T4)",
+    "reproduced_in_this_run": false,
+    "why_not_reproduced": "Dataset Kaggle (boukraailyesali/traffic-road-object-detection-dataset-using-yolo, 380 MB) tidak ada di repo; evaluasi ulang butuh unduhan dan kredensial Kaggle.",
+    "dataset": "Kaggle traffic-road-object-detection-dataset-using-yolo — 1 kelas 'car'",
+    "images": {
+      "train": 399,
+      "val": 100
+    },
+    "val_instances": 493,
+    "ultralytics": {
+      "precision": 0.955,
+      "recall": 0.813,
+      "map50": 0.9256,
+      "map50_95": 0.5324
+    },
+    "iou50_matching_conf025": {
+      "TP": 436.0,
+      "FP": 67.0,
+      "FN": 57.0,
+      "Precision": 0.8668,
+      "Recall": 0.8844,
+      "F1-score": 0.8755
+    },
+    "caveats": [
+      "Tidak ada set uji independen: angka berasal dari set validasi yang juga dipakai early stopping untuk memilih epoch terbaik, sehingga cenderung optimistis.",
+      "Hanya kelas 'car'; sepeda motor (moda dominan di Jakarta), bus, dan truk tidak dibedakan.",
+      "Precision/recall versi IoU>=0,5 pada conf 0,25 dihitung notebook sendiri dan berbeda dari versi Ultralytics (P 0,955 / R 0,813) karena aturan pencocokan berbeda."
+    ]
+  },
+  "frame_inference": {
+    "path": "backend/ml/detection/artifacts/detections.json",
+    "summary": {
+      "frames": 123,
+      "by_period": {
+        "pagi": {
+          "frames": 48,
+          "mean_vehicle_count": 6.04,
+          "mean_team_model_count": 0.94
+        },
+        "siang": {
+          "frames": 24,
+          "mean_vehicle_count": 20.08,
+          "mean_team_model_count": 3.38
+        },
+        "malam": {
+          "frames": 51,
+          "mean_vehicle_count": 3.29,
+          "mean_team_model_count": 0.76
+        }
+      },
+      "mean_vehicle_count": 7.64,
+      "mean_team_model_count": 1.34,
+      "by_class_total": {
+        "car": 800,
+        "motorcycle": 0,
+        "bus": 18,
+        "truck": 122
+      },
+      "mean_inference_ms": 392.62
+    },
+    "model": {
+      "weights": "yolo pipeline/model/yolov8m_coco.pt",
+      "sha256": "5d4a90cdc7a21786cc59cd19778e9eafff836df9e2da32524737c7ee6efe4fe5",
+      "description": "YOLOv8m pretrained COCO (Ultralytics), tidak dilatih ulang oleh tim; lisensi AGPL-3.0",
+      "classes": [
+        "car",
+        "motorcycle",
+        "bus",
+        "truck"
+      ],
+      "ultralytics_version": "8.4.190",
+      "conf_threshold": 0.25,
+      "imgsz": 1280,
+      "device": "cpu"
+    },
+    "team_model": {
+      "weights": "yolo pipeline/model/best.pt",
+      "sha256": "44ad3deef7c5b4c73b99cb651ff129ac01035d6f0c2a8f7eaade1334825afaf8",
+      "classes": [
+        "car"
+      ],
+      "imgsz": 640,
+      "role": "pembanding per frame; metrik validasinya ada di yolo_evidence.json"
+    },
+    "generated_at": "2026-10-27T11:36:34.880763+00:00"
+  }
+}
