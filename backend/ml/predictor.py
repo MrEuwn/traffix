@@ -1,4 +1,4 @@
-"""Traffix prediction service with Keras and dataset fallback modes."""
+"""Traffix prediction service: LSTM on real replay windows, labelled heuristic fallback."""
 
 from __future__ import annotations
 
@@ -6,10 +6,14 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Literal
 
+import numpy as np
+import pandas as pd
+
 from app.state_store import LiveIntersectionState, state_store
 from core.constants import HORIZONS
 from core.logger import get_logger
-from ml import preprocess
+from ml.forecast.features import HORIZON_MINUTES
+from ml.forecast.runtime import ForecastInput, feature_store, load_expected_errors, seq_len_for
 from ml.model_loader import (
     get_model,
     get_scalers,
@@ -23,12 +27,6 @@ ml_logger = get_logger("ml")
 
 CongestionLevel = Literal["Low", "Medium", "High", "Critical"]
 
-HORIZON_VOLUME_SCALE = {
-    "15m": 1.0,
-    "2h": 1.35,
-    "4h": 1.75,
-}
-
 
 @dataclass(frozen=True)
 class PredictionResult:
@@ -38,9 +36,15 @@ class PredictionResult:
     horizon: str
     predicted_vehicle_count: int
     predicted_congestion_level: CongestionLevel
-    confidence_score: float
+    confidence_score: float | None
     prediction_timestamp: str
-    source: Literal["lstm", "dataset", "heuristic"]
+    source: Literal["lstm", "heuristic"]
+    unit: str = "kend/jam"
+    current_volume: float | None = None
+    issue_time_wib: str | None = None
+    target_time_wib: str | None = None
+    expected_mae: float | None = None
+    replay_split: str | None = None
 
 
 class PredictionService:
@@ -49,6 +53,7 @@ class PredictionService:
     def __init__(self) -> None:
         """Initialize prediction caches."""
         self._latest_rows: dict[str, DatasetRow] = {}
+        self._expected_errors = load_expected_errors()
 
     def note_dataset_batch(self, rows: list[DatasetRow]) -> None:
         """Cache the latest dataset row per intersection from a replay batch.
@@ -116,51 +121,28 @@ class PredictionService:
         live_state: LiveIntersectionState,
         dataset_row: DatasetRow | None,
     ) -> PredictionResult:
-        """Run Keras inference when artifacts are loaded.
+        """Run the LSTM on the real feature window ending at the replayed minute.
 
-        Args:
-            intersection_id: Target intersection identifier.
-            horizon: Prediction horizon.
-            live_state: Current live intersection state.
-            dataset_row: Optional latest dataset row.
-
-        Returns:
-            LSTM-backed prediction result.
+        Falls back to the labelled heuristic when the window is not available
+        (unknown minute, not enough history); never pads or repeats rows.
         """
-        features = preprocess.build_feature_vector(
-            live_state,
-            dataset_row=dataset_row,
-        )
-        matrix = preprocess.features_to_matrix(features)
+        if dataset_row is None:
+            return self._predict_with_fallback(intersection_id, horizon, live_state, dataset_row)
         scalers = get_scalers()
-        feat_scaler = scalers["feat"]
-        target_scaler = self._target_scaler_for_horizon(
-            scalers["target"],
-            horizon,
+        seq_len = seq_len_for(registry.get_config(), horizon)
+        payload = feature_store.get_input(
+            intersection_id, dataset_row.timestamp, seq_len, scalers["feat"],
         )
-        scaled = feat_scaler.transform(matrix)
+        if payload is None or payload.window is None:
+            return self._predict_with_fallback(intersection_id, horizon, live_state, dataset_row)
 
-        config = registry.get_config()
-        sequence_length = int(config.get("seq_len", 60))
-        if scaled.shape[0] < sequence_length:
-            padded = scaled.repeat(sequence_length, axis=0)
-        else:
-            padded = scaled[-sequence_length:]
-
-        model_input = padded.reshape(1, padded.shape[0], padded.shape[1])
+        target_scaler = self._target_scaler_for_horizon(scalers["target"], horizon)
         model = get_model(horizon)
-        raw_prediction = model.predict(model_input, verbose=0)
-        inverse = target_scaler.inverse_transform(raw_prediction)
-        predicted_count = int(max(0, round(float(inverse.ravel()[0]))))
-
-        return PredictionResult(
-            intersection_id=intersection_id,
-            horizon=horizon,
-            predicted_vehicle_count=predicted_count,
-            predicted_congestion_level=self._congestion_level(live_state),
-            confidence_score=0.9,
-            prediction_timestamp=datetime.now(timezone.utc).isoformat(),
-            source="lstm",
+        raw_prediction = np.asarray(model(payload.window, training=False))
+        inverse = target_scaler.inverse_transform(raw_prediction.reshape(-1, 1))
+        return self._result(
+            intersection_id, horizon, live_state,
+            value=float(inverse.ravel()[0]), source="lstm", payload=payload,
         )
 
     def _predict_with_fallback(
@@ -170,36 +152,49 @@ class PredictionService:
         live_state: LiveIntersectionState,
         dataset_row: DatasetRow | None,
     ) -> PredictionResult:
-        """Predict using dataset targets or traffic heuristics.
+        """Heuristic forecast: mean volume of the last 15 replayed minutes.
 
-        Args:
-            intersection_id: Target intersection identifier.
-            horizon: Prediction horizon.
-            live_state: Current live intersection state.
-            dataset_row: Optional latest dataset row.
-
-        Returns:
-            Fallback prediction result.
+        This is the `moving_average_15` baseline of the D2 evaluation, labelled
+        `heuristic`. It never reads the dataset's future target columns.
         """
-        target_volume = preprocess.extract_target_volume(dataset_row, horizon)
-        if target_volume is not None:
-            predicted_count = int(max(0, round(target_volume)))
-            source: Literal["dataset", "heuristic"] = "dataset"
+        payload = None
+        if dataset_row is not None:
+            payload = feature_store.get_input(intersection_id, dataset_row.timestamp, 1, None)
+        if payload is not None:
+            value = payload.moving_average_15
         else:
-            base = float(live_state["vehicle_count"])
-            predicted_count = int(
-                max(0, round(base * HORIZON_VOLUME_SCALE[horizon])),
-            )
-            source = "heuristic"
+            value = float(live_state["vehicle_count"]) * 60.0
+        return self._result(
+            intersection_id, horizon, live_state,
+            value=value, source="heuristic", payload=payload,
+        )
 
+    def _result(
+        self,
+        intersection_id: str,
+        horizon: str,
+        live_state: LiveIntersectionState,
+        *,
+        value: float,
+        source: Literal["lstm", "heuristic"],
+        payload: ForecastInput | None,
+    ) -> PredictionResult:
+        issue = payload.issue_time if payload is not None else None
+        target = issue + pd.Timedelta(minutes=HORIZON_MINUTES[horizon]) if issue is not None else None
         return PredictionResult(
             intersection_id=intersection_id,
             horizon=horizon,
-            predicted_vehicle_count=predicted_count,
+            predicted_vehicle_count=int(max(0, round(value))),
             predicted_congestion_level=self._congestion_level(live_state),
-            confidence_score=0.72 if source == "dataset" else 0.55,
+            confidence_score=None,
             prediction_timestamp=datetime.now(timezone.utc).isoformat(),
             source=source,
+            unit="kend/jam",
+            current_volume=None if payload is None else round(payload.current_volume, 1),
+            issue_time_wib=None if issue is None else issue.strftime("%Y-%m-%d %H:%M"),
+            target_time_wib=None if target is None else target.strftime("%Y-%m-%d %H:%M"),
+            expected_mae=self._expected_errors.get(horizon) if source == "lstm" else None,
+            replay_split=None if payload is None else payload.split,
         )
 
     def _congestion_level(
