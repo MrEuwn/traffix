@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Traffix Ops — Lembar Komponen Konsol Editorial</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background: "#0B0F14",
+            surface: "#111823",
+            surfaceRaised: "#18202A",
+            surfaceHover: "#1E2833",
+            border: "#223041",
+            borderStrong: "#31435A",
+            textPrimary: "#E6EDF3",
+            textSecondary: "#9AA7B4",
+            textMuted: "#6B7885",
+            primary: "#2F6FED",
+            primaryHover: "#4682F5",
+            primaryQuiet: "#14243F",
+            // Status semantics
+            statusOk: "#2EA043",
+            statusInfo: "#2F81F7",
+            statusWarn: "#D29922",
+            statusHigh: "#DB6D28",
+            statusCritical: "#E5534B",
+            statusIdle: "#8B949E"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #0B0F14;
+      color: #E6EDF3;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* Subtle custom pattern defs */
+    .pattern-r2 { background-color: #2F6FED; }
+    .pattern-r3 {
+      background-color: #1F2E45;
+      background-image: repeating-linear-gradient(45deg, #2F81F7 0, #2F81F7 2px, transparent 0, transparent 8px);
+    }
+    .pattern-r4 {
+      background-color: #1A3428;
+      background-image: radial-gradient(#2EA043 1.5px, transparent 1.5px);
+      background-size: 8px 8px;
+    }
+    .pattern-r6 {
+      background-color: #382718;
+      background-image: repeating-linear-gradient(0deg, #D29922, #D29922 1px, transparent 1px, transparent 6px),
+                        repeating-linear-gradient(90deg, #D29922, #D29922 1px, transparent 1px, transparent 6px);
+    }
+  </style>
+</head>
+<body class="bg-background text-textPrimary min-h-screen selection:bg-primary selection:text-white pb-24">
+<!-- SVG Global Pattern Definitions -->
+<svg aria-hidden="true" class="hidden">
+<defs>
+<pattern height="8" id="diag-stripes" patterntransform="rotate(45)" patternunits="userSpaceOnUse" width="8">
+<line stroke="#2F81F7" stroke-width="2" x1="0" x2="0" y1="0" y2="8"></line>
+</pattern>
+<pattern height="8" id="dot-grid" patternunits="userSpaceOnUse" width="8">
+<circle cx="4" cy="4" fill="#2EA043" r="1.5"></circle>
+</pattern>
+<pattern height="8" id="cross-hatch" patternunits="userSpaceOnUse" width="8">
+<line stroke="#D29922" stroke-width="1.5" x1="0" x2="8" y1="0" y2="0"></line>
+<line stroke="#D29922" stroke-width="1.5" x1="0" x2="0" y1="0" y2="8"></line>
+</pattern>
+</defs>
+</svg>
+<!-- Sheet Header / Console Metadata -->
+<header class="w-full border-b border-border bg-surface px-8 py-5">
+<div class="max-w-[1600px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<div class="flex items-center gap-3">
+<span class="text-xs font-semibold uppercase tracking-wider text-textSecondary border border-border px-2 py-0.5 rounded">Konsol Diagnostik</span>
+<span class="text-xs text-textMuted tabular-nums">Versi v2.8.4-prod</span>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] bg-surfaceRaised text-textSecondary border border-border font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+            data sintetis · seed 42
+          </span>
+</div>
+<h1 class="text-xl md:text-2xl font-bold tracking-tight text-textPrimary mt-1">Traffix Ops — Lembar Komponen Standar</h1><p class="text-[11px] font-semibold uppercase tracking-wider text-[#9AA7B4] mt-1">Nilai pada lembar ini contoh tampilan, bukan data operasional</p>
+</div>
+<div class="flex items-center gap-4 text-xs text-textSecondary tabular-nums">
+<div class="text-right">
+<div class="text-textPrimary font-medium">Waktu Baku Sistem</div>
+<div>14:32:08 WIB · Node SP-05 Meruya</div>
+</div>
+<div class="h-8 w-[1px] bg-border"></div>
+<div class="px-3 py-1.5 bg-surfaceRaised border border-border rounded text-[11px] font-semibold text-textPrimary uppercase tracking-wider">
+          Dark-First Design System
+        </div>
+</div>
+</div>
+</header>
+<!-- Sheet Main Canvas (1600px max width) -->
+<main class="max-w-[1600px] mx-auto px-6 lg:px-8 pt-8 space-y-12">
+<!-- 1) KERANGKA APLIKASI -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">1. KERANGKA APLIKASI</span>
+<span class="text-xs text-textMuted">Struktur navigasi global konsol operasional dan bilah aksi cepat.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Tinggi 56px · Rail 64px</span>
+</div>
+<div class="border border-border rounded-lg bg-surface p-4 space-y-6">
+<!-- Live Preview of TopNavBar Component -->
+<div class="border border-border rounded overflow-hidden">
+<nav class="flex justify-between items-center w-full px-6 h-14 bg-surface select-none border-b border-border">
+<!-- Brand & Node selector -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<span class="font-headline text-lg font-bold tracking-tight text-textPrimary">Traffix Ops</span>
+<span class="text-[11px] uppercase tracking-wider text-textSecondary bg-surfaceRaised border border-border px-1.5 py-0.5 rounded font-medium">v2.8</span>
+</div>
+<div class="h-4 w-[1px] bg-border"></div>
+<!-- Nav tabs -->
+<div class="flex items-center gap-1">
+<a class="text-textPrimary bg-primaryQuiet px-3 py-1.5 rounded text-xs font-medium border border-borderStrong" href="#">Dashboard</a>
+<a class="text-textSecondary px-3 py-1.5 rounded text-xs font-medium hover:text-textPrimary hover:bg-surfaceHover transition-colors" href="#">Live Map</a>
+<a class="text-textSecondary px-3 py-1.5 rounded text-xs font-medium hover:text-textPrimary hover:bg-surfaceHover transition-colors" href="#">Evaluasi Model</a>
+<a class="text-textSecondary px-3 py-1.5 rounded text-xs font-medium hover:text-textPrimary hover:bg-surfaceHover transition-colors" href="#">Settings</a>
+</div>
+</div>
+<!-- Right side indicators & Action button -->
+<div class="flex items-center gap-4">
+<!-- Live Operational Indicator -->
+<div class="flex items-center gap-2 px-2.5 py-1 bg-surfaceRaised rounded border border-border text-xs">
+<span class="w-2 h-2 rounded-full bg-statusOk animate-pulse"></span>
+<span class="font-semibold text-textPrimary tracking-wider uppercase text-[11px]">OPERASIONAL</span>
+</div>
+<!-- Node selector -->
+<div class="text-xs text-textSecondary flex items-center gap-1 border border-border bg-surfaceRaised px-2.5 py-1 rounded">
+<span class="text-textMuted">Node:</span>
+<span class="text-textPrimary font-medium font-mono text-[11px]">SP-05 Meruya</span>
+</div>
+<!-- Live Clock -->
+<div class="text-xs font-mono text-textPrimary tabular-nums px-2">
+                14:32:08 WIB
+              </div>
+<div class="h-4 w-[1px] bg-border"></div>
+<!-- Action buttons -->
+<div class="flex items-center gap-2">
+<button class="text-xs text-textSecondary hover:text-textPrimary px-2.5 py-1.5 rounded hover:bg-surfaceHover transition-colors" type="button">
+                  Simulasi
+                </button>
+<button class="text-xs bg-primary hover:bg-primaryHover text-white px-3 py-1.5 rounded font-medium transition-colors" type="button">
+                  Setujui Rekomendasi
+                </button>
+</div>
+<!-- Trailing icons -->
+<div class="flex items-center gap-1 border-l border-border pl-3 text-textSecondary">
+<button class="p-1 hover:text-textPrimary rounded hover:bg-surfaceHover" title="Notifikasi" type="button">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+</button>
+<button class="p-1 hover:text-textPrimary rounded hover:bg-surfaceHover" title="Profil" type="button">
+<span class="material-symbols-outlined text-[18px]">account_circle</span>
+</button>
+</div>
+</div>
+</nav>
+</div>
+<!-- Sidebar Rail Preview + Context Note -->
+<div class="flex items-center gap-6 pt-2">
+<div class="flex items-center gap-2 bg-surfaceRaised border border-border p-1.5 rounded-md">
+<span class="text-[11px] font-semibold text-textSecondary uppercase tracking-wider px-2">Rel Samping Collapsed:</span>
+<div class="flex items-center gap-1 bg-surface border border-border rounded p-1">
+<button class="p-2 text-textPrimary bg-primaryQuiet rounded border border-borderStrong" title="Rekomendasi AI">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+</button>
+<button class="p-2 text-textSecondary hover:text-textPrimary hover:bg-surfaceHover rounded" title="Penyebab Macet">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+</button>
+<button class="p-2 text-textSecondary hover:text-textPrimary hover:bg-surfaceHover rounded" title="Kesehatan Sistem">
+<span class="material-symbols-outlined text-[18px]">monitor_heart</span>
+</button>
+<button class="p-2 text-textSecondary hover:text-textPrimary hover:bg-surfaceHover rounded" title="Log Operasi">
+<span class="material-symbols-outlined text-[18px]">history</span>
+</button>
+<div class="h-4 w-[1px] bg-border mx-1"></div>
+<button class="p-2 text-textMuted hover:text-textPrimary hover:bg-surfaceHover rounded" title="Perluas Rel">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+</div>
+</div>
+<p class="text-xs text-textSecondary">
+            TopBar dan SideNav dirancang dense tanpa elevasi bayangan berlebih. Navigasi aktif menggunakan latar belakang <code class="text-textPrimary font-mono">primaryQuiet (#14243F)</code> dengan pembatas kontras <code class="text-textPrimary font-mono">borderStrong (#31435A)</code>.
+          </p>
+</div>
+</div>
+</section>
+<!-- 2) METRIK -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">2. METRIK</span>
+<span class="text-xs text-textMuted">Indikator kinerja utama (KPI) dengan diferensiasi tingkat keparahan.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">3 Status: Normal · Warn · Critical</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- KPI 1: Normal -->
+<div class="bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">ARUS RATA-RATA</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-surfaceRaised text-statusOk font-medium border border-border">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk mr-1.5"></span>Normal
+            </span>
+</div>
+<div class="my-3">
+<div class="text-[26px] font-semibold text-textPrimary tabular-nums leading-none">1.284 <span class="text-xs font-normal text-textSecondary">smp/jam</span></div>
+<div class="text-xs text-textSecondary mt-2 flex items-center gap-1">
+<span class="text-statusOk font-medium tabular-nums">+4,2 %</span>
+<span>vs 15 mnt lalu</span>
+</div>
+</div>
+<!-- Sparkline (Normal / Cyan-Green) -->
+<div class="h-6 w-full pt-1">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 200 24">
+<polyline fill="none" points="0,18 25,16 50,19 75,14 100,15 125,11 150,12 175,8 200,6" stroke="#2EA043" stroke-width="2"></polyline>
+</svg>
+</div>
+</div>
+<!-- KPI 2: Warn -->
+<div class="bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">TUNDAAN SIMPANG</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-surfaceRaised text-statusWarn font-medium border border-border">
+<span class="w-1.5 h-1.5 rounded-full bg-statusWarn mr-1.5"></span>Waspada
+            </span>
+</div>
+<div class="my-3">
+<div class="text-[26px] font-semibold text-textPrimary tabular-nums leading-none">38,4 <span class="text-xs font-normal text-textSecondary">dtk/kend</span></div>
+<div class="text-xs text-textSecondary mt-2 flex items-center gap-1">
+<span class="text-statusWarn font-medium tabular-nums">+12,1 %</span>
+<span>kenaikan antrean</span>
+</div>
+</div>
+<!-- Sparkline (Warn / Amber) -->
+<div class="h-6 w-full pt-1">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 200 24">
+<polyline fill="none" points="0,20 25,18 50,15 75,17 100,12 125,14 150,8 175,10 200,5" stroke="#D29922" stroke-width="2"></polyline>
+</svg>
+</div>
+</div>
+<!-- KPI 3: Critical -->
+<div class="bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">RUAS LOS E–F</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] bg-surfaceRaised text-statusCritical font-medium border border-border">
+<span class="w-1.5 h-1.5 rounded-full bg-statusCritical mr-1.5"></span>Kritis
+            </span>
+</div>
+<div class="my-3">
+<div class="text-[26px] font-semibold text-statusCritical tabular-nums leading-none">4 <span class="text-xs font-normal text-textSecondary">ruas kritis</span></div>
+<div class="text-xs text-textSecondary mt-2 flex items-center gap-1">
+<span class="text-statusCritical font-medium font-mono tabular-nums">V/C &gt; 0,85</span>
+<span>terdeteksi</span>
+</div>
+</div>
+<!-- Sparkline (Critical / Red) -->
+<div class="h-6 w-full pt-1">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 200 24">
+<polyline fill="none" points="0,22 25,20 50,18 75,12 100,14 125,9 150,5 175,7 200,2" stroke="#E5534B" stroke-width="2"></polyline>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- 3) STATUS -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">3. STATUS</span>
+<span class="text-xs text-textMuted">Status operasional sistem dan badge transparansi data sintetis.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Pill Badges · Ikon SVG Baku</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-4 flex flex-wrap items-center gap-6">
+<!-- 4 Status Pills -->
+<div class="flex flex-wrap items-center gap-3">
+<!-- Operasional -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surfaceRaised border border-border text-statusOk">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+<span>Operasional</span>
+</div>
+<!-- Pantau -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surfaceRaised border border-border text-statusWarn">
+<span class="w-1.5 h-1.5 rounded-full bg-statusWarn"></span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<span>Pantau</span>
+</div>
+<!-- Padat -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surfaceRaised border border-border text-statusHigh">
+<span class="w-1.5 h-1.5 rounded-full bg-statusHigh"></span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+<span>Padat</span>
+</div>
+<!-- Kritis -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-surfaceRaised border border-border text-statusCritical">
+<span class="w-1.5 h-1.5 rounded-full bg-statusCritical"></span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+<span>Kritis</span>
+</div>
+</div>
+<div class="h-6 w-[1px] bg-border hidden sm:block"></div>
+<!-- Mandatory Synthetic Transparency Badge -->
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs bg-surfaceRaised border border-border text-textSecondary font-mono">
+<svg class="w-3.5 h-3.5 text-statusInfo" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="16" y2="12"></line><line x1="12" x2="12.01" y1="8" y2="8"></line></svg>
+<span>data sintetis · seed 42</span>
+</div>
+</div>
+</section>
+<!-- 4) PENYEBAB BOTTLENECK -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">4. PENYEBAB BOTTLENECK</span>
+<span class="text-xs text-textMuted">9 taksonomi anomali lalu lintas multimodal dan bilah probabilitas ensemble.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">9 Taksonomi &amp; Bar Probabilitas</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-5 space-y-6">
+<!-- 9 Cause Badges -->
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2">
+<!-- 1. Normal -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#2EA043]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2EA043]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+<span class="truncate">Normal</span>
+</div>
+<!-- 2. Volume puncak -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#D29922]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D29922]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+<span class="truncate">Volume puncak</span>
+</div>
+<!-- 3. Perbaikan jalan -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#DB6D28]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#DB6D28]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polygon points="14 2 18 6 7 17 3 17 3 13 14 2"></polygon><line x1="3" x2="21" y1="22" y2="22"></line></svg>
+<span class="truncate">Perbaikan jalan</span>
+</div>
+<!-- 4. Hujan -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#2F81F7]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2F81F7]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M20 16.2A4.5 4.5 0 0 0 17.5 8h-1.8A7 7 0 1 0 4 14.9"></path><line x1="8" x2="8" y1="19" y2="21"></line><line x1="12" x2="12" y1="17" y2="21"></line><line x1="16" x2="16" y1="19" y2="21"></line></svg>
+<span class="truncate">Hujan</span>
+</div>
+<!-- 5. Banjir -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#1F6FEB]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#1F6FEB]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"></path><path d="M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0"></path></svg>
+<span class="truncate">Banjir</span>
+</div>
+<!-- 6. Kecelakaan -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#E5534B]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#E5534B]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polygon points="12 2 2 22 22 22 12 2"></polygon><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+<span class="truncate">Kecelakaan</span>
+</div>
+<!-- 7. Keramaian event -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#A371F7]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#A371F7]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+<span class="truncate">Keramaian event</span>
+</div>
+<!-- 8. Lampu mati -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#C264C8]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#C264C8]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><line x1="1" x2="23" y1="1" y2="23"></line><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 15.09A6 6 0 0 0 9 4.91"></path></svg>
+<span class="truncate">Lampu mati</span>
+</div>
+<!-- 9. Kendaraan berat -->
+<div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-surfaceRaised border border-border text-[11px] text-[#9E8A1F]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9E8A1F]"></span>
+<svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><rect height="13" width="15" x="1" y="3"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+<span class="truncate">Kendaraan berat</span>
+</div>
+</div>
+<!-- 8px Nine-Segment Probability Track -->
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs text-textSecondary">
+<span class="text-[11px] uppercase tracking-wider font-semibold text-textMuted">DISTRIBUSI PROBABILITAS ENSEMBLE AI (SP-05)</span>
+<span class="text-[11px] font-mono tabular-nums text-textMuted">Confidence: 0,947</span>
+</div>
+<div class="h-2 w-full bg-surfaceRaised rounded overflow-hidden flex">
+<!-- 1. Perbaikan jalan (42%) -->
+<div class="h-full bg-[#DB6D28]" style="width: 42%;" title="Perbaikan jalan: 42%"></div>
+<!-- 2. Volume puncak (28%) -->
+<div class="h-full bg-[#D29922]" style="width: 28%;" title="Volume puncak: 28%"></div>
+<!-- 3. Hujan (14%) -->
+<div class="h-full bg-[#2F81F7]" style="width: 14%;" title="Hujan: 14%"></div>
+<!-- 4. Normal (5%) -->
+<div class="h-full bg-[#2EA043]" style="width: 5%;"></div>
+<!-- 5. Banjir (3%) -->
+<div class="h-full bg-[#1F6FEB]" style="width: 3%;"></div>
+<!-- 6. Kecelakaan (3%) -->
+<div class="h-full bg-[#E5534B]" style="width: 3%;"></div>
+<!-- 7. Keramaian (2%) -->
+<div class="h-full bg-[#A371F7]" style="width: 2%;"></div>
+<!-- 8. Lampu mati (1.5%) -->
+<div class="h-full bg-[#C264C8]" style="width: 1.5%;"></div>
+<!-- 9. Kendaraan berat (1.5%) -->
+<div class="h-full bg-[#9E8A1F]" style="width: 1.5%;"></div>
+</div>
+<!-- Explicit Top 3 Labeling underneath + Collapsed segment -->
+<div class="flex items-center justify-between text-xs pt-1">
+<div class="flex flex-wrap items-center gap-4 text-xs font-mono"><span class="inline-flex items-center gap-1.5 text-textPrimary">
+<span class="w-2 h-2 rounded-full bg-[#DB6D28]"></span>
+<span>Perbaikan jalan <strong class="text-textPrimary font-semibold tabular-nums">99,7 %</strong> (contoh)</span>
+</span>
+<span class="inline-flex items-center gap-1.5 text-textPrimary">
+<span class="w-2 h-2 rounded-full bg-[#D29922]"></span>
+<span>Volume puncak <strong class="text-textPrimary font-semibold tabular-nums">94,2 %</strong> (contoh)</span>
+</span>
+<span class="inline-flex items-center gap-1.5 text-textPrimary">
+<span class="w-2 h-2 rounded-full bg-[#2F81F7]"></span>
+<span>Hujan <strong class="text-textPrimary font-semibold tabular-nums">88,4 %</strong> (contoh)</span>
+</span></div>
+<span class="text-[11px] text-textMuted font-mono">6 anomali lainnya (&lt; 5 %) teragregasi</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 5) TINGKAT PELAYANAN (LOS) -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">5. TINGKAT PELAYANAN</span>
+<span class="text-xs text-textMuted">Klasifikasi Level of Service (LOS) Permenhub berpasangan huruf dan kata.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">A hingga F · Huruf + Kata</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-4">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+<!-- LOS A -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-statusOk"></span>
+<span class="font-bold text-base text-statusOk font-mono">A</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Lancar</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">V/C &lt; 0,60</div>
+</div>
+</div>
+<!-- LOS B -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#14B8A6]"></span>
+<span class="font-bold text-base text-[#14B8A6] font-mono">B</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Stabil</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">0,60 – 0,70</div>
+</div>
+</div>
+<!-- LOS C -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-statusInfo"></span>
+<span class="font-bold text-base text-statusInfo font-mono">C</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Sedang</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">0,70 – 0,80</div>
+</div>
+</div>
+<!-- LOS D -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-statusWarn"></span>
+<span class="font-bold text-base text-statusWarn font-mono">D</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Padat</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">0,80 – 0,90</div>
+</div>
+</div>
+<!-- LOS E -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-statusHigh"></span>
+<span class="font-bold text-base text-statusHigh font-mono">E</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Sangat padat</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">0,90 – 1,00</div>
+</div>
+</div>
+<!-- LOS F -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-statusCritical"></span>
+<span class="font-bold text-base text-statusCritical font-mono">F</span>
+</div>
+<div class="text-right">
+<div class="text-xs font-semibold text-textPrimary">Macet</div>
+<div class="text-[11px] text-textMuted tabular-nums font-mono">V/C &gt; 1,00</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6) TABEL -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">6. TABEL</span>
+<span class="text-xs text-textMuted">Tabel data tabular padat dengan baris berselang, sorting, dan status kosong.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Zebra 3% · Tabular Nums</span>
+</div>
+<div class="space-y-4">
+<!-- Dense Table Container -->
+<div class="border border-border rounded-lg overflow-x-auto bg-surface">
+<table class="w-full text-left text-xs text-textPrimary border-collapse">
+<thead>
+<tr class="bg-surfaceRaised border-b border-border text-[11px] font-semibold text-textSecondary uppercase tracking-wider">
+<th class="py-2.5 px-4 font-semibold">RUAS JALAN</th>
+<th class="py-2.5 px-4 font-semibold">TIPE</th>
+<th class="py-2.5 px-4 font-semibold text-right">KAPASITAS (SMP/JAM)</th>
+<th class="py-2.5 px-4 font-semibold text-right">VOLUME (SMP/JAM)</th>
+<th class="py-2.5 px-4 font-semibold text-right text-primary cursor-pointer select-none">
+                  V/C RATIO ↓
+                </th>
+<th class="py-2.5 px-4 font-semibold text-center">LOS</th>
+<th class="py-2.5 px-4 font-semibold">STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border">
+<!-- Row 1: Hovered State Demonstration -->
+<tr class="bg-surfaceHover transition-colors">
+<td class="py-2 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-statusCritical"></span>
+<span>Jl. Meruya Ilir Raya (Utara)</span>
+</td>
+<td class="py-2 px-4 text-textSecondary font-mono text-[11px]">4/2 D</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">3.200</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">3.040</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono font-bold text-statusCritical">0,95</td>
+<td class="py-2 px-4 text-center">
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surfaceRaised border border-border text-statusCritical">E · Sangat padat</span>
+</td>
+<td class="py-2 px-4 text-textSecondary text-[11px]">
+<span class="inline-flex items-center gap-1 text-[#DB6D28]">
+<span class="w-1 h-1 rounded-full bg-[#DB6D28]"></span>Perbaikan jalan
+                  </span>
+</td>
+</tr>
+<!-- Row 2: Standard row with 3% zebra -->
+<tr class="bg-surface hover:bg-surfaceHover transition-colors">
+<td class="py-2 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-statusWarn"></span>
+<span>Jl. Lapangan Bola (Barat)</span>
+</td>
+<td class="py-2 px-4 text-textSecondary font-mono text-[11px]">2/2 UD</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">1.850</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">1.520</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono font-semibold text-statusWarn">0,82</td>
+<td class="py-2 px-4 text-center">
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surfaceRaised border border-border text-statusWarn">D · Padat</span>
+</td>
+<td class="py-2 px-4 text-textSecondary text-[11px]">
+<span class="inline-flex items-center gap-1 text-[#D29922]">
+<span class="w-1 h-1 rounded-full bg-[#D29922]"></span>Volume puncak
+                  </span>
+</td>
+</tr>
+<!-- Row 3: Standard row -->
+<tr class="bg-surfaceRaised/40 hover:bg-surfaceHover transition-colors">
+<td class="py-2 px-4 font-medium flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+<span>Jl. Pesanggrahan Selatan</span>
+</td>
+<td class="py-2 px-4 text-textSecondary font-mono text-[11px]">4/2 D</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">3.400</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono">1.940</td>
+<td class="py-2 px-4 text-right tabular-nums font-mono text-statusOk">0,57</td>
+<td class="py-2 px-4 text-center">
+<span class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surfaceRaised border border-border text-statusOk">A · Lancar</span>
+</td>
+<td class="py-2 px-4 text-textSecondary text-[11px]">
+<span class="inline-flex items-center gap-1 text-statusOk">
+<span class="w-1 h-1 rounded-full bg-statusOk"></span>Normal
+                  </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Mini Empty Table State Box -->
+<div class="border border-border border-dashed rounded-lg bg-surface/60 p-4 flex items-center justify-center gap-3 text-textMuted text-xs">
+<svg class="w-4 h-4 text-textSecondary" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+<span class="font-medium text-textSecondary">Belum ada data</span>
+<span class="text-textMuted">— Menunggu filter segmen simpang diterapkan</span>
+</div>
+</div>
+</section>
+<!-- 7) KOMPOSISI KENDARAAN -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">7. KOMPOSISI KENDARAAN</span>
+<span class="text-xs text-textMuted">Distribusi moda transportasi dengan pola tekstur unik (solid, diagonal, dots, cross).</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Moda Multimodal · Tekstur Pola</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-5 space-y-5">
+<!-- Composite Stacked Bar with Distinct CSS/SVG Patterns (Height 20px) -->
+<div class="h-5 w-full bg-surfaceRaised rounded overflow-hidden flex border border-border">
+<!-- R2 (Motor) - 58% Solid -->
+<div class="h-full bg-primary" style="width: 58%;" title="R2 (Motor): 58%"></div>
+<!-- R3 (Bajaj/Bemo) - 8% Diagonal -->
+<div class="h-full pattern-r3" style="width: 8%;" title="R3 (Bajaj/Bemo): 8%"></div>
+<!-- R4 (Mobil) - 26% Dots -->
+<div class="h-full pattern-r4" style="width: 26%;" title="R4 (Mobil): 26%"></div>
+<!-- R6+ (Truk/Bus) - 8% Cross -->
+<div class="h-full pattern-r6" style="width: 8%;" title="R6+ (Truk/Bus): 8%"></div>
+</div>
+<!-- Legend with Swatch Pattern Boxes and Metrics -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-1">
+<!-- R2 Legend -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-4 h-4 rounded-sm bg-primary border border-primaryHover"></span>
+<span class="text-xs font-semibold text-textPrimary">R2 (Motor)</span>
+</div>
+<span class="text-[11px] font-mono text-primary font-bold">58 %</span>
+</div>
+<div class="text-[11px] text-textSecondary flex justify-between tabular-nums">
+<span>Jumlah kend:</span>
+<span class="text-textPrimary font-mono">2.840 kend</span>
+</div>
+<div class="text-[11px] text-textMuted flex justify-between tabular-nums">
+<span>smp ekivalen:</span>
+<span class="font-mono">710 smp</span>
+</div>
+</div>
+<!-- R3 Legend -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-4 h-4 rounded-sm pattern-r3 border border-border"></span>
+<span class="text-xs font-semibold text-textPrimary">R3 (Bajaj/Bemo)</span>
+</div>
+<span class="text-[11px] font-mono text-[#2F81F7] font-bold">8 %</span>
+</div>
+<div class="text-[11px] text-textSecondary flex justify-between tabular-nums">
+<span>Jumlah kend:</span>
+<span class="text-textPrimary font-mono">392 kend</span>
+</div>
+<div class="text-[11px] text-textMuted flex justify-between tabular-nums">
+<span>smp ekivalen:</span>
+<span class="font-mono">314 smp</span>
+</div>
+</div>
+<!-- R4 Legend -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-4 h-4 rounded-sm pattern-r4 border border-border"></span>
+<span class="text-xs font-semibold text-textPrimary">R4 (Mobil)</span>
+</div>
+<span class="text-[11px] font-mono text-statusOk font-bold">26 %</span>
+</div>
+<div class="text-[11px] text-textSecondary flex justify-between tabular-nums">
+<span>Jumlah kend:</span>
+<span class="text-textPrimary font-mono">1.274 kend</span>
+</div>
+<div class="text-[11px] text-textMuted flex justify-between tabular-nums">
+<span>smp ekivalen:</span>
+<span class="font-mono">1.274 smp</span>
+</div>
+</div>
+<!-- R6+ Legend -->
+<div class="p-3 bg-surfaceRaised border border-border rounded-lg space-y-1.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-4 h-4 rounded-sm pattern-r6 border border-border"></span>
+<span class="text-xs font-semibold text-textPrimary">R6+ (Truk/Bus)</span>
+</div>
+<span class="text-[11px] font-mono text-statusWarn font-bold">8 %</span>
+</div>
+<div class="text-[11px] text-textSecondary flex justify-between tabular-nums">
+<span>Jumlah kend:</span>
+<span class="text-textPrimary font-mono">392 kend</span>
+</div>
+<div class="text-[11px] text-textMuted flex justify-between tabular-nums">
+<span>smp ekivalen:</span>
+<span class="font-mono">509 smp</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 8) KARTU GRAFIK -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">8. KARTU GRAFIK</span>
+<span class="text-xs text-textMuted">Visualisasi deret waktu telemetri dengan anotasi langsung dan label sumbu.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Time-Series 24 Jam · Tanpa Gradien</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-5">
+<!-- Chart Header -->
+<div class="flex items-center justify-between pb-4 border-b border-border">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">TREN VOLUME &amp; KECEPATAN KORIDOR</span>
+<div class="flex items-center gap-3 text-xs pl-4 border-l border-border">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-primary"></span>
+<span class="text-textSecondary">Volume (smp/jam)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-statusWarn"></span>
+<span class="text-textSecondary">Kecepatan (km/jam)</span>
+</div>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-surfaceRaised text-textSecondary border border-border font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+            data sintetis · seed 42
+          </span>
+</div>
+<!-- Line Chart Area -->
+<div class="pt-6 pb-2">
+<div class="h-56 w-full relative">
+<!-- Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none text-[11px] font-mono text-textMuted">
+<div class="border-b border-border/60 w-full flex justify-between pr-2"><span>3.000</span><span>80</span></div>
+<div class="border-b border-border/60 w-full flex justify-between pr-2"><span>2.000</span><span>60</span></div>
+<div class="border-b border-border/60 w-full flex justify-between pr-2"><span>1.000</span><span>40</span></div>
+<div class="border-b border-border/60 w-full flex justify-between pr-2"><span>0</span><span>20</span></div>
+</div>
+<!-- SVG Multi-Series Curves -->
+<svg class="w-full h-full relative z-10" preserveaspectratio="none" viewbox="0 0 1000 200">
+<!-- Series 1: Volume (Blue #2F6FED) -->
+<polyline fill="none" points="0,170 120,165 240,90 360,70 480,120 600,105 720,40 840,65 940,110" stroke="#2F6FED" stroke-width="2.5"></polyline>
+<!-- Series 2: Kecepatan (Amber #D29922) -->
+<polyline fill="none" points="0,40 120,50 240,140 360,160 480,110 600,125 720,185 840,150 940,115" stroke="#D29922" stroke-dasharray="4 2" stroke-width="2"></polyline>
+<!-- End-line Anotasi Langsung (Series 1) -->
+<circle cx="940" cy="110" fill="#2F6FED" r="4"></circle>
+<text fill="#E6EDF3" font-family="Inter" font-size="11" font-weight="600" x="948" y="114">2.180 smp</text>
+<!-- End-line Anotasi Langsung (Series 2) -->
+<circle cx="940" cy="115" fill="#D29922" r="4"></circle>
+<text fill="#D29922" font-family="Inter" font-size="11" font-weight="600" x="948" y="132">28 km/jam</text>
+</svg>
+</div>
+<!-- X-Axis Labels -->
+<div class="flex justify-between text-xs text-textMuted font-mono pt-3 border-t border-border">
+<span>00:00</span>
+<span>06:00</span>
+<span>12:00</span>
+<span>18:00</span>
+<span>24:00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 9) KONTROL -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">9. KONTROL</span>
+<span class="text-xs text-textMuted">Komponen interaktif berstandar target sentuh 44px dan cincin fokus 2px #4682F5.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Touch-Target 44px (h-11) · Radius 6px</span>
+</div>
+<div class="bg-surface border border-border rounded-lg p-5 space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+<!-- Text Input -->
+<div class="space-y-1.5">
+<label class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase block">CATATAN OPERATOR</label>
+<input class="w-full h-11 px-3 bg-surfaceRaised border border-border rounded-md text-xs text-textPrimary placeholder:text-textMuted focus:outline-none focus:ring-2 focus:ring-primaryHover focus:border-primary transition-all" placeholder="Masukkan rujukan insiden..." type="text"/>
+</div>
+<!-- Action Buttons Group (Primary + Ghost + Icon Button) -->
+<div class="space-y-1.5">
+<label class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase block">TOMBOL AKSI INTERVENSI</label>
+<div class="flex items-center gap-2">
+<button class="h-11 px-4 bg-primary hover:bg-primaryHover active:bg-primary text-white text-xs font-semibold rounded-md transition-colors flex items-center justify-center focus:ring-2 focus:ring-primaryHover focus:outline-none" type="button">
+                Terapkan +12 dtk
+              </button>
+<button class="h-11 px-4 bg-transparent hover:bg-surfaceHover active:bg-surfaceRaised text-textSecondary hover:text-textPrimary text-xs font-semibold rounded-md border border-border transition-colors" type="button">
+                Batal
+              </button>
+<button class="w-11 h-11 flex items-center justify-center bg-surfaceRaised hover:bg-surfaceHover text-textSecondary hover:text-textPrimary rounded-md border border-border transition-colors" title="Segarkan Node" type="button">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+<button class="w-11 h-11 flex items-center justify-center bg-surfaceRaised hover:bg-surfaceHover text-textSecondary hover:text-textPrimary rounded-md border border-border transition-colors" title="Konfigurasi Sinyal" type="button">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</div>
+<!-- Toggle Switch & Segmented Controls -->
+<div class="space-y-1.5">
+<label class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase block">MODE &amp; SAKLAR TELEMETRI</label>
+<div class="flex items-center justify-between h-11 px-3 bg-surfaceRaised border border-border rounded-md">
+<span class="text-xs text-textPrimary font-medium">Aktif / Nonaktif</span>
+<!-- Toggle switch checked -->
+<button class="w-10 h-5 bg-primary rounded-full relative p-0.5 transition-colors focus:outline-none" type="button">
+<span class="w-4 h-4 bg-white rounded-full block transform translate-x-5 transition-transform"></span>
+</button>
+</div>
+</div>
+</div>
+<!-- Segmented Controls and Tab Bar -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-border">
+<!-- Segmented Controls -->
+<div class="flex flex-wrap items-center gap-4">
+<!-- Tema -->
+<div class="space-y-1">
+<span class="text-[11px] text-textMuted uppercase font-semibold">TEMA</span>
+<div class="inline-flex p-1 bg-surfaceRaised border border-border rounded-md text-xs">
+<button class="px-3 py-1 bg-primaryQuiet text-textPrimary border border-borderStrong rounded font-medium">Gelap</button>
+<button class="px-3 py-1 text-textSecondary hover:text-textPrimary transition-colors">Terang</button>
+</div>
+</div>
+<!-- Kepadatan -->
+<div class="space-y-1">
+<span class="text-[11px] text-textMuted uppercase font-semibold">KEPADATAN</span>
+<div class="inline-flex p-1 bg-surfaceRaised border border-border rounded-md text-xs">
+<button class="px-3 py-1 text-textSecondary hover:text-textPrimary transition-colors">Nyaman</button>
+<button class="px-3 py-1 bg-primaryQuiet text-textPrimary border border-borderStrong rounded font-medium">Padat</button>
+</div>
+</div>
+</div>
+<!-- Tab Bar Demo -->
+<div class="space-y-1">
+<span class="text-[11px] text-textMuted uppercase font-semibold">TAB KONSOL OPERASIONAL</span>
+<div class="flex items-center gap-1 border-b border-border pb-1">
+<button class="px-3 py-1.5 rounded text-xs font-semibold bg-primaryQuiet text-textPrimary border border-borderStrong">
+                Fase Lampu Simpang
+              </button>
+<button class="px-3 py-1.5 rounded text-xs text-textSecondary hover:text-textPrimary hover:bg-surfaceHover transition-colors">
+                Sensor Loop Magnetik
+              </button>
+<button class="px-3 py-1.5 rounded text-xs text-textSecondary hover:text-textPrimary hover:bg-surfaceHover transition-colors">
+                Kamera ANPR
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 10) STATE (PARITAS KETINGGIAN TETAP, TOAST, MODAL) -->
+<section class="space-y-3">
+<div class="flex items-baseline justify-between border-b border-border pb-2">
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-semibold tracking-wider text-textSecondary uppercase">10. STATE</span>
+<span class="text-xs text-textMuted">Paritas ketinggian tetap untuk siklus pemuatan, galat, notifikasi toast, dan modal konfirmasi.</span>
+</div>
+<span class="text-[11px] text-textMuted uppercase font-mono">Tinggi Tetap 160px · Anti-Reflow Layout</span>
+</div>
+<div class="space-y-6">
+<!-- 3 Fixed-Height Equal Parity Boxes (160px) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- 1. Loading Skeleton -->
+<div class="h-40 bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<div class="h-3 w-28 bg-surfaceRaised rounded animate-pulse"></div>
+<div class="h-4 w-12 bg-surfaceRaised rounded-full animate-pulse"></div>
+</div>
+<div class="space-y-2.5">
+<div class="h-4 w-3/4 bg-surfaceRaised rounded animate-pulse"></div>
+<div class="h-3 w-full bg-surfaceRaised rounded animate-pulse"></div>
+<div class="h-3 w-5/6 bg-surfaceRaised rounded animate-pulse"></div>
+</div>
+<div class="text-[11px] text-textMuted flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>Memperbarui telemetri...</span>
+</div>
+</div>
+<!-- 2. Empty State -->
+<div class="h-40 bg-surface border border-border rounded-lg p-4 flex flex-col items-center justify-center text-center space-y-2">
+<div class="w-8 h-8 rounded-full bg-surfaceRaised border border-border flex items-center justify-center text-textSecondary">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+</div>
+<div>
+<div class="text-xs font-semibold text-textPrimary">Belum ada data</div>
+<div class="text-[11px] text-textMuted mt-0.5">Telemetri tidak ditemukan untuk interval ini</div>
+</div>
+</div>
+<!-- 3. Error State with Ghost Button -->
+<div class="h-40 bg-surface border border-border rounded-lg p-4 flex flex-col items-center justify-center text-center space-y-2.5">
+<div class="w-8 h-8 rounded-full bg-surfaceRaised border border-border flex items-center justify-center text-statusCritical">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polygon points="12 2 2 22 22 22 12 2"></polygon><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+</div>
+<div>
+<div class="text-xs font-semibold text-textPrimary">Gagal memuat data</div>
+<div class="text-[11px] text-textMuted mt-0.5">Koneksi gateway node SP-05 terputus</div>
+</div>
+<button class="px-3 py-1 bg-surfaceRaised hover:bg-surfaceHover text-textPrimary border border-border rounded text-xs transition-colors" type="button">
+              Coba lagi
+            </button>
+</div>
+</div>
+<!-- Toast Notification Banner Preview -->
+<div class="bg-surface border border-border rounded-lg p-3 flex items-center justify-between max-w-2xl mx-auto">
+<div class="flex items-center gap-2.5 text-xs text-textPrimary">
+<span class="w-5 h-5 rounded-full bg-surfaceRaised border border-border flex items-center justify-center text-statusOk">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</span>
+<span>Perubahan diterapkan · <strong class="font-normal text-textSecondary">Sinyal lalu lintas sinkron dengan rekomendasi</strong></span>
+</div>
+<div class="flex items-center gap-3">
+<button class="text-xs text-primary font-semibold hover:underline" type="button">
+              Urungkan (30 dtk)
+            </button>
+<button class="text-textMuted hover:text-textPrimary" title="Tutup" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+</button>
+</div>
+</div>
+<!-- Modal Frame Preview Component -->
+<div class="max-w-2xl mx-auto border border-borderStrong rounded-xl bg-surfaceRaised p-6 space-y-5">
+<!-- Modal Header -->
+<div class="flex items-start justify-between border-b border-border pb-3">
+<div>
+<h2 class="text-base font-bold text-textPrimary">Konfirmasi perubahan fase</h2>
+<p class="text-xs text-textSecondary mt-0.5 font-mono">Contoh · Simpang Meruya Utara</p>
+</div>
+<button class="text-textMuted hover:text-textPrimary p-1" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+</button>
+</div>
+<!-- Before / After Table -->
+<div class="border border-border rounded-lg overflow-hidden bg-surface">
+<table class="w-full text-xs text-left">
+<thead>
+<tr class="bg-surfaceRaised/80 border-b border-border text-[11px] font-semibold text-textSecondary uppercase">
+<th class="py-2 px-3">PENDEKAT</th>
+<th class="py-2 px-3 text-right">HIJAU SAAT INI</th>
+<th class="py-2 px-3 text-right">HIJAU USULAN</th>
+<th class="py-2 px-3 text-right">SELISIH</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border font-mono tabular-nums">
+<tr>
+<td class="py-2 px-3 font-sans text-textPrimary">Pendekat Utara (Utama)</td>
+<td class="py-2 px-3 text-right text-textSecondary">45 s</td>
+<td class="py-2 px-3 text-right text-textPrimary font-semibold">60 s</td>
+<td class="py-2 px-3 text-right text-statusOk font-semibold">+15 s</td>
+</tr>
+<tr>
+<td class="py-2 px-3 font-sans text-textPrimary">Pendekat Barat</td>
+<td class="py-2 px-3 text-right text-textSecondary">35 s</td>
+<td class="py-2 px-3 text-right text-textPrimary font-semibold">28 s</td>
+<td class="py-2 px-3 text-right text-statusCritical font-semibold">-7 s</td>
+</tr>
+<tr>
+<td class="py-2 px-3 font-sans text-textPrimary">Pendekat Selatan</td>
+<td class="py-2 px-3 text-right text-textSecondary">30 s</td>
+<td class="py-2 px-3 text-right text-textPrimary font-semibold">22 s</td>
+<td class="py-2 px-3 text-right text-statusCritical font-semibold">-8 s</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Loss Warning line -->
+<div class="p-3 bg-surface border border-border rounded-lg text-xs space-y-2">
+<div class="flex items-center gap-2 text-statusWarn font-medium">
+<svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+<span>Fase yang kehilangan waktu: Pendekat Barat (-7 s) dan Pendekat Selatan (-8 s)</span>
+</div>
+<div class="flex items-center gap-1.5 text-[11px] text-textMuted font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-statusInfo"></span>
+<span>Simulasi pada data sintetis — tidak mengubah lampu nyata</span>
+</div>
+</div>
+<!-- Modal Actions -->
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-4 py-2 text-xs font-semibold text-textSecondary hover:text-textPrimary bg-transparent hover:bg-surface border border-border rounded-md transition-colors" type="button">
+              Batal
+            </button>
+<button class="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primaryHover rounded-md transition-colors" type="button">
+              Terapkan
+            </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Sheet Footer / System Legend -->
+<footer class="max-w-[1600px] mx-auto px-8 mt-16 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center text-xs text-textMuted gap-4">
+<div class="flex items-center gap-4">
+<span>Traffix Ops Editorial Control Room Design Sheet</span>
+<span>•</span>
+<span>Palet Gelap Dibatasi (#0B0F14 / #111823)</span>
+<span>•</span>
+<span>Aksen Tunggal #2F6FED</span>
+</div>
+<div class="flex items-center gap-3 font-mono text-[11px]">
+<span class="text-statusOk">● statusOk</span>
+<span class="text-statusWarn">● statusWarn</span>
+<span class="text-statusCritical">● statusCritical</span>
+<span class="text-statusInfo">● statusInfo</span>
+</div>
+</footer>
+</body></html>
