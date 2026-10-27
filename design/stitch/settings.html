@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Traffix Ops — Pengaturan Konsol</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background: "#0a0c10",
+            surface: "#111823",
+            surfaceRaised: "#18202A",
+            surfaceHover: "#1E2833",
+            border: "#223041",
+            borderStrong: "#31435A",
+            textPrimary: "#E6EDF3",
+            textSecondary: "#9AA7B4",
+            textMuted: "#6B7885",
+            primary: "#2F6FED",
+            primaryHover: "#4682F5",
+            primaryQuiet: "#14243F",
+            statusOk: "#2EA043",
+            statusInfo: "#2F81F7",
+            statusWarn: "#D29922",
+            statusHigh: "#DB6D28",
+            statusCritical: "#E5534B",
+            statusIdle: "#8B949E"
+          },
+          borderRadius: {
+            DEFAULT: "0.25rem",
+            lg: "0.5rem",
+            xl: "0.75rem",
+            full: "9999px"
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body class="bg-[#0a0c10] text-[#E6EDF3] font-body text-[13px] leading-relaxed antialiased min-h-screen selection:bg-[#2F6FED]/30 selection:text-white">
+<!-- TopNavBar (Shared Component Anchor) -->
+<header class="flex justify-between items-center w-full px-6 h-12 bg-[#111823] border-b border-[#223041] select-none sticky top-0 z-50">
+<!-- Left branding & operational status -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#2F6FED] ring-2 ring-[#2F6FED]/20"></span>
+<span class="font-headline text-[15px] font-semibold tracking-tight text-[#E6EDF3]">Traffix Ops</span>
+</div>
+<div class="h-3.5 w-px bg-[#223041]"></div>
+<div class="flex items-center gap-3 text-[11px] font-mono tabular-nums text-[#9AA7B4]">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#18202A] border border-[#223041]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2EA043]"></span>
+<span class="text-[#2EA043] font-sans font-semibold text-[10px] tracking-wider uppercase">OPERASIONAL</span>
+</div>
+<span>06:21 WIB</span>
+<span class="text-[#6B7885]">•</span>
+<span class="text-[#9AA7B4]">tick #1.846</span>
+</div>
+</div>
+<!-- Center Navigation Links -->
+<nav class="hidden md:flex items-center gap-1.5">
+<a class="text-[#9AA7B4] px-3 py-1.5 rounded text-[12px] font-medium hover:text-[#E6EDF3] hover:bg-[#1E2833] transition-colors duration-150" href="#">
+        Dashboard
+      </a>
+<a class="text-[#9AA7B4] px-3 py-1.5 rounded text-[12px] font-medium hover:text-[#E6EDF3] hover:bg-[#1E2833] transition-colors duration-150" href="#">
+        Live Map
+      </a>
+<a class="text-[#9AA7B4] px-3 py-1.5 rounded text-[12px] font-medium hover:text-[#E6EDF3] hover:bg-[#1E2833] transition-colors duration-150" href="#">
+        Evaluasi Model
+      </a>
+<!-- Active Item: Settings -->
+<a class="text-[#E6EDF3] bg-[#14243F] px-3 py-1.5 rounded text-[12px] font-medium border border-[#31435A]" href="#">
+        Settings
+      </a>
+</nav>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-3">
+<button class="px-3 py-1 text-[12px] font-medium text-[#9AA7B4] hover:text-[#E6EDF3] hover:bg-[#1E2833] border border-[#223041] rounded transition-colors duration-150" type="button">
+        Simulasi
+      </button>
+<button class="inline-flex items-center gap-1.5 px-3 py-1 text-[12px] font-medium text-white bg-[#2F6FED] hover:bg-[#4682F5] active:bg-[#14243F] rounded transition-colors duration-150 border border-transparent" type="button">
+<span class="material-symbols-outlined text-[15px]">check</span>
+<span>Setujui Rekomendasi</span>
+</button>
+<div class="h-3.5 w-px bg-[#223041]"></div>
+<div class="flex items-center gap-1 text-[#9AA7B4]">
+<button aria-label="Notifikasi" class="relative p-1.5 rounded hover:bg-[#1E2833] hover:text-[#E6EDF3] transition-colors" title="Notifikasi" type="button">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1 right-1 w-1.5 h-1.5 bg-[#2F6FED] rounded-full"></span>
+</button>
+<button aria-label="Mode Kontras" class="p-1.5 rounded hover:bg-[#1E2833] hover:text-[#E6EDF3] transition-colors" title="Mode Kontras" type="button">
+<span class="material-symbols-outlined text-[18px]">contrast</span>
+</button>
+</div>
+<div class="flex items-center gap-2 pl-1 text-[12px] text-[#9AA7B4]">
+<span class="material-symbols-outlined text-[20px] text-[#6B7885]">account_circle</span>
+<span class="hidden lg:inline text-[#E6EDF3] font-medium text-[12px]">Budi S. <span class="text-[#6B7885] font-normal">/ Dishub DKI</span></span>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
+<!-- Header Section -->
+<section class="space-y-2 border-b border-[#223041] pb-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-[#9AA7B4]">
+<span>KONSOL OPERATOR</span>
+<span class="text-[#6B7885]">/</span>
+<span class="text-[#E6EDF3]">PENGATURAN</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[11px] font-mono text-[#9AA7B4] bg-[#111823] border border-[#223041]">
+            Versi 2.4-rc2
+          </span>
+<span class="px-2 py-0.5 rounded text-[11px] font-mono text-[#9AA7B4] bg-[#111823] border border-[#223041]">
+            Node: atcs-jkt-01
+          </span>
+<span class="px-2 py-0.5 rounded text-[11px] text-[#2EA043] bg-[#18202A] border border-[#223041] font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2EA043]"></span>
+            Simulasi Terkalibrasi
+          </span>
+</div>
+</div>
+<div>
+<h1 class="text-xl font-semibold tracking-tight text-[#E6EDF3] font-headline">Pengaturan</h1>
+<p class="text-[13px] text-[#9AA7B4] mt-1 max-w-3xl">
+          Konfigurasi instans Traffix Ops, parameter simulasi data sintetis, preferensi tampilan antarmuka, dan transparansi pipeline model.
+        </p>
+</div>
+</section>
+<!-- Card 1: Sistem -->
+<section class="bg-[#12151b] border border-[#232832] rounded-[10px] p-6 space-y-4">
+<div class="flex items-start justify-between border-b border-[#223041]/60 pb-3">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-[#18202A] border border-[#223041] flex items-center justify-center text-[#9AA7B4]">
+<span class="material-symbols-outlined text-[16px]">dns</span>
+</div>
+<div>
+<h2 class="text-[14px] font-semibold text-[#E6EDF3] tracking-tight">Sistem</h2>
+<p class="text-[12px] text-[#9AA7B4]">Status runtime komponen inti dan konektivitas modul diagnostik</p>
+</div>
+</div>
+<span class="text-[11px] font-mono text-[#6B7885] self-center">5 layanan terpantau</span>
+</div>
+<div class="divide-y divide-[#223041]/40">
+<!-- Row 1: Backend Layanan -->
+<div class="py-3 flex items-center justify-between gap-4">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Backend Layanan</div>
+<div class="text-[12px] text-[#9AA7B4]">Pemeriksaan health-check API gateway &amp; telemetry ingestion</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-[#18202A] border border-[#2EA043]/30 text-[#2EA043]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2EA043]"></span>
+              tersambung (200, 12 ms)
+            </span>
+<button class="border border-[#30363d] px-2.5 py-1 text-[11px] font-medium text-[#c9d1d9] hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+              Periksa
+            </button>
+</div>
+</div>
+<!-- Row 2: Model Klasifikasi Penyebab -->
+<div class="py-3 flex items-center justify-between gap-4">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Model Klasifikasi Penyebab</div>
+<div class="text-[12px] text-[#9AA7B4]">Pipeline inferensi probabilistik multivariat 9 kelas</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-[#18202A] border border-[#2F81F7]/30 text-[#2F81F7]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2F81F7]"></span>
+              hist_gradient_boosting, dimuat
+            </span>
+<button class="border border-[#30363d] px-2.5 py-1 text-[11px] font-medium text-[#c9d1d9] hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+              Periksa
+            </button>
+</div>
+</div>
+<!-- Row 3: Dataset Operasional v4 -->
+<div class="py-3 flex items-center justify-between gap-4">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Dataset Operasional v4</div>
+<div class="text-[12px] text-[#9AA7B4]">Buffer time-series agregasi sensor V/C &amp; panjang antrean</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-[#18202A] border border-[#31435A] text-[#9AA7B4]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9AA7B4]"></span>
+              live_replay_7d.csv.gz, 60.480 baris, 6 simpang
+            </span>
+<button class="border border-[#30363d] px-2.5 py-1 text-[11px] font-medium text-[#c9d1d9] hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+              Periksa
+            </button>
+</div>
+</div>
+<!-- Row 4: Mesin Simulasi Replay -->
+<div class="py-3 flex items-center justify-between gap-4">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Mesin Simulasi Replay</div>
+<div class="text-[12px] text-[#9AA7B4]">Eksekutor tick event sinkronisasi koridor jalan raya</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-[#18202A] border border-[#2EA043]/30 text-[#2EA043]">
+<span class="relative flex h-1.5 w-1.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2EA043] opacity-75"></span>
+<span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#2EA043]"></span>
+</span>
+              berjalan, tick 1.842 dari 10.080
+            </span>
+<button class="border border-[#30363d] px-2.5 py-1 text-[11px] font-medium text-[#c9d1d9] hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+              Periksa
+            </button>
+</div>
+</div>
+<!-- Row 5: Feed Video CCTV AI -->
+<div class="py-3 flex items-center justify-between gap-4">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Feed Video CCTV AI</div>
+<div class="text-[12px] text-[#9AA7B4]">Deteksi objek kendaraan visual real-time pendeteksi lajur</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-[#18202A] border border-[#D29922]/30 text-[#D29922]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D29922]"></span>
+              0 dari 8 sumber tersedia
+            </span>
+<button class="border border-[#30363d] px-2.5 py-1 text-[11px] font-medium text-[#c9d1d9] hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+              Periksa
+            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Card 2: Simulasi -->
+<section class="bg-[#12151b] border border-[#232832] rounded-[10px] p-6 space-y-5">
+<div class="flex items-start justify-between border-b border-[#223041]/60 pb-3">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-[#18202A] border border-[#223041] flex items-center justify-center text-[#9AA7B4]">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</div>
+<div>
+<h2 class="text-[14px] font-semibold text-[#E6EDF3] tracking-tight">Simulasi</h2>
+<p class="text-[12px] text-[#9AA7B4]">Parameter replay deret waktu dan akselerasi skenario kemacetan</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[10px] uppercase font-mono tracking-wider text-[#9AA7B4] bg-[#0d1015] border border-[#223041]">
+          SEED 42
+        </span>
+</div>
+<div class="space-y-4">
+<!-- Toggle: Jalankan replay otomatis -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Jalankan replay otomatis</div>
+<div class="text-[12px] text-[#9AA7B4]">Lanjutkan simulasi tick berurutan tanpa jeda manual</div>
+</div>
+<div>
+<!-- Custom Styled Switch (Active / ON) -->
+<button aria-checked="true" class="w-11 h-6 bg-[#2F6FED] rounded-full p-0.5 transition-colors duration-200 ease-in-out focus:outline-none flex items-center justify-end" role="switch" type="button">
+<span class="w-5 h-5 bg-white rounded-full transition-transform"></span>
+</button>
+</div>
+</div>
+<div class="h-px bg-[#223041]/40"></div>
+<!-- Input: Interval tick -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Interval tick</div>
+<div class="text-[12px] text-[#9AA7B4]">2 detik per menit simulasi</div>
+</div>
+<div class="relative flex items-center">
+<input class="w-36 text-right pr-14 pl-3 py-1.5 text-[12px] font-mono bg-[#0d1015] border border-[#30363d] rounded text-[#E6EDF3] focus:border-[#2F6FED] focus:ring-1 focus:ring-[#2F6FED] tabular-nums" type="text" value="2"/>
+<span class="absolute right-2.5 text-[11px] font-medium text-[#6B7885] pointer-events-none select-none">detik</span>
+</div>
+</div>
+<div class="h-px bg-[#223041]/40"></div>
+<!-- Input: Posisi mulai replay -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Posisi mulai replay</div>
+<div class="text-[12px] text-[#9AA7B4]">360 = 06:00 WIB, jam sibuk pagi</div>
+</div>
+<div class="relative flex items-center">
+<input class="w-36 text-right pr-14 pl-3 py-1.5 text-[12px] font-mono bg-[#0d1015] border border-[#30363d] rounded text-[#E6EDF3] focus:border-[#2F6FED] focus:ring-1 focus:ring-[#2F6FED] tabular-nums" type="text" value="360"/>
+<span class="absolute right-2.5 text-[11px] font-medium text-[#6B7885] pointer-events-none select-none">menit</span>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-4 pt-4 border-t border-[#223041]/60 flex items-center justify-between">
+<div class="flex items-center gap-2 text-[12px] text-[#9AA7B4] font-mono">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2EA043]"></span>
+<span>Replay aktif: 06:00 - 08:30 WIB</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="border border-[#30363d] text-[#c9d1d9] px-4 py-1.5 text-[12px] font-medium hover:bg-[#1f242c] rounded transition-colors duration-150" type="button">
+            Hentikan
+          </button>
+<!-- Sole Primary Button in content view -->
+<button class="bg-[#2F6FED] text-white px-4 py-1.5 text-[12px] font-medium hover:bg-[#4682F5] active:bg-[#14243F] rounded transition-colors duration-150" type="button">
+            Mulai
+          </button>
+</div>
+</div>
+</section>
+<!-- Card 3: Tampilan -->
+<section class="bg-[#12151b] border border-[#232832] rounded-[10px] p-6 space-y-4">
+<div class="flex items-start justify-between border-b border-[#223041]/60 pb-3">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-[#18202A] border border-[#223041] flex items-center justify-center text-[#9AA7B4]">
+<span class="material-symbols-outlined text-[16px]">palette</span>
+</div>
+<div>
+<h2 class="text-[14px] font-semibold text-[#E6EDF3] tracking-tight">Tampilan</h2>
+<p class="text-[12px] text-[#9AA7B4]">Kustomisasi antarmuka konsol dan keterbukaan informasi sumber</p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<!-- Segmented Control: Tema -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Tema antarmuka</div>
+<div class="text-[12px] text-[#9AA7B4]">Penyesuaian kontras layar monitor ruang kendali</div>
+</div>
+<div class="inline-flex p-0.5 bg-[#0d1015] border border-[#223041] rounded">
+<button class="px-3 py-1 text-[11px] font-medium rounded bg-[#21262d] text-white border border-[#30363d]" type="button">
+              Gelap
+            </button>
+<button class="px-3 py-1 text-[11px] font-medium rounded text-[#8b949e] hover:text-[#E6EDF3] transition-colors" type="button">
+              Terang
+            </button>
+</div>
+</div>
+<div class="h-px bg-[#223041]/40"></div>
+<!-- Segmented Control: Kerapatan tabel -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Kerapatan tabel</div>
+<div class="text-[12px] text-[#9AA7B4]">Kepadatan visual data tabular simpang dan riwayat</div>
+</div>
+<div class="inline-flex p-0.5 bg-[#0d1015] border border-[#223041] rounded">
+<button class="px-3 py-1 text-[11px] font-medium rounded text-[#8b949e] hover:text-[#E6EDF3] transition-colors" type="button">
+              Nyaman
+            </button>
+<button class="px-3 py-1 text-[11px] font-medium rounded bg-[#21262d] text-white border border-[#30363d]" type="button">
+              Padat
+            </button>
+</div>
+</div>
+<div class="h-px bg-[#223041]/40"></div>
+<!-- Switch: Tampilkan badge sumber data sintetis -->
+<div class="flex items-center justify-between py-1">
+<div class="space-y-0.5">
+<div class="text-[13px] font-medium text-[#E6EDF3]">Tampilkan badge sumber data sintetis</div>
+<div class="text-[12px] text-[#9AA7B4]">Sesuai ketentuan keterbukaan data</div>
+</div>
+<div>
+<button aria-checked="true" class="w-11 h-6 bg-[#2F6FED] rounded-full p-0.5 transition-colors duration-200 ease-in-out focus:outline-none flex items-center justify-end" role="switch" type="button">
+<span class="w-5 h-5 bg-white rounded-full transition-transform"></span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Card 4: Sumber data -->
+<section class="bg-[#12151b] border border-[#232832] rounded-[10px] p-6 space-y-4">
+<div class="flex items-start justify-between border-b border-[#223041]/60 pb-3">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded bg-[#18202A] border border-[#223041] flex items-center justify-center text-[#9AA7B4]">
+<span class="material-symbols-outlined text-[16px]">database</span>
+</div>
+<div>
+<h2 class="text-[14px] font-semibold text-[#E6EDF3] tracking-tight">Sumber data</h2>
+<p class="text-[12px] text-[#9AA7B4]">Metadata pipeline data sintetis dan audit kepatuhan ISO/IEC 42001</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-[11px] font-mono text-[#2EA043] bg-[#18202A] border border-[#223041]">
+          data sintetis · seed 42
+        </span>
+</div>
+<!-- Quiet Information Block -->
+<div class="bg-[#0d1015] border border-[#232832] rounded p-4 space-y-4">
+<!-- Metadata Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-1">
+<div class="text-[10px] uppercase tracking-wider font-semibold text-[#6B7885]">LOKASI BERKAS</div>
+<div class="inline-block px-2.5 py-1 rounded bg-[#18202A] border border-[#223041] font-mono text-[11px] text-[#7ee787]">
+              data/data_synthetic/v4/ticks_v4.csv.gz
+            </div>
+</div>
+<div class="space-y-1">
+<div class="text-[10px] uppercase tracking-wider font-semibold text-[#6B7885]">GENERATOR PIPELINE</div>
+<div class="inline-block px-2.5 py-1 rounded bg-[#18202A] border border-[#223041] font-mono text-[11px] text-[#E6EDF3]">
+              generate_data_v4.py · seed 42
+            </div>
+</div>
+</div>
+<!-- Links Row -->
+<div class="pt-2 border-t border-[#232832]/60 flex flex-wrap items-center gap-6">
+<a class="text-[11px] text-[#58a6ff] hover:underline inline-flex items-center gap-1 font-medium" href="#">
+<span class="material-symbols-outlined text-[14px]">download</span>
+<span>Unduh metrics.json</span>
+</a>
+<a class="text-[11px] text-[#58a6ff] hover:underline inline-flex items-center gap-1 font-medium" href="#">
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+<span>Buka model card</span>
+</a>
+<a class="text-[11px] text-[#58a6ff] hover:underline inline-flex items-center gap-1 font-medium" href="#">
+<span class="material-symbols-outlined text-[14px]">description</span>
+<span>Lihat kontrak skema (SCHEMA-v4.md)</span>
+</a>
+</div>
+<!-- Bordered Reminder Callout -->
+<div class="border-l-2 border-[#d29922] bg-[#1c1917]/50 border-t border-r border-b border-[#302a24] p-3 text-[12px] text-[#d29922] rounded-r flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-[#d29922]">info</span>
+<span>Label penyebab berasal dari simulator, bukan pengukuran lapangan.</span>
+</div>
+</div>
+</section>
+</main>
+</body></html>

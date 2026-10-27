@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="id"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Traffix Ops — Control Room Console</title>
+<!-- Inter & JetBrains Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            background: "#0B0F14",
+            surface: "#111823",
+            surfaceRaised: "#18202A",
+            surfaceHover: "#1E2833",
+            border: "#223041",
+            borderStrong: "#31435A",
+            textPrimary: "#E6EDF3",
+            textSecondary: "#9AA7B4",
+            textMuted: "#6B7885",
+            primary: "#2F6FED",
+            primaryHover: "#4682F5",
+            primaryQuiet: "#14243F",
+            // Status Semantics
+            statusOk: "#2EA043",
+            statusInfo: "#2F81F7",
+            statusWarn: "#D29922",
+            statusHigh: "#DB6D28",
+            statusCritical: "#E5534B",
+            statusIdle: "#8B949E",
+            // Cause Semantics
+            causeNormal: "#2EA043",
+            causeVolume: "#D29922",
+            causePerbaikan: "#DB6D28",
+            causeHujan: "#2F81F7",
+            causeBanjir: "#1F6FEB",
+            causeKecelakaan: "#E5534B",
+            causeEvent: "#A371F7",
+            causeLampu: "#C264C8",
+            causeTruk: "#9E8A1F",
+          },
+          fontFamily: {
+            headline: ["Inter", "sans-serif"],
+            display: ["Inter", "sans-serif"],
+            body: ["Inter", "sans-serif"],
+            label: ["Inter", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"],
+          },
+          borderRadius: {
+            DEFAULT: "4px",
+            sm: "4px",
+            md: "6px",
+            lg: "10px",
+            xl: "14px",
+            full: "9999px"
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      background-color: #0B0F14;
+      color: #E6EDF3;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 16px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .font-mono-code {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Subtle scrollbars for control room density */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #223041;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #31435A;
+    }
+  </style>
+</head>
+<body class="bg-background text-textPrimary min-h-screen flex flex-col antialiased select-none">
+<!-- ========================================================== -->
+<!-- 1. TOPBAR (Shared Component: TopNavBar Anchor)            -->
+<!-- ========================================================== -->
+<header class="flex justify-between items-center w-full px-6 h-12 bg-surface dark:bg-surface border-b border-border dark:border-border select-none fixed top-0 left-0 right-0 z-50">
+<!-- Left Cluster: Brand & Tabs -->
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2.5">
+<div class="w-6 h-6 rounded bg-primary flex items-center justify-center text-textPrimary shadow-inner">
+<span class="material-symbols-outlined text-[15px] font-bold">alt_route</span>
+</div>
+<span class="font-headline text-display-md font-semibold tracking-tight text-textPrimary dark:text-textPrimary text-[15px] tracking-tight">Traffix Ops</span>
+</div>
+<!-- Live Operations Tag -->
+<div class="hidden sm:flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-surfaceRaised border border-border">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-statusOk opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-statusOk"></span>
+</span>
+<span class="text-[10px] font-semibold tracking-wider uppercase text-statusOk">Operasional</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-1">
+<a class="text-textPrimary dark:text-textPrimary bg-primaryQuiet dark:bg-primaryQuiet px-3 py-1.5 rounded text-[12px] font-medium border border-borderStrong dark:border-borderStrong transition-colors" href="#">Dashboard</a>
+<a class="text-textSecondary dark:text-textSecondary px-3 py-1.5 rounded text-[12px] font-medium hover:text-textPrimary dark:hover:text-textPrimary hover:bg-surfaceHover dark:hover:bg-surfaceHover transition-colors" href="#">Live Map</a>
+<a class="text-textSecondary dark:text-textSecondary px-3 py-1.5 rounded text-[12px] font-medium hover:text-textPrimary dark:hover:text-textPrimary hover:bg-surfaceHover dark:hover:bg-surfaceHover transition-colors" href="#">Evaluasi Model</a>
+<a class="text-textSecondary dark:text-textSecondary px-3 py-1.5 rounded text-[12px] font-medium hover:text-textPrimary dark:hover:text-textPrimary hover:bg-surfaceHover dark:hover:bg-surfaceHover transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<!-- Right Cluster: Telemetry time, Actions & Profile -->
+<div class="flex items-center gap-3">
+<!-- Realtime Replay Tick -->
+<div class="hidden lg:flex items-center gap-2 px-2.5 py-1 bg-surfaceRaised border border-border rounded text-[11px] text-textSecondary font-mono-code tabular-nums">
+<span class="material-symbols-outlined text-textMuted text-[14px]">schedule</span>
+<span class="text-textPrimary" id="live-time">06:21 WIB</span>
+<span class="text-borderStrong">·</span>
+<span class="text-statusInfo">tick #1.842</span>
+</div>
+<!-- Topbar Action: Secondary & Primary from JSON/Prompt -->
+<div class="hidden xl:flex items-center gap-2">
+<button class="px-2.5 py-1 rounded-md text-[12px] font-medium text-textSecondary hover:text-textPrimary hover:bg-surfaceHover border border-border transition-colors">
+          Simulasi
+        </button>
+<button class="px-3 py-1 rounded-md text-[12px] font-medium bg-primary hover:bg-primaryHover text-white transition-colors">
+          Setujui Rekomendasi
+        </button>
+</div>
+<div class="h-4 w-[1px] bg-border hidden sm:block"></div>
+<!-- Quick Icon Buttons -->
+<div class="flex items-center gap-0.5">
+<button class="relative p-1.5 rounded hover:bg-surfaceHover text-textSecondary hover:text-textPrimary transition-colors" title="Notifikasi">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-statusCritical rounded-full"></span>
+</button>
+<button class="p-1.5 rounded hover:bg-surfaceHover text-textSecondary hover:text-textPrimary transition-colors" title="Ubah Kontras">
+<span class="material-symbols-outlined">contrast</span>
+</button>
+</div>
+<!-- User Avatar / Operator Badge -->
+<div class="flex items-center gap-2 pl-2 border-l border-border">
+<div class="w-6 h-6 rounded-full bg-surfaceRaised border border-border flex items-center justify-center text-textSecondary text-[11px] font-semibold">
+          BS
+        </div>
+<div class="hidden sm:flex flex-col text-left">
+<span class="text-[11px] font-medium text-textPrimary leading-tight">Budi S.</span>
+<span class="text-[10px] text-textMuted leading-tight font-mono-code">Dishub DKI</span>
+</div>
+<button class="text-textMuted hover:text-statusCritical p-1 ml-1 rounded transition-colors" title="Keluar">
+<span class="material-symbols-outlined text-[15px]">logout</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================== -->
+<!-- MAIN WORKSPACE & SIDE RAIL CONTAINER                       -->
+<!-- ========================================================== -->
+<div class="pt-12 flex w-full min-h-[calc(100vh-3rem)]">
+<!-- Central Content Grid (Scrollable) -->
+<main class="flex-1 p-6 space-y-4 max-w-[calc(100vw-20rem)] overflow-y-auto">
+<!-- ========================================================== -->
+<!-- 2. KPI STRIP (4 Dense Control-Room Cards)                 -->
+<!-- ========================================================== -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+<!-- KPI 1: Total Kendaraan -->
+<div class="bg-surface border border-border rounded-lg p-3.5 flex flex-col justify-between hover:border-borderStrong transition-colors">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-semibold tracking-wider uppercase text-textMuted">TOTAL KENDARAAN</span>
+<span class="text-[10px] font-mono-code text-statusOk font-medium bg-surfaceRaised px-1.5 py-0.5 rounded border border-border">+4,2%</span>
+</div>
+<div class="my-1.5 flex items-baseline justify-between">
+<span class="text-[26px] font-semibold tracking-tight text-textPrimary font-mono-code tabular-nums leading-none">1.284</span>
+<span class="text-[11px] text-textMuted">smp / 15 mnt</span>
+</div>
+<!-- 24px Sparkline -->
+<div class="h-6 w-full flex items-end">
+<svg class="w-full h-5 text-statusOk overflow-visible" fill="none" preserveaspectratio="none" stroke="currentColor" stroke-width="1.75" viewbox="0 0 100 25">
+<path d="M0,18 Q15,22 25,14 T50,16 T75,8 T100,5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-textSecondary mt-1 leading-tight truncate">+4,2% vs 15 mnt lalu</span>
+</div>
+<!-- KPI 2: Kecepatan Rata-rata -->
+<div class="bg-surface border border-border rounded-lg p-3.5 flex flex-col justify-between hover:border-borderStrong transition-colors">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-semibold tracking-wider uppercase text-textMuted">KECEPATAN RATA-RATA</span>
+<span class="text-[10px] font-mono-code text-statusWarn font-medium bg-surfaceRaised px-1.5 py-0.5 rounded border border-border">Padat</span>
+</div>
+<div class="my-1.5 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="text-[26px] font-semibold tracking-tight text-textPrimary font-mono-code tabular-nums leading-none">24</span>
+<span class="text-[13px] text-textMuted font-normal">km/jam</span>
+</div>
+<span class="text-[11px] text-textMuted font-mono-code">ambang: 35</span>
+</div>
+<!-- 24px Sparkline -->
+<div class="h-6 w-full flex items-end">
+<svg class="w-full h-5 text-statusWarn overflow-visible" fill="none" preserveaspectratio="none" stroke="currentColor" stroke-width="1.75" viewbox="0 0 100 25">
+<path d="M0,8 Q20,6 35,15 T65,18 T85,22 T100,20" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-textSecondary mt-1 leading-tight truncate">Kepadatan tinggi koridor barat</span>
+</div>
+<!-- KPI 3: Simpang Aktif -->
+<div class="bg-surface border border-border rounded-lg p-3.5 flex flex-col justify-between hover:border-borderStrong transition-colors">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-semibold tracking-wider uppercase text-textMuted">SIMPANG AKTIF</span>
+<span class="text-[10px] font-mono-code text-statusOk font-medium bg-surfaceRaised px-1.5 py-0.5 rounded border border-border">100% Online</span>
+</div>
+<div class="my-1.5 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1.5">
+<span class="text-[26px] font-semibold tracking-tight text-textPrimary font-mono-code tabular-nums leading-none">6</span>
+<span class="text-[13px] text-textMuted">dari 6</span>
+</div>
+<span class="text-[11px] text-statusOk font-mono-code">Sinkronisasi ATC</span>
+</div>
+<!-- 24px Sparkline / Status Bars -->
+<div class="h-6 w-full flex items-center gap-1.5 pt-1">
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 1: Online"></div>
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 2: Online"></div>
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 3: Online"></div>
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 4: Online"></div>
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 5: Online"></div>
+<div class="h-2 flex-1 rounded-sm bg-statusOk" title="Simpang 6: Online"></div>
+</div>
+<span class="text-[11px] text-textSecondary mt-1 leading-tight truncate">3 perempatan · 3 pertigaan online</span>
+</div>
+<!-- KPI 4: Cuaca Saat Ini -->
+<div class="bg-surface border border-border rounded-lg p-3.5 flex flex-col justify-between hover:border-borderStrong transition-colors">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-semibold tracking-wider uppercase text-textMuted">CUACA SAAT INI</span>
+<span class="text-[10px] font-mono-code text-statusInfo font-medium bg-surfaceRaised px-1.5 py-0.5 rounded border border-border">Sensor St. 04</span>
+</div>
+<div class="my-1.5 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1.5">
+<span class="text-[22px] font-semibold tracking-tight text-textPrimary leading-none">Hujan</span>
+<span class="text-[15px] font-mono-code text-textSecondary">· 27 °C</span>
+</div>
+<span class="text-[11px] text-textMuted font-mono-code">RH 88%</span>
+</div>
+<!-- 24px Sparkline (Precipitation trend) -->
+<div class="h-6 w-full flex items-end">
+<svg class="w-full h-5 text-statusInfo overflow-visible" fill="none" preserveaspectratio="none" stroke="currentColor" stroke-width="1.75" viewbox="0 0 100 25">
+<path d="M0,22 Q25,18 45,10 T70,5 T90,8 T100,4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-textSecondary mt-1 leading-tight truncate">Presipitasi 14 mm/jam · visibilitas 850m</span>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- 3. HERO SECTION - DIAGNOSIS PENYEBAB (2-Column Bento)      -->
+<!-- ========================================================== -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-3">
+<!-- Left: Bottleneck Diagnosis Overview -->
+<div class="lg:col-span-6 bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div>
+<!-- Header with Provenance Badge -->
+<div class="flex items-center justify-between pb-3 border-b border-border">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">psychology_alt</span>
+<span class="text-[11px] font-semibold tracking-wider uppercase text-textPrimary">DIAGNOSIS PENYEBAB BOTTLENECK</span>
+</div>
+<span class="text-[10px] font-mono-code text-textMuted bg-surfaceRaised border border-border px-2 py-0.5 rounded-full">
+                data sintetis · seed 42
+              </span>
+</div>
+<!-- Dominant Cause Focus Block -->
+<div class="mt-4 p-3.5 bg-surfaceRaised rounded-md border border-border">
+<div class="flex items-center justify-between">
+<span class="text-[11px] text-textSecondary uppercase tracking-wider font-medium">Penyebab dominan terdeteksi</span>
+<span class="text-[11px] font-mono-code text-textMuted">Tingkat Keyakinan</span>
+</div>
+<div class="flex items-center justify-between mt-2">
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#2A1D13] border border-causePerbaikan/40 text-causePerbaikan text-[13px] font-semibold">
+<span class="material-symbols-outlined text-[16px]">construction</span>
+                  Perbaikan jalan
+                </div>
+<div class="text-[28px] font-semibold font-mono-code tabular-nums text-textPrimary leading-none">
+                  99,7 %
+                </div>
+</div>
+<p class="text-[11px] text-textSecondary mt-2 leading-relaxed">
+                Penyempitan lajur terdeteksi di segmen pendekat utara Simpang Meruya. Kapasitas berkurang drastis menjadi 450 smp/jam.
+              </p>
+</div>
+<!-- 9-Segment Probability Bar (Collapsed to top 3 + remainder) -->
+<div class="mt-4">
+<div class="flex justify-between items-center text-[10px] font-mono-code text-textMuted mb-1.5">
+<span>Distribusi Probabilitas Model Klasifikasi (9 Kelas)</span>
+<span>Seed 42</span>
+</div>
+<div class="w-full h-2.5 bg-surfaceRaised rounded-full overflow-hidden flex border border-border">
+<div class="bg-causePerbaikan h-full" style="width: 99.7%;" title="Perbaikan jalan: 99,7%"></div>
+<div class="bg-causeLampu h-full" style="width: 0.2%;" title="Lampu mati: 0,2%"></div>
+<div class="bg-causeHujan h-full" style="width: 0.1%;" title="Hujan: 0,1%"></div>
+</div>
+<!-- Segment Labels -->
+<div class="grid grid-cols-4 gap-2 mt-2 text-[10px] font-mono-code">
+<div class="flex items-center gap-1.5 text-textPrimary">
+<span class="w-2 h-2 rounded-full bg-causePerbaikan"></span>
+<span class="truncate">Perbaikan jln <strong class="text-causePerbaikan">99,7%</strong></span>
+</div>
+<div class="flex items-center gap-1.5 text-textSecondary">
+<span class="w-2 h-2 rounded-full bg-causeLampu"></span>
+<span class="truncate">Lampu mati <strong>0,2%</strong></span>
+</div>
+<div class="flex items-center gap-1.5 text-textSecondary">
+<span class="w-2 h-2 rounded-full bg-causeHujan"></span>
+<span class="truncate">Hujan <strong>0,1%</strong></span>
+</div>
+<div class="flex items-center gap-1.5 text-textMuted">
+<span class="w-2 h-2 rounded-full bg-surfaceHover"></span>
+<span class="truncate">Lainnya <strong>0,0%</strong></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Telemetry Chips -->
+<div class="grid grid-cols-3 gap-2 pt-3 mt-4 border-t border-border">
+<div class="p-2 bg-surfaceRaised/60 rounded border border-border text-center">
+<span class="text-[10px] text-textMuted block font-mono-code">WAKTU TUNGGU</span>
+<span class="text-[13px] font-semibold font-mono-code text-textPrimary tabular-nums">0,9 menit</span>
+</div>
+<div class="p-2 bg-surfaceRaised/60 rounded border border-border text-center">
+<span class="text-[10px] text-textMuted block font-mono-code">KECEPATAN RATA</span>
+<span class="text-[13px] font-semibold font-mono-code text-textPrimary tabular-nums">24,6 km/jam</span>
+</div>
+<div class="p-2 bg-surfaceRaised/60 rounded border border-border text-center">
+<span class="text-[10px] text-textMuted block font-mono-code">KENDARAAN BERAT</span>
+<span class="text-[13px] font-semibold font-mono-code text-textPrimary tabular-nums">7,9 %</span>
+</div>
+</div>
+</div>
+<!-- Right: Ranked Intersections & Actions -->
+<div class="lg:col-span-6 bg-surface border border-border rounded-lg p-4 flex flex-col justify-between">
+<div>
+<!-- Header with Segmented Filter -->
+<div class="flex items-center justify-between pb-3 border-b border-border">
+<span class="text-[11px] font-semibold tracking-wider uppercase text-textPrimary">PERINGKAT ANTREAN SIMPANG</span>
+<div class="inline-flex rounded-md p-0.5 bg-surfaceRaised border border-border text-[11px]">
+<button class="px-2 py-0.5 rounded bg-primaryQuiet text-textPrimary border border-borderStrong font-medium">Semua (6)</button>
+<button class="px-2 py-0.5 rounded text-textSecondary hover:text-textPrimary transition-colors">Perempatan (3)</button>
+<button class="px-2 py-0.5 rounded text-textSecondary hover:text-textPrimary transition-colors">Pertigaan (3)</button>
+</div>
+</div>
+<!-- Intersections Ranked List -->
+<div class="mt-2 divide-y divide-border/60">
+<!-- Node 1 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">01</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Simpang Meruya Utara</span>
+<span class="text-[10px] text-textMuted">Perempatan 4 lengan · Pendekat T</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#2A1D13] text-causePerbaikan border border-causePerbaikan/30">
+                    Perbaikan jalan · 99,7 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusCritical/20 text-statusCritical border border-statusCritical/40">
+                    Prioritaskan
+                  </span>
+</div>
+</div>
+<!-- Node 2 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">02</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Simpang Tomang</span>
+<span class="text-[10px] text-textMuted">Perempatan 4 lengan · Pendekat B</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#2D2413] text-causeVolume border border-causeVolume/30">
+                    Volume puncak · 94,2 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusCritical/20 text-statusCritical border border-statusCritical/40">
+                    Prioritaskan
+                  </span>
+</div>
+</div>
+<!-- Node 3 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">03</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Pertigaan Cawang</span>
+<span class="text-[10px] text-textMuted">Pertigaan 3 lengan · Pendekat S</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#14233A] text-causeHujan border border-causeHujan/30">
+                    Hujan · 88,4 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusWarn/20 text-statusWarn border border-statusWarn/40">
+                    Pantau
+                  </span>
+</div>
+</div>
+<!-- Node 4 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">04</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Pertigaan Grogol</span>
+<span class="text-[10px] text-textMuted">Pertigaan 3 lengan · Pendekat U</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#2A2613] text-causeTruk border border-causeTruk/30">
+                    Kendaraan berat · 81,0 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusWarn/20 text-statusWarn border border-statusWarn/40">
+                    Pantau
+                  </span>
+</div>
+</div>
+<!-- Node 5 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">05</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Simpang Kebayoran</span>
+<span class="text-[10px] text-textMuted">Perempatan 4 lengan · Pendekat T</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#12231A] text-causeNormal border border-causeNormal/30">
+                    Normal · 98,1 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusOk/20 text-statusOk border border-statusOk/40">
+                    Normal
+                  </span>
+</div>
+</div>
+<!-- Node 6 -->
+<div class="py-2 flex items-center justify-between gap-2 hover:bg-surfaceHover/50 px-1 rounded transition-colors">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="text-[11px] font-mono-code text-textMuted w-4 text-center">06</span>
+<div class="truncate">
+<span class="text-[12px] font-medium text-textPrimary block truncate">Pertigaan Bekasi Barat</span>
+<span class="text-[10px] text-textMuted">Pertigaan 3 lengan · Pendekat B</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium font-mono-code bg-[#12231A] text-causeNormal border border-causeNormal/30">
+                    Normal · 95,6 %
+                  </span>
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-statusOk/20 text-statusOk border border-statusOk/40">
+                    Normal
+                  </span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-2 text-[10px] text-textMuted flex items-center justify-between border-t border-border pt-2 font-mono-code">
+<span>Intervensi manual diperbolehkan via Dishub Console</span>
+<span class="text-textSecondary">Sinkronisasi setiap 1000ms</span>
+</div>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- 4. RATA-RATA WAKTU LAMPU (Comparison & Diagnostic Grid)   -->
+<!-- ========================================================== -->
+<section class="bg-surface border border-border rounded-lg p-4 space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 pb-2 border-b border-border">
+<div>
+<h2 class="text-[12px] font-semibold uppercase tracking-wider text-textPrimary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">traffic</span>
+              RATA-RATA WAKTU LAMPU &amp; KINERJA SIMPANG
+            </h2>
+<p class="text-[11px] text-textSecondary mt-0.5">
+              Pertigaan punya hijau lebih pendek, jadi antrean menumpuk lebih cepat.
+            </p>
+</div>
+<span class="text-[10px] font-mono-code text-textMuted">Metode: Webster Modified Peak Optimization</span>
+</div>
+<!-- 3 Comparison Columns -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<!-- Card 1 -->
+<div class="bg-surfaceRaised p-3 rounded-md border border-border">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-semibold text-textPrimary">Semua lampu</span>
+<span class="text-[10px] font-mono-code text-textMuted">21 pendekat</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">SIKLUS</span>
+<span class="text-[13px] font-semibold text-textPrimary tabular-nums">120 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusOk block">HIJAU</span>
+<span class="text-[13px] font-semibold text-statusOk tabular-nums">42 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusCritical block">MERAH</span>
+<span class="text-[13px] font-semibold text-statusCritical tabular-nums">74 s</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code mt-2">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNGGU</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">1,8 mnt</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">ANTREAN</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">142 m</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNDAAN</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">48 s</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surfaceRaised p-3 rounded-md border border-border">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-semibold text-textPrimary">Perempatan</span>
+<span class="text-[10px] font-mono-code text-textMuted">4 lengan</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">SIKLUS</span>
+<span class="text-[13px] font-semibold text-textPrimary tabular-nums">135 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusOk block">HIJAU</span>
+<span class="text-[13px] font-semibold text-statusOk tabular-nums">48 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusCritical block">MERAH</span>
+<span class="text-[13px] font-semibold text-statusCritical tabular-nums">82 s</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code mt-2">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNGGU</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">2,1 mnt</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">ANTREAN</span>
+<span class="text-[12px] font-medium text-statusCritical tabular-nums">168 m</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNDAAN</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">54 s</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surfaceRaised p-3 rounded-md border border-border">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[11px] font-semibold text-textPrimary">Pertigaan</span>
+<span class="text-[10px] font-mono-code text-textMuted">3 lengan</span>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">SIKLUS</span>
+<span class="text-[13px] font-semibold text-textPrimary tabular-nums">105 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusOk block">HIJAU</span>
+<span class="text-[13px] font-semibold text-statusOk tabular-nums">36 s</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-statusCritical block">MERAH</span>
+<span class="text-[13px] font-semibold text-statusCritical tabular-nums">66 s</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center font-mono-code mt-2">
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNGGU</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">1,5 mnt</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">ANTREAN</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">116 m</span>
+</div>
+<div class="bg-surface p-1.5 rounded border border-border/80">
+<span class="text-[9px] text-textMuted block">TUNDAAN</span>
+<span class="text-[12px] font-medium text-textPrimary tabular-nums">42 s</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Node Breakdown Sub-table -->
+<div class="overflow-x-auto rounded border border-border mt-3">
+<table class="w-full text-left text-[11px] font-mono-code">
+<thead class="bg-surfaceRaised text-textMuted text-[10px] uppercase border-b border-border">
+<tr>
+<th class="py-1.5 px-3">Simpang Node</th>
+<th class="py-1.5 px-2">Tipe Geometri</th>
+<th class="py-1.5 px-2 text-right">Siklus</th>
+<th class="py-1.5 px-2 text-right">Hijau Efektif</th>
+<th class="py-1.5 px-2 text-right">Merah</th>
+<th class="py-1.5 px-2 text-right">Waktu Tunggu</th>
+<th class="py-1.5 px-2 text-right">Panjang Antrean</th>
+<th class="py-1.5 px-3 text-center">Status Sinyal</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border/60 bg-surface">
+<tr class="hover:bg-surfaceHover">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Simpang Meruya Utara</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Perempatan 4 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">140 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk font-semibold">38 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">98 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical font-semibold">2,8 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical font-semibold">245 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusCritical/20 text-statusCritical border border-statusCritical/40">Bottleneck</span>
+</td>
+</tr>
+<tr class="hover:bg-surfaceHover bg-surfaceRaised/20">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Simpang Tomang</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Perempatan 4 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">135 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk">45 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">86 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusWarn">2,2 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusWarn">178 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusWarn/20 text-statusWarn border border-statusWarn/40">Padat</span>
+</td>
+</tr>
+<tr class="hover:bg-surfaceHover">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Pertigaan Cawang</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Pertigaan 3 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">110 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk">35 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">71 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">1,6 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">124 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusWarn/20 text-statusWarn border border-statusWarn/40">Terganggu</span>
+</td>
+</tr>
+<tr class="hover:bg-surfaceHover bg-surfaceRaised/20">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Pertigaan Grogol</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Pertigaan 3 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">105 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk">36 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">65 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">1,5 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">115 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusOk/20 text-statusOk border border-statusOk/40">Normal</span>
+</td>
+</tr>
+<tr class="hover:bg-surfaceHover">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Simpang Kebayoran</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Perempatan 4 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">130 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk">52 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">74 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">1,4 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">94 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusOk/20 text-statusOk border border-statusOk/40">Optimal</span>
+</td>
+</tr>
+<tr class="hover:bg-surfaceHover bg-surfaceRaised/20">
+<td class="py-1.5 px-3 font-medium text-textPrimary">Pertigaan Bekasi Barat</td>
+<td class="py-1.5 px-2 text-textSecondary font-sans">Pertigaan 3 lengan</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textPrimary">100 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusOk">38 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-statusCritical">58 s</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">1,2 mnt</td>
+<td class="py-1.5 px-2 text-right tabular-nums text-textSecondary">82 m</td>
+<td class="py-1.5 px-3 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-statusOk/20 text-statusOk border border-statusOk/40">Optimal</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- ========================================================== -->
+<!-- 5. RUAS JALAN (Dense Road Telemetry & V/C Table)           -->
+<!-- ========================================================== -->
+<section class="bg-surface border border-border rounded-lg p-4 space-y-3">
+<!-- Summary Strip -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+<div>
+<h2 class="text-[12px] font-semibold uppercase tracking-wider text-textPrimary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">navigation</span>
+              RUAS JALAN &amp; TINGKAT PELAYANAN (LOS)
+            </h2>
+<div class="text-[11px] text-textSecondary font-mono-code mt-0.5">
+              30 ruas · 21 pendekat · 9 koridor · Total kapasitas <strong class="text-textPrimary font-semibold">3.982 smp/jam</strong>
+</div>
+</div>
+<!-- Legend for Composition Bar -->
+<div class="flex items-center gap-3 text-[10px] font-mono-code text-textMuted bg-surfaceRaised px-2.5 py-1 rounded border border-border">
+<span>Roda:</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-sky-400"></span>R2 (Motor)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-indigo-400"></span>R4 (Mobil)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-amber-400"></span>R6+ (Truk/Bus)</span>
+</div>
+</div>
+<!-- Filter & Search Toolbar -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
+<div class="relative min-w-[220px] max-w-xs">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-textMuted text-[15px]">search</span>
+<input class="w-full bg-surfaceRaised border border-border text-textPrimary pl-8 pr-3 py-1 rounded text-[11px] placeholder:text-textMuted focus:outline-none focus:border-primary" placeholder="Cari ruas atau ID..." type="text"/>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+<!-- Type Filters -->
+<div class="flex items-center gap-1 bg-surfaceRaised p-0.5 rounded border border-border text-[11px]">
+<span class="text-[10px] text-textMuted px-1.5">Tipe:</span>
+<button class="px-2 py-0.5 rounded bg-primaryQuiet text-textPrimary font-medium border border-borderStrong">Semua</button>
+<button class="px-2 py-0.5 rounded text-textSecondary hover:text-textPrimary">Pendekat</button>
+<button class="px-2 py-0.5 rounded text-textSecondary hover:text-textPrimary">Koridor</button>
+</div>
+<!-- LOS Filters -->
+<div class="flex items-center gap-1 bg-surfaceRaised p-0.5 rounded border border-border text-[11px] font-mono-code">
+<span class="text-[10px] text-textMuted px-1 font-sans">LOS:</span>
+<button class="px-1.5 py-0.5 rounded bg-primaryQuiet text-textPrimary">Semua</button>
+<button class="px-1.5 py-0.5 rounded text-statusCritical font-semibold hover:bg-surfaceHover">F</button>
+<button class="px-1.5 py-0.5 rounded text-statusHigh font-semibold hover:bg-surfaceHover">E</button>
+<button class="px-1.5 py-0.5 rounded text-statusWarn font-semibold hover:bg-surfaceHover">D</button>
+<button class="px-1.5 py-0.5 rounded text-statusInfo font-semibold hover:bg-surfaceHover">C</button>
+<button class="px-1.5 py-0.5 rounded text-statusOk font-semibold hover:bg-surfaceHover">B</button>
+<button class="px-1.5 py-0.5 rounded text-statusOk font-semibold hover:bg-surfaceHover">A</button>
+</div>
+</div>
+</div>
+<!-- Dense Table with Horizontal Scroll Container -->
+<div class="overflow-x-auto rounded border border-border">
+<table class="w-full text-left text-[11px] font-mono-code whitespace-nowrap">
+<thead class="bg-surfaceRaised text-textMuted text-[10px] uppercase border-b border-border sticky top-0">
+<tr>
+<th class="py-2 px-3">Ruas Jalan (ID)</th>
+<th class="py-2 px-2">Tipe</th>
+<th class="py-2 px-2 text-right">Panjang</th>
+<th class="py-2 px-2 text-center">Lajur</th>
+<th class="py-2 px-2 text-right">Kapasitas Kend.</th>
+<th class="py-2 px-2 text-right">Kapasitas smp</th>
+<th class="py-2 px-2 text-right">Volume Saat Ini</th>
+<th class="py-2 px-2 text-right font-bold text-textPrimary">V/C Rasio ↓</th>
+<th class="py-2 px-2 text-center">LOS</th>
+<th class="py-2 px-2 text-right">Kecepatan</th>
+<th class="py-2 px-2 text-right">Antrean</th>
+<th class="py-2 px-3 text-center min-w-[120px]">Komposisi Roda</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border/60 bg-surface">
+<!-- Row 1 -->
+<tr class="hover:bg-surfaceHover bg-[#201518]/30">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. Meruya Ilir <span class="text-textMuted font-mono-code text-[10px]">(RUAS-014)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Pendekat</td>
+<td class="py-2 px-2 text-right tabular-nums">480 m</td>
+<td class="py-2 px-2 text-center tabular-nums">2</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">1.250</td>
+<td class="py-2 px-2 text-right tabular-nums">1.100</td>
+<td class="py-2 px-2 text-right tabular-nums font-semibold text-statusCritical">1.034</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusCritical">0,94</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusCritical/20 text-statusCritical border border-statusCritical/40">LOS F</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusCritical font-semibold">14 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusCritical">245 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 58%;" title="R2: 58%"></div>
+<div class="bg-indigo-400" style="width: 32%;" title="R4: 32%"></div>
+<div class="bg-amber-400" style="width: 10%;" title="R6+: 10%"></div>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surfaceHover bg-[#201815]/20">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. Tomang Raya <span class="text-textMuted font-mono-code text-[10px]">(RUAS-003)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Koridor</td>
+<td class="py-2 px-2 text-right tabular-nums">1.200 m</td>
+<td class="py-2 px-2 text-center tabular-nums">4</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">3.400</td>
+<td class="py-2 px-2 text-right tabular-nums">2.950</td>
+<td class="py-2 px-2 text-right tabular-nums font-semibold text-statusHigh">2.596</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusHigh">0,88</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusHigh/20 text-statusHigh border border-statusHigh/40">LOS E</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusHigh font-semibold">19 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusHigh">180 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 44%;"></div>
+<div class="bg-indigo-400" style="width: 46%;"></div>
+<div class="bg-amber-400" style="width: 10%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. S. Parman <span class="text-textMuted font-mono-code text-[10px]">(RUAS-008)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Koridor</td>
+<td class="py-2 px-2 text-right tabular-nums">1.650 m</td>
+<td class="py-2 px-2 text-center tabular-nums">4</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">3.600</td>
+<td class="py-2 px-2 text-right tabular-nums">3.100</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">2.511</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusWarn">0,81</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusWarn/20 text-statusWarn border border-statusWarn/40">LOS D</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusWarn">24 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusWarn">135 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 50%;"></div>
+<div class="bg-indigo-400" style="width: 38%;"></div>
+<div class="bg-amber-400" style="width: 12%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. DI Panjaitan <span class="text-textMuted font-mono-code text-[10px]">(RUAS-019)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Pendekat</td>
+<td class="py-2 px-2 text-right tabular-nums">620 m</td>
+<td class="py-2 px-2 text-center tabular-nums">3</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">2.200</td>
+<td class="py-2 px-2 text-right tabular-nums">1.950</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">1.501</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusWarn">0,77</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusWarn/20 text-statusWarn border border-statusWarn/40">LOS D</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">27 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-textSecondary">110 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 62%;"></div>
+<div class="bg-indigo-400" style="width: 26%;"></div>
+<div class="bg-amber-400" style="width: 12%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. Kyai Tapa <span class="text-textMuted font-mono-code text-[10px]">(RUAS-011)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Pendekat</td>
+<td class="py-2 px-2 text-right tabular-nums">540 m</td>
+<td class="py-2 px-2 text-center tabular-nums">3</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">2.100</td>
+<td class="py-2 px-2 text-right tabular-nums">1.880</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">1.334</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusInfo">0,71</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusInfo/20 text-statusInfo border border-statusInfo/40">LOS C</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">31 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-textSecondary">85 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 54%;"></div>
+<div class="bg-indigo-400" style="width: 36%;"></div>
+<div class="bg-amber-400" style="width: 10%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. Gatot Subroto <span class="text-textMuted font-mono-code text-[10px]">(RUAS-001)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Koridor</td>
+<td class="py-2 px-2 text-right tabular-nums">2.100 m</td>
+<td class="py-2 px-2 text-center tabular-nums">4</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">4.200</td>
+<td class="py-2 px-2 text-right tabular-nums">3.750</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">2.437</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusInfo">0,65</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusInfo/20 text-statusInfo border border-statusInfo/40">LOS C</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">36 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-textSecondary">64 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 48%;"></div>
+<div class="bg-indigo-400" style="width: 44%;"></div>
+<div class="bg-amber-400" style="width: 8%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 7 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. Wolter Monginsidi <span class="text-textMuted font-mono-code text-[10px]">(RUAS-022)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Pendekat</td>
+<td class="py-2 px-2 text-right tabular-nums">410 m</td>
+<td class="py-2 px-2 text-center tabular-nums">2</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">1.400</td>
+<td class="py-2 px-2 text-right tabular-nums">1.250</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">687</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusOk">0,55</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusOk/20 text-statusOk border border-statusOk/40">LOS B</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusOk">42 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-textSecondary">40 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 60%;"></div>
+<div class="bg-indigo-400" style="width: 35%;"></div>
+<div class="bg-amber-400" style="width: 5%;"></div>
+</div>
+</td>
+</tr>
+<!-- Row 8 -->
+<tr class="hover:bg-surfaceHover">
+<td class="py-2 px-3 font-medium text-textPrimary font-sans">
+                  Jl. KH Noer Ali <span class="text-textMuted font-mono-code text-[10px]">(RUAS-029)</span>
+</td>
+<td class="py-2 px-2 text-textSecondary font-sans">Pendekat</td>
+<td class="py-2 px-2 text-right tabular-nums">750 m</td>
+<td class="py-2 px-2 text-center tabular-nums">3</td>
+<td class="py-2 px-2 text-right tabular-nums text-textMuted">2.300</td>
+<td class="py-2 px-2 text-right tabular-nums">2.050</td>
+<td class="py-2 px-2 text-right tabular-nums text-textPrimary">861</td>
+<td class="py-2 px-2 text-right tabular-nums font-bold text-statusOk">0,42</td>
+<td class="py-2 px-2 text-center">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-statusOk/20 text-statusOk border border-statusOk/40">LOS A</span>
+</td>
+<td class="py-2 px-2 text-right tabular-nums text-statusOk">48 km/h</td>
+<td class="py-2 px-2 text-right tabular-nums text-textSecondary">22 m</td>
+<td class="py-2 px-3">
+<div class="h-2 w-full bg-surfaceRaised rounded flex overflow-hidden">
+<div class="bg-sky-400" style="width: 52%;"></div>
+<div class="bg-indigo-400" style="width: 40%;"></div>
+<div class="bg-amber-400" style="width: 8%;"></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<!-- ========================================================== -->
+<!-- 6. RIGHT RAIL (Shared Component: SideNavBar & Telemetry)   -->
+<!-- ========================================================== -->
+<aside class="flex flex-col justify-between h-[calc(100vh-3rem)] w-80 fixed top-12 right-0 bg-surface dark:bg-surface border-l border-border dark:border-border z-40 p-4 overflow-y-auto">
+<div class="space-y-4">
+<!-- AI Diagnostic Header from JSON -->
+<div class="flex items-center justify-between pb-3 border-b border-border">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded bg-primaryQuiet border border-borderStrong flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[17px]">smart_toy</span>
+</div>
+<div>
+<span class="font-headline text-heading-sm font-semibold text-textPrimary dark:text-textPrimary block text-[13px] leading-tight">Diagnostik AI</span>
+<span class="text-[10px] font-mono-code text-textMuted">data sintetis · seed 42</span>
+</div>
+</div>
+<span class="w-2 h-2 rounded-full bg-statusOk" title="Agent Online"></span>
+</div>
+<!-- SideNav Tabs from JSON (Active selection: Rekomendasi AI) -->
+<div class="space-y-1">
+<a class="flex items-center gap-2 px-3 py-2 rounded bg-primaryQuiet dark:bg-primaryQuiet text-textPrimary dark:text-textPrimary border border-borderStrong dark:border-borderStrong text-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-primary text-[18px]">smart_toy</span>
+<span class="text-[12px]">Rekomendasi AI</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded text-textSecondary dark:text-textSecondary hover:bg-surfaceHover dark:hover:bg-surfaceHover hover:text-textPrimary dark:hover:text-textPrimary text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-textMuted text-[18px]">analytics</span>
+<span class="text-[12px]">Penyebab Macet</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded text-textSecondary dark:text-textSecondary hover:bg-surfaceHover dark:hover:bg-surfaceHover hover:text-textPrimary dark:hover:text-textPrimary text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-textMuted text-[18px]">monitor_heart</span>
+<span class="text-[12px]">Kesehatan Sistem</span>
+</a>
+<a class="flex items-center gap-2 px-3 py-2 rounded text-textSecondary dark:text-textSecondary hover:bg-surfaceHover dark:hover:bg-surfaceHover hover:text-textPrimary dark:hover:text-textPrimary text-body-sm transition-colors" href="#">
+<span class="material-symbols-outlined text-textMuted text-[18px]">history</span>
+<span class="text-[12px]">Log Operasi</span>
+</a>
+</div>
+<!-- Focused Recommendation Card -->
+<div class="bg-surfaceRaised p-3.5 rounded-lg border border-border space-y-3">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-mono-code text-textMuted uppercase tracking-wider">Intervensi Mendesak</span>
+<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-statusCritical/20 text-statusCritical border border-statusCritical/40">
+              CRITICAL
+            </span>
+</div>
+<div>
+<span class="text-[12px] font-semibold text-textPrimary block">Simpang Meruya Utara</span>
+<span class="text-[11px] text-textSecondary">Pendekat Timur (Lajur 1 &amp; 2)</span>
+</div>
+<!-- Risk Score Bar -->
+<div>
+<div class="flex justify-between items-center text-[10px] font-mono-code mb-1">
+<span class="text-textMuted">Indeks Risiko Antrean</span>
+<span class="text-statusCritical font-bold">92%</span>
+</div>
+<div class="w-full h-1.5 bg-surface rounded-full overflow-hidden">
+<div class="h-full bg-statusCritical rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+<!-- Delta Calculation -->
+<div class="p-2 bg-surface rounded border border-border text-[11px] font-mono-code">
+<span class="text-textMuted block text-[10px]">PENYESUAIAN SINYAL HIJAU</span>
+<div class="flex items-center justify-between mt-1 text-textPrimary">
+<span>75 s</span>
+<span class="text-primary font-bold">→ 90 s</span>
+<span class="text-statusOk font-semibold bg-statusOk/10 px-1 rounded">(+15 s)</span>
+</div>
+</div>
+<div class="text-[10px] font-mono-code text-textMuted flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">info</span>
+<span>Mengurangi tundaan ~34% dalam 10 mnt</span>
+</div>
+<!-- Action Buttons Group -->
+<div class="space-y-1.5 pt-1">
+<button class="w-full py-1.5 px-3 rounded bg-primary hover:bg-primaryHover text-white text-[12px] font-medium transition-colors">
+              Setujui Rekomendasi
+            </button>
+<div class="grid grid-cols-2 gap-1.5">
+<button class="py-1 px-2 rounded border border-border text-textSecondary hover:text-textPrimary hover:bg-surfaceHover text-[11px] font-medium transition-colors">
+                Simulasi
+              </button>
+<button class="py-1 px-2 rounded border border-border text-textSecondary hover:text-statusCritical hover:bg-surfaceHover text-[11px] font-medium transition-colors">
+                Tolak
+              </button>
+</div>
+</div>
+</div>
+<!-- Sistem & Telemetri Card -->
+<div class="bg-surfaceRaised p-3 rounded-lg border border-border space-y-2">
+<span class="text-[10px] font-mono-code text-textMuted uppercase tracking-wider block">Sistem &amp; Telemetri</span>
+<div class="space-y-1.5 text-[11px] font-mono-code">
+<div class="flex items-center justify-between">
+<span class="text-textMuted">Model AI:</span>
+<span class="text-textPrimary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+                YOLOv8-Traffic v2.4
+              </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-textMuted">Dataset:</span>
+<span class="text-textPrimary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+                SynthTraffic (seed 42)
+              </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-textMuted">Kamera CCTV:</span>
+<span class="text-textPrimary flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-statusOk"></span>
+                24/24 Online (100%)
+              </span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-textMuted">Latensi Inferensi:</span>
+<span class="text-statusOk">42 ms [Normal]</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Rail Footer Actions (Mandatory from JSON SideNavBar) -->
+<div class="pt-4 border-t border-border space-y-2">
+<button class="w-full py-2 px-3 rounded bg-primaryQuiet text-textPrimary hover:bg-primary hover:text-white border border-borderStrong text-[12px] font-semibold transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+          Terapkan Semua Intervensi
+        </button>
+<div class="grid grid-cols-2 gap-1 pt-1 text-[11px] text-textSecondary font-medium">
+<a class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surfaceHover hover:text-textPrimary transition-colors" href="#">
+<span class="material-symbols-outlined text-textMuted text-[15px]">help</span>
+            Bantuan Sinyal
+          </a>
+<a class="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surfaceHover hover:text-textPrimary transition-colors" href="#">
+<span class="material-symbols-outlined text-textMuted text-[15px]">tune</span>
+            Konfigurasi Node
+          </a>
+</div>
+</div>
+</aside>
+</div>
+<!-- Realtime Clock Tick Simulation Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      let tick = 1842;
+      const tickSpan = document.querySelector('.text-statusInfo');
+      
+      setInterval(() => {
+        tick += 1;
+        if (tickSpan) {
+          tickSpan.textContent = `tick #${tick.toLocaleString('id-ID')}`;
+        }
+      }, 1000);
+    });
+  </script>
+</body></html>
