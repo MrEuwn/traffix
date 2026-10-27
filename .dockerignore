@@ -1,0 +1,27 @@
+# Backend image context (repo root). Keep: backend/, data/ (v4 replay + feature manifest),
+# inference/ and inference_data/ (CCTV metadata + frames), yolo pipeline/model/best.pt,
+# backend/ml/*/artifacts (models + evaluation JSON/CSV).
+.git
+.github
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.env
+**/.env.*
+!**/.env.example
+.env.docker
+frontend
+design
+docs
+Traffix.id-main
+Traffix_D2_*.md
+**/*.ipynb
+**/*.zip
+LSTM Training
+yolo pipeline/visualization
+yolo pipeline/dataset
+data/data_process/traffix_lstm_ready.csv
+inference_data/data_video/video_input
+backend/data/videos
+backend/artifacts/drive_cache
+*.log

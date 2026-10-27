@@ -1,0 +1,64 @@
+# Traffix competition demo: one command, no live CCTV, no internet at runtime.
+#
+#   docker compose up -d --build        # http://localhost:8080
+#   docker compose ps                   # both services should be "healthy"
+#   docker compose down                 # nothing to lose: no volumes, artefacts are baked in
+#
+# Optional overrides: copy .env.docker.example to .env.docker.
+name: traffix
+
+services:
+  backend:
+    image: traffix-backend:competition
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WITH_YOLO: "${WITH_YOLO:-true}"
+    env_file:
+      - path: .env.docker
+        required: false
+    environment:
+      APP_ENV: "${APP_ENV:-production}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      # The browser reaches the API through the frontend's Nginx (same origin).
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:8080}"
+      ML_AUTO_LOAD: "true"
+      ML_ALLOW_FALLBACK: "true"
+      SIMULATION_AUTO_START: "true"
+      TICK_INTERVAL_SECONDS: "${TICK_INTERVAL_SECONDS:-2}"
+      SIM_INTERSECTIONS: "6"
+      REPLAY_START_TICK: "${REPLAY_START_TICK:-9000}"
+      CAMERA_INPUT_ENABLED: "false"
+      HYBRID_TRAFFIC_DATASET_PATH: ../data/data_synthetic/v4/live_replay_7d.csv.gz
+      FEATURE_COLUMNS_PATH: ../data/data_process/feature_columns.json
+      LSTM_15M_PATH: ml/forecast/artifacts/models/lstm_15m.keras
+      LSTM_2H_PATH: ml/forecast/artifacts/models/lstm_2h.keras
+      LSTM_4H_PATH: ml/forecast/artifacts/models/lstm_4h.keras
+      LSTM_CONFIG_PATH: ml/forecast/artifacts/models/config.json
+      FEAT_SCALER_PATH: ml/forecast/artifacts/models/feat_scaler.joblib
+      TARGET_SCALER_PATH: ml/forecast/artifacts/models/target_scalers.joblib
+    expose:
+      - "8000"
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    restart: unless-stopped
+    networks: [traffix]
+
+  frontend:
+    image: traffix-frontend:competition
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ""
+    ports:
+      - "${FRONTEND_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [traffix]
+
+networks:
+  traffix:
+    driver: bridge
