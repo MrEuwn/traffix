@@ -142,19 +142,19 @@ class Settings(BaseSettings):
 
     # ML Model Paths
     lstm_15m_path: str = Field(
-        default="../LSTM Training/artifacts/best_lstm_15m.keras",
+        default="ml/forecast/artifacts/models/lstm_15m.keras",
         description="Path to the 15-minute LSTM model artifact",
     )
     lstm_2h_path: str = Field(
-        default="../LSTM Training/artifacts/best_lstm_2h.keras",
+        default="ml/forecast/artifacts/models/lstm_2h.keras",
         description="Path to the 2-hour LSTM model artifact",
     )
     lstm_4h_path: str = Field(
-        default="../LSTM Training/artifacts/best_lstm_4h.keras",
+        default="ml/forecast/artifacts/models/lstm_4h.keras",
         description="Path to the 4-hour LSTM model artifact",
     )
     lstm_config_path: str = Field(
-        default="../LSTM Training/artifacts/best_config.json",
+        default="ml/forecast/artifacts/models/config.json",
         description="Path to the LSTM training configuration artifact",
     )
     ml_auto_load: bool = Field(
@@ -163,18 +163,18 @@ class Settings(BaseSettings):
     )
     ml_allow_fallback: bool = Field(
         default=True,
-        description="Use dataset/heuristic predictions when Keras files are absent",
+        description="Use the labelled moving-average heuristic when Keras files are absent",
     )
     prediction_auto_refresh: bool = Field(
         default=True,
         description="Refresh AI predictions after each simulation tick",
     )
     feat_scaler_path: str = Field(
-        default="../LSTM Training/artifacts/feat_scaler.joblib",
+        default="ml/forecast/artifacts/models/feat_scaler.joblib",
         description="Path to the feature scaler artifact",
     )
     target_scaler_path: str = Field(
-        default="../LSTM Training/artifacts/target_scalers.joblib",
+        default="ml/forecast/artifacts/models/target_scalers.joblib",
         description="Path to the target scalers artifact",
     )
 
@@ -218,10 +218,10 @@ class Settings(BaseSettings):
         description="Number of intersections in the simulation",
     )
     replay_start_tick: int = Field(
-        default=360,
+        default=9000,
         description=(
-            "Replay start position in dataset minutes (default 360 = 06:00, jam sibuk pagi, "
-            "supaya demo langsung menampilkan kondisi puncak)"
+            "Replay start position in dataset minutes (default 9000 = hari 7 pukul 06:00: jam sibuk "
+            "pagi pada hari UJI, sehingga prakiraan yang tampil di demo tidak in-sample)"
         ),
     )
 
