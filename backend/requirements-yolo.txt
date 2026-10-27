@@ -1,0 +1,6 @@
+# Optional: live YOLOv8 inference on recorded CCTV frames
+# (POST /api/v1/cameras/frames/{id}/infer and backend/scripts/run_yolo_frames.py).
+# Without it the API still serves the stored detections and says live inference is off.
+# Install CPU-only torch first to avoid multi-GB CUDA wheels:
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+ultralytics>=8.3.0
