@@ -1,6 +1,6 @@
 {
   "model_name": "hist_gradient_boosting",
-  "trained_at": "2026-10-26T18:24:53.756326+00:00",
+  "trained_at": "2026-10-27T08:58:49.847148+00:00",
   "n_train": 216000,
   "n_validation": 43200,
   "n_test": 43200,
@@ -83,9 +83,9 @@
     "smp_ekivalen"
   ],
   "metrics": {
-    "macro_f1": 0.8473,
-    "balanced_accuracy": 0.8311,
-    "accuracy": 0.8916
+    "macro_f1": 0.8475,
+    "balanced_accuracy": 0.8317,
+    "accuracy": 0.8928
   },
   "baselines": {
     "majority_class": {
@@ -104,37 +104,37 @@
   "per_class": [
     {
       "cause": "banjir",
-      "precision": 0.9206,
-      "recall": 0.9975,
-      "f1": 0.9575,
+      "precision": 0.9156,
+      "recall": 0.9978,
+      "f1": 0.9549,
       "support": 3151
     },
     {
       "cause": "hujan",
-      "precision": 0.9952,
-      "recall": 0.4361,
-      "f1": 0.6065,
+      "precision": 0.9954,
+      "recall": 0.4564,
+      "f1": 0.6259,
       "support": 4728
     },
     {
       "cause": "kecelakaan",
-      "precision": 0.9027,
-      "recall": 0.8207,
-      "f1": 0.8598,
+      "precision": 0.8889,
+      "recall": 0.812,
+      "f1": 0.8487,
       "support": 1606
     },
     {
       "cause": "kendaraan_berat",
-      "precision": 0.9231,
-      "recall": 0.9728,
-      "f1": 0.9473,
+      "precision": 0.9238,
+      "recall": 0.9801,
+      "f1": 0.9511,
       "support": 3860
     },
     {
       "cause": "keramaian_event",
-      "precision": 0.6554,
-      "recall": 0.319,
-      "f1": 0.4291,
+      "precision": 0.6576,
+      "recall": 0.3089,
+      "f1": 0.4204,
       "support": 1884
     },
     {
@@ -146,23 +146,23 @@
     },
     {
       "cause": "normal",
-      "precision": 0.862,
-      "recall": 0.9936,
-      "f1": 0.9232,
+      "precision": 0.8645,
+      "recall": 0.9926,
+      "f1": 0.9241,
       "support": 20280
     },
     {
       "cause": "perbaikan_jalan",
-      "precision": 0.9681,
-      "recall": 0.9674,
-      "f1": 0.9677,
+      "precision": 0.9679,
+      "recall": 0.9624,
+      "f1": 0.9652,
       "support": 4203
     },
     {
       "cause": "volume_puncak",
-      "precision": 0.899,
-      "recall": 0.9724,
-      "f1": 0.9343,
+      "precision": 0.9029,
+      "recall": 0.9748,
+      "f1": 0.9375,
       "support": 2499
     }
   ],
@@ -180,9 +180,9 @@
     ],
     "matrix": [
       [
-        3143,
+        3144,
         0,
-        8,
+        7,
         0,
         0,
         0,
@@ -192,32 +192,32 @@
       ],
       [
         5,
-        2062,
+        2158,
         0,
-        31,
-        137,
+        35,
+        128,
         0,
-        2166,
+        2079,
         112,
-        215
+        211
       ],
       [
-        266,
+        285,
         0,
-        1318,
-        0,
-        0,
+        1304,
         0,
         0,
-        18,
-        4
+        0,
+        0,
+        14,
+        3
       ],
       [
         0,
         0,
         0,
-        3755,
-        101,
+        3783,
+        73,
         0,
         4,
         0,
@@ -227,12 +227,12 @@
         0,
         10,
         0,
-        282,
-        601,
+        277,
+        582,
         0,
-        990,
+        1015,
         0,
-        1
+        0
       ],
       [
         0,
@@ -250,116 +250,116 @@
         0,
         0,
         0,
-        75,
+        95,
         0,
-        20151,
-        4,
-        50
+        20130,
+        8,
+        47
       ],
       [
         0,
         0,
-        134,
+        156,
         0,
         0,
         0,
-        0,
-        4066,
-        3
+        1,
+        4045,
+        1
       ],
       [
         0,
         0,
         0,
         0,
-        3,
+        7,
         0,
-        66,
+        56,
         0,
-        2430
+        2436
       ]
     ]
   },
   "feature_importance": [
     {
       "feature": "wait_time_min",
-      "importance": 0.403273
+      "importance": 0.421256
     },
     {
       "feature": "proporsi_roda_6plus",
-      "importance": 0.142579
+      "importance": 0.160447
     },
     {
       "feature": "avg_speed_kmh",
-      "importance": 0.085243
+      "importance": 0.114383
     },
     {
       "feature": "vehicle_count_1min",
-      "importance": 0.050216
+      "importance": 0.064541
     },
     {
       "feature": "hour",
-      "importance": 0.040957
+      "importance": 0.064536
     },
     {
       "feature": "weather_temp_c",
-      "importance": 0.036769
-    },
-    {
-      "feature": "panjang_m",
-      "importance": 0.023722
-    },
-    {
-      "feature": "lag60_volume_veh_per_hour",
-      "importance": 0.019513
+      "importance": 0.054461
     },
     {
       "feature": "roll60_std_queue_length_veh",
-      "importance": 0.016821
+      "importance": 0.034231
+    },
+    {
+      "feature": "lag60_volume_veh_per_hour",
+      "importance": 0.03158
     },
     {
       "feature": "roll60_std_avg_speed_kmh",
-      "importance": 0.008247
+      "importance": 0.02575
     },
     {
-      "feature": "lag5_volume_veh_per_hour",
-      "importance": 0.004278
-    },
-    {
-      "feature": "roll15_mean_avg_speed_kmh",
-      "importance": 0.003205
+      "feature": "panjang_m",
+      "importance": 0.022103
     },
     {
       "feature": "jumlah_lajur",
-      "importance": 0.002502
-    },
-    {
-      "feature": "lag5_queue_length_veh",
-      "importance": 0.002055
-    },
-    {
-      "feature": "roll15_std_avg_speed_kmh",
-      "importance": 0.001814
-    },
-    {
-      "feature": "lag15_avg_speed_kmh",
-      "importance": 0.001054
+      "importance": 0.020898
     },
     {
       "feature": "lag60_avg_speed_kmh",
-      "importance": 0.000904
-    },
-    {
-      "feature": "lag30_queue_length_veh",
-      "importance": 0.00017
+      "importance": 0.013765
     },
     {
       "feature": "lag30_avg_speed_kmh",
-      "importance": 5e-05
+      "importance": 0.013226
     },
     {
-      "feature": "lag60_queue_length_veh",
-      "importance": 2.6e-05
+      "feature": "lag15_avg_speed_kmh",
+      "importance": 0.009261
+    },
+    {
+      "feature": "roll60_std_volume_veh_per_hour",
+      "importance": 0.0076
+    },
+    {
+      "feature": "roll15_std_volume_veh_per_hour",
+      "importance": 0.006876
+    },
+    {
+      "feature": "lag5_avg_speed_kmh",
+      "importance": 0.006029
+    },
+    {
+      "feature": "roll60_mean_avg_speed_kmh",
+      "importance": 0.00568
+    },
+    {
+      "feature": "roll60_mean_volume_veh_per_hour",
+      "importance": 0.005445
+    },
+    {
+      "feature": "roll15_mean_volume_veh_per_hour",
+      "importance": 0.004833
     }
   ],
   "leakage_guard": [

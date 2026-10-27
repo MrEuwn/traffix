@@ -42,31 +42,31 @@ Validasi:
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.7254 | 0.7641 | 0.7890 |
-| mlp | 0.6766 | 0.7406 | 0.6662 |
+| hist_gradient_boosting | 0.7228 | 0.7658 | 0.7899 |
+| mlp | 0.6950 | 0.7720 | 0.6547 |
 
 Hari uji (hari 7):
 
 | Model | macro-F1 | balanced acc | accuracy |
 |---|---|---|---|
-| hist_gradient_boosting | 0.8473 | 0.8311 | 0.8916 |
+| hist_gradient_boosting | 0.8475 | 0.8317 | 0.8928 |
 | majority_class | 0.0710 | 0.1111 | 0.4694 |
 | rule_based | 0.1757 | 0.2237 | 0.5598 |
 
 Pemenang: **hist_gradient_boosting**.
 
-Recall kelas langka: `banjir` 0.9975 (support 3151),
+Recall kelas langka: `banjir` 0.9978 (support 3151),
 `lampu_mati` 1.0000 (support 989).
 
 ## 6. Analisis kesalahan (dihitung dari confusion matrix hari uji)
 
 Pasangan paling sering tertukar:
 
-- `hujan` diprediksi `normal`: 2166 tick (45.8% dari seluruh tick berlabel `hujan`)
-- `keramaian_event` diprediksi `normal`: 990 tick (52.5% dari seluruh tick berlabel `keramaian_event`)
-- `keramaian_event` diprediksi `kendaraan_berat`: 282 tick (15.0% dari seluruh tick berlabel `keramaian_event`)
-- `kecelakaan` diprediksi `banjir`: 266 tick (16.6% dari seluruh tick berlabel `kecelakaan`)
-- `hujan` diprediksi `volume_puncak`: 215 tick (4.5% dari seluruh tick berlabel `hujan`)
+- `hujan` diprediksi `normal`: 2079 tick (44.0% dari seluruh tick berlabel `hujan`)
+- `keramaian_event` diprediksi `normal`: 1015 tick (53.9% dari seluruh tick berlabel `keramaian_event`)
+- `kecelakaan` diprediksi `banjir`: 285 tick (17.7% dari seluruh tick berlabel `kecelakaan`)
+- `keramaian_event` diprediksi `kendaraan_berat`: 277 tick (14.7% dari seluruh tick berlabel `keramaian_event`)
+- `hujan` diprediksi `volume_puncak`: 211 tick (4.5% dari seluruh tick berlabel `hujan`)
 
 Pola: kebingungan terbesar terjadi antar kelas yang **gejala lalu lintasnya tumpang tindih** —
 gangguan yang sama-sama menurunkan kecepatan dan menaikkan antrean. Fitur yang boleh dipakai tidak
@@ -76,14 +76,14 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 
 | # | Fitur | Importance (Δ macro-F1) |
 |---|---|---|
-| 1 | `wait_time_min` | 0.40327 |
-| 2 | `proporsi_roda_6plus` | 0.14258 |
-| 3 | `avg_speed_kmh` | 0.08524 |
-| 4 | `vehicle_count_1min` | 0.05022 |
-| 5 | `hour` | 0.04096 |
-| 6 | `weather_temp_c` | 0.03677 |
-| 7 | `panjang_m` | 0.02372 |
-| 8 | `lag60_volume_veh_per_hour` | 0.01951 |
+| 1 | `wait_time_min` | 0.42126 |
+| 2 | `proporsi_roda_6plus` | 0.16045 |
+| 3 | `avg_speed_kmh` | 0.11438 |
+| 4 | `vehicle_count_1min` | 0.06454 |
+| 5 | `hour` | 0.06454 |
+| 6 | `weather_temp_c` | 0.05446 |
+| 7 | `roll60_std_queue_length_veh` | 0.03423 |
+| 8 | `lag60_volume_veh_per_hour` | 0.03158 |
 
 ## 8. Penanganan ketidakseimbangan kelas
 
@@ -113,8 +113,8 @@ memisahkan penyebab, hanya tingkat keparahannya; itu batas atas yang wajar, buka
 ## 11. Cara reproduksi
 
 ```bash
-cd C:/Users/prafasta/Documents/traffix
-./.venv/Scripts/python.exe backend/ml/bottleneck/train_bottleneck.py
+cd <root-repo-traffix>
+python backend/ml/bottleneck/train_bottleneck.py
 ```
 
 Menulis ulang `backend/ml/bottleneck/artifacts/bottleneck_classifier.joblib`, `metrics.json`, dan
