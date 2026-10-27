@@ -1,365 +1,252 @@
 import { useMemo, useState } from "react";
 import { useSegments, useSegmentsSummary } from "../../hooks/useTraffixData";
 import {
-  CARD,
-  CAUSE_COLOR,
-  causeLabel,
-  fmtInt,
-  fmtNum,
-  fmtPct,
-  losStyle,
-} from "../../lib/format";
-import { PanelHeader, PanelState } from "./Panel";
-import type { SegmentItem, SegmentVehicleMix } from "../../types";
+  Card,
+  Field,
+  LosBadge,
+  PanelHead,
+  SeedBadge,
+  Segmented,
+  StateBlock,
+  TableWrap,
+  Td,
+  Th,
+  VehicleMixBar,
+} from "../ui";
+import { Icon } from "../ui/icons";
+import { causeMeta } from "../../lib/causes";
+import { fmtInt, fmtNum } from "../../lib/format";
+import { PanelState } from "./Panel";
 
-const VEH = [
-  { key: "roda_2" as const, label: "R2", color: "var(--blue)" },
-  { key: "roda_3" as const, label: "R3", color: "#a3e635" },
-  { key: "roda_4" as const, label: "R4", color: "var(--yellow)" },
-  { key: "roda_6plus" as const, label: "R6+", color: "var(--orange)" },
+type TypeFilter = "all" | "approach" | "corridor";
+type LosFilter = "all" | "A" | "B" | "C" | "D" | "E" | "F";
+type SortKey = "vc" | "volume" | "queue" | "nama";
+
+const TYPE_OPTIONS: { value: TypeFilter; label: string }[] = [
+  { value: "all", label: "Semua" },
+  { value: "approach", label: "Pendekat" },
+  { value: "corridor", label: "Koridor" },
 ];
 
-const shares = (mix: SegmentVehicleMix) => {
-  const total = mix.total || 0;
-  return VEH.map((v) => ({
-    ...v,
-    count: mix[v.key] ?? 0,
-    share: mix.persen?.[v.key] ?? (total ? (mix[v.key] ?? 0) / total : 0),
-  }));
-};
-
-const StackedBar = ({ mix, height = 6 }: { mix: SegmentVehicleMix; height?: number }) => (
-  <div
-    style={{
-      display: "flex",
-      height,
-      borderRadius: 3,
-      overflow: "hidden",
-      background: "var(--border)",
-      width: "100%",
-    }}
-  >
-    {shares(mix).map((v) => (
-      <div
-        key={v.key}
-        title={`${v.label}: ${fmtInt(v.count)} (${fmtPct(v.share)})`}
-        style={{ width: `${Math.max(v.share, 0) * 100}%`, background: v.color }}
-      />
-    ))}
-  </div>
-);
-
-const MixCell = ({ mix }: { mix: SegmentVehicleMix }) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 168 }}>
-    <StackedBar mix={mix} />
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 3 }}>
-      {shares(mix).map((v) => (
-        <div key={v.key}>
-          <p style={{ fontSize: 9, color: v.color, fontWeight: 600 }}>{v.label}</p>
-          <p style={{ fontSize: 10, color: "var(--text-secondary)" }}>{fmtInt(v.count)}</p>
-          <p style={{ fontSize: 9, color: "var(--text-dim)" }}>{fmtPct(v.share)}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-type SortKey = keyof Pick<
-  SegmentItem,
-  | "nama_ruas"
-  | "panjang_m"
-  | "jumlah_lajur"
-  | "kapasitas_kendaraan"
-  | "kapasitas_smp_per_jam"
-  | "volume_veh_per_hour"
-  | "vc_ratio"
-  | "los"
-  | "avg_speed_kmh"
-  | "queue_length_veh"
->;
-
-const COLS: { key: SortKey; label: string; align?: "right" }[] = [
-  { key: "nama_ruas", label: "Ruas" },
-  { key: "panjang_m", label: "Panjang" },
-  { key: "jumlah_lajur", label: "Lajur" },
-  { key: "kapasitas_kendaraan", label: "Kapasitas (kend)" },
-  { key: "kapasitas_smp_per_jam", label: "Kapasitas (smp/jam)" },
-  { key: "volume_veh_per_hour", label: "Volume" },
-  { key: "vc_ratio", label: "V/C" },
-  { key: "los", label: "LOS" },
-  { key: "avg_speed_kmh", label: "Kec." },
-  { key: "queue_length_veh", label: "Antrean" },
+const LOS_OPTIONS: { value: LosFilter; label: string }[] = [
+  { value: "all", label: "Semua" },
+  ...(["A", "B", "C", "D", "E", "F"] as const).map((g) => ({ value: g, label: g })),
 ];
 
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "vc", label: "V/C" },
+  { value: "volume", label: "Volume" },
+  { value: "queue", label: "Antrean" },
+  { value: "nama", label: "Nama" },
+];
+
+const TipeCell = ({ value }: { value: string }) => (
+  <span className="inline-flex items-center gap-1 rounded-bar border border-line bg-raised px-1.5 py-0.5 text-caps text-ink-soft">
+    <Icon name={value === "corridor" ? "layers" : "pin"} size={12} />
+    {value === "corridor" ? "Koridor" : "Pendekat"}
+  </span>
+);
+
+/** Tabel 30 ruas: kapasitas, volume smp/jam, V/C, LOS, komposisi roda. */
 export const SegmentTable = () => {
   const { data, isLoading, isError } = useSegments();
   const { data: summary } = useSegmentsSummary();
   const [q, setQ] = useState("");
-  const [type, setType] = useState("all");
-  const [los, setLos] = useState("all");
-  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "vc_ratio", dir: -1 });
+  const [type, setType] = useState<TypeFilter>("all");
+  const [los, setLos] = useState<LosFilter>("all");
+  const [sort, setSort] = useState<SortKey>("vc");
 
   const items = useMemo(() => data?.items ?? [], [data]);
 
   const rows = useMemo(() => {
-    const t = q.trim().toLowerCase();
+    const needle = q.trim().toLowerCase();
     const filtered = items.filter(
       (s) =>
         (type === "all" || s.section_type === type) &&
         (los === "all" || s.los === los) &&
-        (!t ||
-          s.nama_ruas.toLowerCase().includes(t) ||
-          s.section_id.toLowerCase().includes(t)),
+        (!needle ||
+          s.nama_ruas.toLowerCase().includes(needle) ||
+          s.section_id.toLowerCase().includes(needle)),
     );
     return [...filtered].sort((a, b) => {
-      const x = a[sort.key];
-      const y = b[sort.key];
-      if (typeof x === "string" && typeof y === "string") return sort.dir * x.localeCompare(y);
-      return sort.dir * ((x as number) - (y as number));
+      if (sort === "nama") return a.nama_ruas.localeCompare(b.nama_ruas);
+      if (sort === "queue") return (b.queue_length_veh ?? 0) - (a.queue_length_veh ?? 0);
+      if (sort === "volume") return (b.kendaraan?.smp_ekivalen ?? 0) - (a.kendaraan?.smp_ekivalen ?? 0);
+      return (b.vc_ratio ?? 0) - (a.vc_ratio ?? 0);
     });
   }, [items, q, type, los, sort]);
 
-  const toggle = (key: SortKey) =>
-    setSort((s) => (s.key === key ? { key, dir: (s.dir * -1) as 1 | -1 } : { key, dir: -1 }));
-
-  const fleet = summary?.total_kendaraan;
+  const stats = [
+    {
+      label: "Jumlah ruas",
+      value: fmtInt(summary?.section_count ?? items.length),
+      unit: "ruas",
+    },
+    {
+      label: "Pendekat / koridor",
+      value: summary ? `${fmtInt(summary.approach_count)} / ${fmtInt(summary.corridor_count)}` : "—",
+      unit: "",
+    },
+    {
+      label: "Kapasitas kend",
+      value: fmtInt(summary?.total_capacity_vehicles ?? data?.total_capacity_vehicles),
+      unit: "kend",
+    },
+    { label: "Kapasitas", value: fmtInt(summary?.total_capacity_smp_per_jam), unit: "smp/jam" },
+    { label: "Rata-rata V/C", value: fmtNum(summary?.avg_vc_ratio, 2), unit: "" },
+    { label: "Rata-rata kecepatan", value: fmtNum(summary?.avg_speed_kmh, 1), unit: "km/jam" },
+  ];
 
   return (
-    <div style={CARD}>
-      <PanelHeader
-        icon="🛣"
-        title="Ruas Jalan & Komposisi Kendaraan"
+    <Card pad={false}>
+      <PanelHead
+        icon="layers"
+        title="Ruas jalan & komposisi kendaraan"
         sub={
           data
-            ? `${fmtInt(data.count)} ruas · tick ${fmtInt(data.tick)}`
+            ? `${fmtInt(data.count)} ruas · tick ${fmtInt(data.tick)} · kapasitas ${fmtInt(
+                summary?.total_capacity_smp_per_jam ?? data.total_capacity_vehicles,
+              )} smp/jam`
             : "30 ruas pendekat + koridor"
         }
+        right={<SeedBadge />}
       />
 
-      {(isLoading || isError || !data) && <PanelState kind={isLoading ? "loading" : "error"} />}
-
-      {data && (
-        <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-          {/* summary strip */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 8 }}>
-            {[
-              { l: "Jumlah ruas", v: fmtInt(summary?.section_count ?? data.count) },
-              {
-                l: "Pendekat / koridor",
-                v: summary ? `${fmtInt(summary.approach_count)} / ${fmtInt(summary.corridor_count)}` : "—",
-              },
-              { l: "Kapasitas kendaraan", v: fmtInt(summary?.total_capacity_vehicles ?? data.total_capacity_vehicles) },
-              { l: "Kapasitas smp/jam", v: fmtInt(summary?.total_capacity_smp_per_jam) },
-              { l: "Rata-rata V/C", v: fmtNum(summary?.avg_vc_ratio, 2) },
-              { l: "Rata-rata kecepatan", v: `${fmtNum(summary?.avg_speed_kmh, 1)} km/h` },
-            ].map((s) => (
-              <div key={s.l} style={{ background: "var(--bg-elevated)", borderRadius: 8, padding: "8px 10px" }}>
-                <p style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06em" }}>
-                  {s.l}
+      {isLoading || isError || !data ? (
+        <PanelState
+          kind={isLoading ? "loading" : "error"}
+          message="Endpoint /api/v1/segments tidak merespons."
+        />
+      ) : (
+        <div className="space-y-3 p-4">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+            {stats.map((s) => (
+              <div key={s.label} className="rounded-control border border-line bg-raised px-3 py-2">
+                <p className="label-caps">{s.label}</p>
+                <p className="num mt-1 text-cell font-semibold text-ink">
+                  {s.value}
+                  {s.unit && <span className="ml-1 text-micro font-normal text-ink-muted">{s.unit}</span>}
                 </p>
-                <p style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)" }}>{s.v}</p>
               </div>
             ))}
           </div>
 
-          {/* komposisi armada total */}
-          {fleet && (
-            <div style={{ background: "var(--bg-elevated)", borderRadius: 8, padding: 10 }}>
-              <p style={{ fontSize: 9, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: 7 }}>
-                Komposisi armada · {fmtInt(fleet.total)} kendaraan · {fmtNum(fleet.smp_ekivalen, 0)} smp
-              </p>
-              <StackedBar mix={fleet} height={7} />
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 6, marginTop: 7 }}>
-                {shares(fleet).map((v) => (
-                  <div key={v.key}>
-                    <p style={{ fontSize: 10, color: v.color, fontWeight: 600 }}>
-                      {v.label} <span style={{ color: "var(--text-dim)" }}>· {fmtPct(v.share)}</span>
-                    </p>
-                    <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>{fmtInt(v.count)}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* kontrol filter */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-            <input
+          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto] md:items-end">
+            <Field
+              label="Cari ruas"
+              placeholder="nama ruas atau section id"
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Cari ruas / section id…"
-              style={{
-                flex: 1,
-                minWidth: 170,
-                background: "var(--bg-elevated)",
-                border: "1px solid var(--border)",
-                borderRadius: 7,
-                padding: "6px 9px",
-                fontSize: 11,
-                color: "var(--text-secondary)",
-                outline: "none",
-              }}
             />
-            {[
-              { v: type, set: setType, opts: ["all", "approach", "corridor"], labels: ["Semua tipe", "Pendekat", "Koridor"] },
-              { v: los, set: setLos, opts: ["all", "A", "B", "C", "D", "E", "F"], labels: ["Semua LOS", "LOS A", "LOS B", "LOS C", "LOS D", "LOS E", "LOS F"] },
-            ].map((sel, i) => (
-              <select
-                key={i}
-                value={sel.v}
-                onChange={(e) => sel.set(e.target.value)}
-                style={{
-                  background: "var(--bg-elevated)",
-                  border: "1px solid var(--border)",
-                  borderRadius: 7,
-                  padding: "6px 9px",
-                  fontSize: 11,
-                  color: "var(--text-secondary)",
-                }}
-              >
-                {sel.opts.map((o, j) => (
-                  <option key={o} value={o}>
-                    {sel.labels[j]}
-                  </option>
-                ))}
-              </select>
-            ))}
-            <span style={{ fontSize: 10, color: "var(--text-dim)" }}>
-              {fmtInt(rows.length)} dari {fmtInt(items.length)} ruas
-            </span>
+            <Segmented label="Tipe" options={TYPE_OPTIONS} value={type} onChange={setType} />
+            <Segmented label="LOS" options={LOS_OPTIONS} value={los} onChange={setLos} />
+            <Segmented label="Urut" options={SORT_OPTIONS} value={sort} onChange={setSort} />
           </div>
 
-          {/* tabel */}
-          <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+          <TableWrap>
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  {COLS.map((c) => (
-                    <th
-                      key={c.key}
-                      onClick={() => toggle(c.key)}
-                      style={{
-                        textAlign: "left",
-                        padding: "6px 8px",
-                        fontSize: 9,
-                        textTransform: "uppercase",
-                        letterSpacing: ".06em",
-                        color: sort.key === c.key ? "var(--text-secondary)" : "var(--text-dim)",
-                        cursor: "pointer",
-                        whiteSpace: "nowrap",
-                        borderBottom: "1px solid var(--border)",
-                      }}
-                    >
-                      {c.label}
-                      {sort.key === c.key ? (sort.dir === -1 ? " ▼" : " ▲") : ""}
-                    </th>
-                  ))}
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "6px 8px",
-                      fontSize: 9,
-                      textTransform: "uppercase",
-                      letterSpacing: ".06em",
-                      color: "var(--text-dim)",
-                      borderBottom: "1px solid var(--border)",
-                    }}
-                  >
-                    Komposisi roda
-                  </th>
+                  <Th>Ruas jalan</Th>
+                  <Th align="right">Panjang m</Th>
+                  <Th align="right">Lajur</Th>
+                  <Th align="right">Kapasitas smp/jam</Th>
+                  <Th align="right">Kapasitas kend</Th>
+                  <Th align="right">Volume smp/jam</Th>
+                  <Th align="right">V/C</Th>
+                  <Th>LOS</Th>
+                  <Th>Komposisi R2/R3/R4/R6+</Th>
                 </tr>
               </thead>
               <tbody>
-                {rows.map((s) => {
-                  const ls = losStyle(s.los);
-                  return (
-                    <tr key={s.section_id} style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: "7px 8px", verticalAlign: "top" }}>
-                        <p style={{ color: "var(--text-secondary)" }}>{s.nama_ruas}</p>
-                        <p style={{ fontSize: 9, color: "var(--text-dim)" }}>
-                          {s.section_id} · {s.section_type}
-                          {s.approach ? ` · ${s.approach}` : ""} · {s.intersection_id}
-                        </p>
-                        <p style={{ fontSize: 9, color: CAUSE_COLOR[s.bottleneck_cause] ?? "var(--text-dim)" }}>
-                          {causeLabel(s.penyebab_dominan || s.bottleneck_cause)}
-                        </p>
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-muted)", verticalAlign: "top" }}>
-                        {fmtInt(s.panjang_m)} m
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-muted)", verticalAlign: "top" }}>
-                        {fmtInt(s.jumlah_lajur)}
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-primary)", verticalAlign: "top" }}>
-                        {fmtInt(s.kapasitas_kendaraan)}
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-muted)", verticalAlign: "top" }}>
-                        {fmtInt(s.kapasitas_smp_per_jam)}
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-secondary)", verticalAlign: "top" }}>
-                        {fmtInt(s.volume_veh_per_hour)}
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", verticalAlign: "top" }}>
-                        <span style={{ color: s.vc_ratio >= 1 ? "var(--red)" : s.vc_ratio >= 0.85 ? "var(--orange)" : "var(--text-secondary)" }}>
-                          {fmtNum(s.vc_ratio, 2)}
-                        </span>
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", verticalAlign: "top" }}>
+                {rows.map((s) => (
+                  <tr key={s.section_id}>
+                    <Td>
+                      <span className="block text-ink">{s.nama_ruas}</span>
+                      <span className="mt-0.5 block text-micro text-ink-muted">
+                        {s.section_id} · {s.intersection_id}
+                        {s.approach ? ` · Pendekat ${s.approach}` : ""}
+                      </span>
+                      <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                        <TipeCell value={s.section_type} />
                         <span
-                          style={{
-                            fontSize: 10,
-                            fontWeight: 700,
-                            padding: "1px 6px",
-                            borderRadius: 4,
-                            color: ls.color,
-                            background: ls.bg,
-                            border: `1px solid ${ls.border}`,
-                          }}
+                          className="inline-flex items-center gap-1 text-micro"
+                          style={{ color: causeMeta(s.penyebab_dominan || s.bottleneck_cause).color }}
                         >
-                          {s.los}
+                          <Icon
+                            name={causeMeta(s.penyebab_dominan || s.bottleneck_cause).icon}
+                            size={12}
+                          />
+                          {causeMeta(s.penyebab_dominan || s.bottleneck_cause).label}
                         </span>
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-muted)", verticalAlign: "top" }}>
-                        {fmtNum(s.avg_speed_kmh, 1)}
-                      </td>
-                      <td style={{ padding: "7px 8px", textAlign: "right", color: "var(--text-muted)", verticalAlign: "top" }}>
-                        {fmtInt(s.queue_length_veh)}
-                      </td>
-                      <td style={{ padding: "7px 8px", verticalAlign: "top" }}>
-                        <MixCell mix={s.kendaraan} />
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num">{fmtInt(s.panjang_m)}</span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num">{fmtInt(s.jumlah_lajur)}</span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num">{fmtInt(s.kapasitas_smp_per_jam)}</span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num">{fmtInt(s.kapasitas_kendaraan)}</span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num text-ink" title="ekuivalen volume kend/jam dalam smp/jam">
+                        {fmtInt(s.kendaraan?.smp_ekivalen)}
+                      </span>
+                      <span className="mt-0.5 block text-micro text-ink-muted">
+                        {fmtInt(s.volume_veh_per_hour)} kend/jam
+                      </span>
+                    </Td>
+                    <Td align="right">
+                      <span className="num text-ink">{fmtNum(s.vc_ratio, 2)}</span>
+                    </Td>
+                    <Td>
+                      <LosBadge los={s.los} />
+                    </Td>
+                    <Td className="min-w-[220px]">
+                      <VehicleMixBar
+                        total={s.kendaraan?.total}
+                        mix={{
+                          roda_2: s.kendaraan?.roda_2 ?? 0,
+                          roda_3: s.kendaraan?.roda_3 ?? 0,
+                          roda_4: s.kendaraan?.roda_4 ?? 0,
+                          roda_6plus: s.kendaraan?.roda_6plus ?? 0,
+                        }}
+                      />
+                    </Td>
+                  </tr>
+                ))}
               </tbody>
             </table>
+          </TableWrap>
+
+          <div className="flex flex-wrap items-center gap-2 text-micro text-ink-muted">
+            <span>
+              <span className="num">{fmtInt(rows.length)}</span> dari{" "}
+              <span className="num">{fmtInt(items.length)}</span> ruas tampil
+            </span>
+            {summary?.los_distribution &&
+              Object.entries(summary.los_distribution).map(([grade, count]) => (
+                <span key={grade} className="num">
+                  LOS {grade} {fmtInt(count)}
+                </span>
+              ))}
           </div>
 
-          {/* sebaran LOS */}
-          {summary?.los_distribution && (
-            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {Object.entries(summary.los_distribution).map(([k, v]) => {
-                const ls = losStyle(k);
-                return (
-                  <span
-                    key={k}
-                    style={{
-                      fontSize: 10,
-                      padding: "2px 8px",
-                      borderRadius: 20,
-                      color: ls.color,
-                      background: ls.bg,
-                      border: `1px solid ${ls.border}`,
-                    }}
-                  >
-                    LOS {k}: {fmtInt(v)} ruas
-                  </span>
-                );
-              })}
-            </div>
+          {rows.length === 0 && (
+            <StateBlock
+              state="empty"
+              height={140}
+              emptyText="Tidak ada ruas pada filter ini"
+              hint="Ubah tipe, LOS, atau kata kunci"
+            />
           )}
         </div>
       )}
-    </div>
+    </Card>
   );
 };

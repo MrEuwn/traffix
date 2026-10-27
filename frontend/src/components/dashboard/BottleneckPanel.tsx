@@ -1,216 +1,102 @@
 import { useBottlenecks } from "../../hooks/useTraffixData";
-import {
-  BADGE_SINTETIS,
-  CARD,
-  CAUSE_COLOR,
-  causeLabel,
-  fmtInt,
-  fmtNum,
-  fmtPct,
-} from "../../lib/format";
-import { PanelHeader, PanelState } from "./Panel";
-import type { BottleneckPerIntersection } from "../../types";
+import { Card, CauseBadge, PanelHead, SeedBadge } from "../ui";
+import { Icon } from "../ui/icons";
+import { causeMeta } from "../../lib/causes";
+import { fmtInt, fmtNum } from "../../lib/format";
+import { PanelState } from "./Panel";
 
-/** Bar probabilitas 9 kelas (terurut menurun). */
-const ProbBar = ({ probs, cm = 6 }: { probs: Record<string, number>; cm?: number }) => {
-  const entries = Object.entries(probs).sort((a, b) => b[1] - a[1]);
-  if (!entries.length)
-    return <div style={{ height: cm, background: "var(--border)", borderRadius: 3 }} />;
-  return (
-    <div
-      style={{
-        display: "flex",
-        height: cm,
-        borderRadius: 3,
-        overflow: "hidden",
-        background: "var(--border)",
-      }}
-    >
-      {entries.map(([c, p]) => (
-        <div
-          key={c}
-          title={`${causeLabel(c)} · ${fmtPct(p)}`}
-          style={{
-            width: `${Math.max(p, 0) * 100}%`,
-            background: CAUSE_COLOR[c] ?? "var(--text-dim)",
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-const IntersectionRow = ({ ix }: { ix: BottleneckPerIntersection }) => {
-  const probs =
-    ix.probabilities && Object.keys(ix.probabilities).length
-      ? ix.probabilities
-      : Object.fromEntries((ix.top3 ?? []).map((t) => [t.cause, t.probability]));
-  const color = CAUSE_COLOR[ix.dominant_cause] ?? "var(--text-dim)";
-  const fallback = ix.model_available === false || !ix.confidence;
-
-  return (
-    <div
-      style={{
-        background: "var(--bg-elevated)",
-        border: "1px solid var(--border)",
-        borderRadius: 9,
-        padding: 11,
-        display: "flex",
-        flexDirection: "column",
-        gap: 8,
-      }}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
-        <div style={{ minWidth: 0 }}>
-          <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary)" }}>
-            {ix.intersection_name}
-          </p>
-          <p style={{ fontSize: 10, color: "var(--text-dim)" }}>
-            {ix.intersection_id} · {ix.tipe_persimpangan}
-            {fallback ? " · fallback aturan" : ""}
-          </p>
-        </div>
-        <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <span
-            style={{
-              fontSize: 9,
-              fontWeight: 600,
-              padding: "2px 7px",
-              borderRadius: 4,
-              color,
-              background: "var(--bg-card)",
-              border: `1px solid ${color}`,
-            }}
-          >
-            {causeLabel(ix.dominant_cause)}
-          </span>
-          <p style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 4 }}>
-            keyakinan {fmtPct(ix.confidence)}
-          </p>
-        </div>
-      </div>
-
-      <ProbBar probs={probs} />
-
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-        {(ix.top3 ?? []).slice(0, 3).map((t) => (
-          <span
-            key={t.cause}
-            style={{
-              fontSize: 9,
-              color: "var(--text-muted)",
-              background: "var(--bg-card)",
-              border: "1px solid var(--border)",
-              borderRadius: 20,
-              padding: "1px 7px",
-            }}
-          >
-            {causeLabel(t.cause)} {fmtPct(t.probability, 1)}
-          </span>
-        ))}
-      </div>
-
-      {!!(ix.drivers ?? []).length && (
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-            borderTop: "1px solid var(--border)",
-            paddingTop: 7,
-          }}
-        >
-          {ix.drivers.map((d) => (
-            <li key={d} style={{ fontSize: 10, color: "var(--text-dim)", lineHeight: 1.45 }}>
-              • {d}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
+/** Agregat jaringan: sebaran 9 kelas penyebab pada 30 ruas + diagnosis per simpang. */
 export const BottleneckPanel = () => {
   const { data, isLoading, isError } = useBottlenecks();
 
+  const causes = [...(data?.causes ?? [])].sort((a, b) => (b.share ?? 0) - (a.share ?? 0));
+  const worstShare = causes[0]?.share ?? 1;
+
   return (
-    <div style={CARD}>
-      <PanelHeader
-        icon="🧩"
-        title="Penyebab Bottleneck"
-        sub={data ? `tick ${fmtInt(data.tick)} · ${data.timestamp_wib}` : "klasifikasi 9 kelas penyebab"}
-        right={<span style={BADGE_SINTETIS}>data sintetis · seed 42</span>}
+    <Card pad={false}>
+      <PanelHead
+        icon="layers"
+        title="Penyebab bottleneck jaringan"
+        sub={
+          data
+            ? `tick ${fmtInt(data.tick)} · ${fmtInt(data.affected_section_count)} dari ${fmtInt(
+                data.section_count,
+              )} ruas terdampak`
+            : "klasifikasi 9 kelas penyebab"
+        }
+        right={<SeedBadge />}
       />
 
-      {(isLoading || isError || !data) && (
-        <PanelState kind={isLoading ? "loading" : "error"} />
-      )}
-
-      {data && (
-        <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 11 }}>
-          {/* ringkasan global */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))",
-              gap: 8,
-            }}
-          >
-            {[
-              { label: "Penyebab dominan", val: causeLabel(data.dominant_cause) },
-              { label: "Ruas terdampak", val: `${fmtInt(data.affected_section_count)} / ${fmtInt(data.section_count)}` },
-              { label: "Kelas dihitung", val: fmtInt(data.causes?.length ?? 0) },
-            ].map((s) => (
-              <div
-                key={s.label}
-                style={{ background: "var(--bg-elevated)", borderRadius: 8, padding: "8px 10px" }}
-              >
-                <p style={{ fontSize: 9, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: ".06em" }}>
-                  {s.label}
-                </p>
-                <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>{s.val}</p>
-              </div>
-            ))}
+      {isLoading || isError || !data ? (
+        <PanelState
+          kind={isLoading ? "loading" : "error"}
+          message="Endpoint /api/v1/bottlenecks tidak merespons."
+        />
+      ) : (
+        <div className="space-y-3 p-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="label-caps">Penyebab dominan jaringan</span>
+            <CauseBadge cause={data.dominant_cause} />
+            <span className="text-micro text-ink-muted">
+              {fmtInt(causes.length)} kelas dihitung · {fmtInt(data.section_count)} ruas
+            </span>
           </div>
 
-          {/* sebaran kelas penyebab pada 30 ruas */}
-          {!!data.causes?.length && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <p style={{ fontSize: 9, color: "var(--text-dim)", textTransform: "uppercase", letterSpacing: ".08em" }}>
-                Sebaran kelas pada {fmtInt(data.section_count)} ruas
-              </p>
-              {data.causes.slice(0, 6).map((c) => (
-                <div key={c.cause} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 118, fontSize: 10, color: "var(--text-muted)" }}>
-                    {causeLabel(c.cause)}
+          <ul className="space-y-1.5">
+            {causes.map((c) => {
+              const meta = causeMeta(c.cause);
+              return (
+                <li key={c.cause} className="grid grid-cols-[10rem_minmax(0,1fr)_auto] items-center gap-2">
+                  <span className="flex items-center gap-1.5 text-micro text-ink-soft">
+                    <Icon name={meta.icon} size={12} style={{ color: meta.color }} />
+                    {meta.label}
                   </span>
-                  <div style={{ flex: 1, height: 5, background: "var(--border)", borderRadius: 3, overflow: "hidden" }}>
-                    <div
+                  <span className="h-1.5 overflow-hidden rounded-bar bg-raised">
+                    <span
+                      className="block h-full rounded-bar"
                       style={{
-                        height: "100%",
-                        width: `${(c.share ?? 0) * 100}%`,
-                        background: CAUSE_COLOR[c.cause] ?? "var(--text-dim)",
+                        width: `${((c.share ?? 0) / (worstShare || 1)) * 100}%`,
+                        background: meta.color,
                       }}
                     />
-                  </div>
-                  <span style={{ width: 132, fontSize: 10, color: "var(--text-dim)", textAlign: "right" }}>
-                    {fmtInt(c.sections)} ruas · {fmtPct(c.share, 1)} · VC {fmtNum(c.avg_vc_ratio, 2)}
                   </span>
-                </div>
-              ))}
-            </div>
-          )}
+                  <span className="num whitespace-nowrap text-micro text-ink-muted">
+                    {fmtInt(c.sections)} ruas · {fmtNum((c.share ?? 0) * 100, 1)} % · V/C{" "}
+                    {fmtNum(c.avg_vc_ratio, 2)} · {fmtNum(c.avg_queue_veh, 1)} kend ·{" "}
+                    {fmtNum(c.avg_wait_time_min, 2)} menit
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
 
-          {/* per simpang */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(290px,1fr))", gap: 9 }}>
+          <div className="space-y-2 border-t border-line pt-3">
+            <p className="label-caps">Diagnosis per simpang</p>
             {(data.per_intersection ?? []).map((ix) => (
-              <IntersectionRow key={ix.intersection_id} ix={ix} />
+              <div
+                key={ix.intersection_id}
+                className="flex flex-wrap items-center gap-2 rounded-control border border-line bg-raised px-3 py-2"
+              >
+                <span className="min-w-0 text-cell text-ink">{ix.intersection_name}</span>
+                <span className="text-micro text-ink-muted">
+                  {ix.intersection_id} · {ix.tipe_persimpangan}
+                </span>
+                <CauseBadge
+                  size="sm"
+                  cause={ix.dominant_cause}
+                  confidence={ix.model_available !== false && ix.confidence > 0 ? ix.confidence : undefined}
+                />
+                <span className="num ml-auto text-micro text-ink-muted">
+                  {(ix.top3 ?? [])
+                    .slice(0, 3)
+                    .map((t) => `${causeMeta(t.cause).label} ${fmtNum(t.probability * 100, 1)} %`)
+                    .join(" · ")}
+                </span>
+              </div>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };

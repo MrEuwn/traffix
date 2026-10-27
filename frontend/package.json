@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:render": "node scripts/render-check.mjs",
-    "check:e2e": "node scripts/render-check.mjs"
+    "check:ui": "../.venv/Scripts/python.exe scripts/ui_audit.py"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.100.14",

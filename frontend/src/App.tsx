@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Navbar } from "./components/layout/Navbar";
+import { Topbar } from "./components/layout/Topbar";
+import { ToastProvider } from "./components/ui";
 import { Dashboard } from "./pages/Dashboard";
 import { Settings } from "./pages/Settings";
 import { LiveMap } from "./pages/Livemap";
@@ -17,26 +18,28 @@ function AppShell() {
   const { isAuthenticated } = useAuth();
   const [page, setPage] = useState("dashboard");
 
-  if (!isAuthenticated) return <LoginPage />;
+  if (!isAuthenticated) {
+    return (
+      <ToastProvider>
+        <LoginPage />
+      </ToastProvider>
+    );
+  }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        background: "var(--bg-base)",
-        transition: "background .3s ease",
-      }}
-    >
-      <Navbar page={page} onNavigate={setPage} />
-      <main style={{ flex: 1, overflow: "auto" }}>
-        {page === "dashboard" && <Dashboard />}
-        {page === "map" && <LiveMap />}
-        {page === "model" && <ModelEvaluation />}
-        {page === "settings" && <Settings />}
-      </main>
-    </div>
+    <ToastProvider>
+      <div className="flex h-screen flex-col bg-base">
+        <Topbar page={page} onNavigate={setPage} />
+        <main className="flex-1 overflow-auto">
+          <div className="mx-auto w-full max-w-canvas p-4 md:p-6">
+            {page === "dashboard" && <Dashboard />}
+            {page === "map" && <LiveMap />}
+            {page === "model" && <ModelEvaluation />}
+            {page === "settings" && <Settings />}
+          </div>
+        </main>
+      </div>
+    </ToastProvider>
   );
 }
 

@@ -17,8 +17,51 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 /* ── Token maps ── */
+/* Lama (dipakai file yang belum dirombak) + baru (Stitch "Traffix Ops — Control Room",
+   dipakai lewat tailwind.config.js sebagai rgb(var(--c-*)) supaya opacity modifier tetap jalan). */
+const stichDark = {
+  "--c-base": "11 15 20",
+  "--c-surface": "17 24 35",
+  "--c-raised": "24 32 42",
+  "--c-hover": "30 40 51",
+  "--c-line": "34 48 65",
+  "--c-line-strong": "49 67 90",
+  "--c-ink": "230 237 243",
+  "--c-ink-soft": "154 167 180",
+  "--c-ink-muted": "132 147 161",
+  "--c-primary": "47 111 237",
+  "--c-primary-hover": "70 130 245",
+  "--c-primary-quiet": "20 36 63",
+  "--c-ok": "46 160 67",
+  "--c-info": "47 129 247",
+  "--c-warn": "210 153 34",
+  "--c-high": "219 109 40",
+  "--c-crit": "229 83 75",
+};
+
+const stichLight = {
+  "--c-base": "244 246 249",
+  "--c-surface": "255 255 255",
+  "--c-raised": "240 243 247",
+  "--c-hover": "232 237 243",
+  "--c-line": "210 217 226",
+  "--c-line-strong": "176 187 200",
+  "--c-ink": "16 22 30",
+  "--c-ink-soft": "68 80 95",
+  "--c-ink-muted": "98 110 125",
+  "--c-primary": "37 99 235",
+  "--c-primary-hover": "29 78 216",
+  "--c-primary-quiet": "232 240 254",
+  "--c-ok": "21 128 61",
+  "--c-info": "29 78 216",
+  "--c-warn": "161 98 7",
+  "--c-high": "194 65 12",
+  "--c-crit": "190 38 46",
+};
+
 const tokens = {
   dark: {
+    ...stichDark,
     // Backgrounds — deep navy with subtle blue tint
     "--bg-base": "#060b18",
     "--bg-card": "#0c1525",
@@ -59,6 +102,7 @@ const tokens = {
     "--stat-value": "#e8eeff",
   },
   light: {
+    ...stichLight,
     // Backgrounds — soft lavender/blue tinted whites
     "--bg-base": "#eef2f9",
     "--bg-card": "#ffffff",

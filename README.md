@@ -263,31 +263,68 @@ for weather) to render an up-to-date view of intersection conditions.
 
 **Pages (`src/pages/`):**
 
-- **Login** — entry screen with a client-side dummy authentication (stored in
+- **Login** — split editorial layout (58/42): product facts on the left, the
+  credential form on the right. Client-side dummy authentication (stored in
   `localStorage`, no backend auth endpoint involved). Default demo credentials:
   username `admin`, password `admin123`.
-- **Dashboard** — main operator view: aggregate KPI cards (total vehicles,
-  average speed, active intersections), per-intersection cards, LSTM
-  multi-horizon prediction charts, the AI recommendation approval panel, a
-  manual signal override control, and a live camera feed grid.
-- **Live Map** — Leaflet map plotting the four monitored intersections with
-  color-coded congestion and signal-state badges.
-- **Settings** — displays backend system status (ML/weather/simulation/camera
-  readiness) and exposes simulation start/stop controls.
+- **Dashboard** — operator view built around the bottleneck diagnosis: KPI row
+  (flow in `smp/jam`, speed in `km/jam`, queue in `kend` with metres in brackets,
+  wait in minutes), a diagnosis hero with the dominant cause, model confidence
+  and the nine-segment probability bar, signal timing averages for `perempatan`
+  and `pertigaan`, the 6-of-6 intersection list, the 30-section table with the
+  R2/R3/R4/R6+ vehicle mix, a 24-hour history strip with a "Sekarang" marker,
+  and an audit trail. Approving a signal change always goes through the
+  **"Konfirmasi perubahan fase"** modal (before/after phase table, operator note,
+  synthetic-data warning) and leaves a toast with **Urungkan** plus an audit entry.
+- **Live Map** — Leaflet map with one pin per intersection (cause colour + glyph,
+  no floating popup), a fixed 360 px detail dock with a **Sematkan** pin toggle,
+  the complete cause filter (**Semua penyebab** + the nine cause chips), and the
+  24-hour history strip.
+- **Evaluasi Model** — the D2 evidence page: model vs `rule_based` and
+  `majority_class` baselines with per-row deltas, the per-class
+  precision/recall/F1/support table, the 9×9 confusion matrix with a highlighted
+  diagonal, the temporal split protocol, the leakage guard, feature importance,
+  and a limitations block given the same visual weight as the hero.
+- **Settings** — system status, simulation start/stop behind a confirmation
+  modal, appearance (theme, density) and data-source disclosure.
 
-**Notable components (`src/components/`):**
+**UI primitives and tokens:**
 
-- `layout/Navbar.tsx` — page navigation tabs, live "Operational/Idle" status
-  pill, notification bell, dark/light theme toggle, and logout control.
-- `layout/NotificationBell.tsx` — surfaces client-derived alerts (e.g.
-  congestion threshold crossings) computed from polled intersection data.
-- `dashboard/RecommendationPanel.tsx` — approve/reject/simulate workflow for
-  AI-generated green-light duration recommendations.
-- `dashboard/ManualSignalAdjust.tsx` — manual green-light duration override
-  per intersection, calling the backend's manual-override endpoints.
-- `dashboard/PredictionChart.tsx` / `CameraGrid.tsx` / `IntersectionCard.tsx` /
-  `MetricCard.tsx` — prediction visualization, camera feed display, and
-  per-intersection/aggregate metric displays.
+- `components/ui/index.tsx` — `Card`, `PanelHead`, `StateBlock` (loading/empty/
+  error at equal height), `CauseBadge`, `Confidence`, `StatusPill`, `LosBadge`,
+  `SeedBadge`, `Btn`, `Chip`, `Segmented`, `Field`, `KpiCard`, `Sparkline`,
+  `ProbabilityBar`, `VehicleMixBar`, `HeatStrip`, `TableWrap`/`Th`/`Td`,
+  `Modal` (focus trap), and a `ToastProvider` with undo support.
+- `components/ui/icons.tsx` — inline stroke SVG icon set. No icon font, no emoji.
+- `lib/causes.ts` — single source of truth for the nine cause classes (label,
+  colour, icon), the LOS scale, and the four vehicle classes with their fill
+  patterns.
+- Typography: **Inter** for UI text and **JetBrains Mono** for telemetry numbers
+  (`.num` = mono + `tabular-nums`, so columns never jitter during the 1-second
+  replay). Both are loaded from Google Fonts via `<link>` + `preconnect` in
+  `index.html`. The type scale is frozen with an 11 px floor.
+- Tokens live in `tailwind.config.js` as `rgb(var(--c-*) / <alpha-value>)` and the
+  values are set per theme in `lib/ThemeContext.tsx`, so the dark/light toggle in
+  the top bar and every Tailwind colour utility work together. Text contrast is
+  ≥5.2:1 for all three text tokens on all three surfaces.
+- `frontend/design/UI-CONTRACT.md` documents the design rules that new screens
+  must follow; `frontend/design/` also keeps the exported design (DESIGN.md and
+  the Tailwind token export).
+
+**Verification scripts:**
+
+```bash
+cd frontend
+npm run check:render   # headless SSR render of the panels against the live API
+npm run check:ui       # Playwright audit of the running app (see below)
+```
+
+`npm run check:ui` (backend `:8000` + vite `:5173` running) logs in, walks all
+four tabs and verifies in the real DOM that no error state is shown, the UI font
+is Inter, `.num` resolves to JetBrains Mono, no text is under 11 px, no emoji is
+used, every button is a valid touch target, the confirmation modal and its undo
+toast really work, and no page overflows horizontally at 1600/1440/1280 px.
+Screenshots land in `frontend/screenshots/`.
 
 **Configuration:** the only environment variable used is `VITE_API_URL`
 (defaults to `http://localhost:8000` if unset), which points the frontend to
