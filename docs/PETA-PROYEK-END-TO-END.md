@@ -42,6 +42,9 @@ mengumumkan itu lewat badge `data sintetis · seed 42`, model card menuliskannya
 | mengubah cara data v4 dibuat | `data/data_synthetic/v4/generate_data_v4.py` |
 | melatih ulang classifier | `backend/ml/bottleneck/train_bottleneck.py` |
 | lihat angka model apa adanya | `backend/ml/bottleneck/artifacts/metrics.json` |
+| angka peramalan & deteksi | `backend/ml/forecast/artifacts/`, `backend/ml/detection/artifacts/` |
+| jalan pakai Docker | `docker-compose.yml` |
+| bahan presentasi yang sudah disiapkan | `docs/pitch/D2_DEMO_RUNBOOK.md`, `docs/pitch/D2_METRICS_BRIEF.md`, `docs/evidence/d2/` |
 | tahu batasan model untuk juri | `backend/ml/bottleneck/model_card.md` |
 | menambah endpoint | `backend/app/routes/` |
 | menyetel perilaku runtime | `backend/core/config.py` dan `backend/.env` |
@@ -63,25 +66,31 @@ generate_data_v4.py
 train_bottleneck.py  (46 fitur, hanya keadaan sensor + lag/rolling)
    └─ split temporal: hari 1-5 latih (216.000) · hari 6 validasi (43.200) · hari 7 uji (43.200)
    └─ artifacts/bottleneck_classifier.joblib + metrics.json
-   └─ macro-F1 uji 0,8473  vs  aturan 0,1757  vs  majority 0,0710
+   └─ macro-F1 uji 0,8475  vs  aturan 0,1757  vs  majority 0,0710
             │
             ▼
 FastAPI (backend/app)
    └─ tick engine membaca dataset, cursor berjalan 1 menit per detik
-   └─ /api/v1/bottlenecks, /segments, /segments/summary, /signals/summary, /model/evaluation
+   └─ /api/v1/bottlenecks, /segments, /segments/summary, /signals/summary
+   └─ /api/v1/model/evaluation            (klasifikasi penyebab)
+   └─ /api/v1/model/evaluation/forecast   (peramalan volume, termasuk uji transfer ke v4)
+   └─ /api/v1/model/evaluation/detection  (validasi YOLO + inferensi potongan gambar)
+   └─ /api/v1/cameras/frames, /forecast, /frames/{id}/image, /frames/{id}/infer
    └─ endpoint lama tetap hidup: /intersections, /predictions, /recommendations, /weather, /simulation
    └─ semua endpoint analitik menerima ?tick= supaya semua panel menampilkan detik yang sama
             │
             ▼
 React 19 + Tailwind (frontend)
-   └─ Dashboard      : KPI, diagnosis penyebab, waktu lampu, 6 simpang, tabel 30 ruas, heat strip, jejak audit
+   └─ Dashboard      : KPI, diagnosis penyebab, prakiraan volume simpang, replay rekaman CCTV,
+                       kotak terdeteksi, waktu lampu, 6 simpang, tabel 30 ruas, heat strip, jejak audit
    └─ Live Map       : peta + dock detail 360 px, filter 9 penyebab
-   └─ Evaluasi Model : bukti D2 (model vs baseline, tabel per kelas, matriks konfusi 9×9, batasan)
+   └─ Evaluasi Model : tiga sub-tab, Penyebab bottleneck (bukti D2 utama) · Deteksi YOLO ·
+                       Peramalan volume; semua angka dibaca dari berkas artefak
    └─ Settings       : status sistem, kontrol simulasi, tema, sumber data
 ```
 
 Angka yang harus konsisten di ketiga lapisan: 6 simpang, 30 ruas, kapasitas total 3.982
-kendaraan, siklus 120 detik (perempatan) dan 80 detik (pertigaan), macro-F1 0,8473.
+kendaraan, siklus 120 detik (perempatan) dan 80 detik (pertigaan), macro-F1 0,8475.
 
 ## 4. Kronologi pengerjaan
 
@@ -101,9 +110,10 @@ di 250 kendaraan sepanjang hari, waktu tunggu sempat 51 menit (tidak masuk akal)
 kecepatan 59 km/jam sehari penuh. Perbaikannya ada di bagian 11.
 
 Fase 3, model. 46 fitur, split temporal (bukan acak, supaya tidak ada kebocoran antar hari),
-penjaga kebocoran yang menolak kolom label dan kolom cuaca mentah. Hasil akhir macro-F1 uji
-0,8473. Dua kelas memang lemah dan itu dibiarkan apa adanya: `keramaian_event` (F1 0,4291)
-dan `hujan` (F1 0,6065), karena gejalanya bertumpang tindih dengan antrean jam sibuk.
+penjaga kebocoran yang menolak kolom label dan kolom cuaca mentah. Hasil latihan pertama
+macro-F1 uji 0,8473, lalu menjadi 0,8475 setelah dilatih ulang di fase 6. Dua kelas memang
+lemah dan itu dibiarkan apa adanya: `keramaian_event` dan `hujan`, karena gejalanya
+bertumpang tindih dengan antrean jam sibuk.
 
 Fase 4, backend. Endpoint v4 ditambahkan tanpa merusak yang lama. `REPLAY_START_TICK`
 disetel 360 (06:00 WIB) supaya demo dibuka saat jam sibuk pagi, bukan tengah malam.
@@ -114,7 +124,16 @@ React. Token warna, tipografi Inter + JetBrains Mono, kumpulan primitif bersama,
 halaman ditulis ulang di atas primitif itu. Sekarang ada dua skrip yang menjaga hasilnya
 (bagian 8).
 
-Fase 6, berkas lomba. Belum selesai, lihat bagian 12.
+Fase 6, modul pendukung dan kemasan lomba (dikerjakan di cabang `d2-competition`, masuk lewat
+PR #1). Tiga hal ditambahkan: modul peramalan LSTM dengan halaman evaluasinya sendiri
+(termasuk uji transfer ke dataset v4), modul deteksi YOLO beserta artefaknya dan panel
+inferensi potongan gambar CCTV, serta Docker Compose supaya seluruh tumpukan bisa dijalankan
+dengan satu perintah. Halaman Evaluasi Model dipecah jadi tiga sub-tab: penyebab bottleneck,
+deteksi YOLO, dan peramalan volume. Classifier penyebab dilatih ulang, angkanya bergeser tipis
+(macro-F1 0,8475). Berkas pendukung presentasi juga masuk: `docs/pitch/` dan `docs/evidence/d2/`.
+
+Fase 7, berkas lomba. Belum selesai, lihat bagian 12. Deck-nya sudah punya template resmi
+IRDSC 2026 di Canva (13 halaman) yang sebagian baru terisi identitas tim.
 
 ## 5. Kontrak yang sudah dibekukan (jangan diubah sembarangan)
 
@@ -140,17 +159,21 @@ Aturan satuan, dicampur = salah dan juri akan menanyakannya:
 
 | Hal | Nilai | Sumber kebenaran |
 |---|---|---|
-| macro-F1 model | 0,8473 | `artifacts/metrics.json`, disajikan `/api/v1/model/evaluation` |
-| balanced accuracy | 0,8311 | sama |
-| akurasi | 0,8916 | sama |
-| baseline aturan | 0,1757 / 0,2237 / 0,5506 | sama |
+| macro-F1 model | 0,8475 | `artifacts/metrics.json`, disajikan `/api/v1/model/evaluation` |
+| balanced accuracy | 0,8317 | sama |
+| akurasi | 0,8928 | sama |
+| baseline aturan | 0,1757 / 0,2237 / 0,5598 | sama |
 | baseline majority | 0,0710 / 0,1111 / 0,4694 | sama |
 | baris uji | 43.200 (hari 7) | sama |
+| F1 per kelas | lampu_mati 1,0000 · perbaikan_jalan 0,9652 · banjir 0,9549 · kendaraan_berat 0,9511 · volume_puncak 0,9375 · normal 0,9241 · kecelakaan 0,8487 · hujan 0,6259 · keramaian_event 0,4204 | sama |
 | dataset v4 | 302.400 baris, 51 kolom | `data/data_synthetic/v4/` |
 | kapasitas total | 3.982 kendaraan | `/api/v1/segments/summary` |
 | fitur paling berpengaruh | waktu tunggu 0,451 · kecepatan 0,368 · pangsa kendaraan berat 0,153 · jam 0,127 · jumlah kendaraan 0,116 | `metrics.json` |
+| deteksi YOLO | mAP50 0,9256 · F1 0,8755 pada validasi 100 gambar Kaggle (satu kelas `car`), tanpa set uji independen | `docs/pitch/D2_METRICS_BRIEF.md`, `/api/v1/model/evaluation/detection` |
 
-Kalau angka di UI berbeda dengan `metrics.json`, UI yang salah, bukan berkasnya.
+Angka di tabel ini pernah bergeser setelah model dilatih ulang, jadi jangan hafal angkanya:
+hafalkan tempat angkanya hidup. Kalau angka di UI berbeda dengan `metrics.json`, UI yang salah.
+Angka 0,8473 dan 0,8916 yang tertulis di dokumen desain lama adalah hasil latihan sebelum PR #1.
 
 ## 7. Menjalankan dari nol
 
@@ -187,36 +210,49 @@ python backend/ml/bottleneck/train_bottleneck.py
 ## 8. Cara memverifikasi, dan artinya
 
 ```bash
-cd backend  && pytest -q          # 27 tes: model, endpoint, integrasi
+cd backend  && pytest -q          # 46 tes: model, peramalan, endpoint, integrasi
 cd frontend && npm run build      # tsc -b + bundel produksi
 cd frontend && npm run lint
 cd frontend && npm run check:render   # render panel tanpa browser, cek angkanya dari API nyata
 cd frontend && npm run check:ui       # audit Playwright aplikasi yang benar-benar jalan
+docker compose up --build             # jalur lain: seluruh tumpukan termasuk ML di dalam image
 ```
 
 `check:ui` (butuh backend dan vite hidup) membuka browser sungguhan lalu gagal kalau: ada
 state galat terlihat, font UI bukan Inter, utilitas angka bukan JetBrains Mono, ada teks di
 bawah 11 px, ada emoji dipakai sebagai ikon, ada tombol lebih kecil dari target sentuh
 wajar, modal konfirmasi atau toast "Urungkan" tidak jalan, atau ada halaman meluber
-horizontal di 1600 / 1440 / 1280 px. Screenshot-nya jatuh di `frontend/screenshots/` dan
-folder itu sengaja tidak masuk git.
+horizontal di 1600 / 1440 / 1280 px. Skrip ini juga menelusuri sub-tab Evaluasi Model dan
+panel baru di Dashboard. Alamat bisa diganti lewat env `TRAFFIX_URL` (Docker memakai
+`http://localhost:8080`). Screenshot-nya jatuh di `frontend/screenshots/` dan folder itu
+sengaja tidak masuk git.
+
+Satu hal yang wajib dicek sebelum demo: `GET /api/v1/system/status`. Di mesin ini
+`ml_mode` bernilai `heuristic_fallback` dan `ml_fallback_active` bernilai true, karena
+TensorFlow belum dipasang di `.venv`. Artinya panel peramalan menampilkan rata-rata
+bergerak 15 menit terakhir, bukan keluaran LSTM, dan tombol inferensi YOLO langsung ikut
+nonaktif tanpa `ultralytics`. Docker Compose memasang keduanya di dalam image, jadi lewat
+jalur itu jatuh ke fallback tidak akan terjadi.
 
 ## 9. Urutan demo lima menit
 
 1. Buka `http://localhost:5173`, masuk `admin` / `admin123`.
 2. Dashboard: tunjuk baris KPI (arus, kecepatan, antrean, waktu tunggu), lalu panel diagnosis
    dengan badge penyebab dan tulisan "Keyakinan model". Sebut satu angka dengan satuannya.
-3. Tab Evaluasi Model: ini puncaknya. Tunjukkan macro-F1 0,8473 versus baseline aturan 0,1757,
-   lalu matriks konfusi 9×9, lalu blok batasan yang sengaja dibuat sebesar hero.
+3. Tab Evaluasi Model: ini puncaknya, dan sekarang ada tiga sub-tab. Buka "Penyebab
+   bottleneck", tunjukkan macro-F1 0,8475 versus baseline aturan 0,1757, matriks konfusi 9×9,
+   lalu blok batasan yang sengaja dibuat sebesar hero. Sub-tab "Deteksi YOLO" menyebut
+   mAP50 0,9256 dengan jujur bahwa itu validasi, bukan set uji. Sub-tab "Peramalan volume"
+   menampilkan MAPE per horizon beserta uji transfer ke dataset v4.
 4. Tab Live Map: klik satu simpang, dock kanan terbuka, sebut "Sematkan" dan filter
    "Semua penyebab" beserta sembilan kelasnya.
 5. Balik ke Dashboard, tekan "Setujui Rekomendasi", biarkan modal konfirmasi fase muncul,
    klik Terapkan, tunjukkan toast "Urungkan" dan entri baru di Jejak audit.
 
-Empat hal yang jangan didemokan: video CCTV (butuh kredensial Google Drive yang tidak ada di
-repo), LSTM sebagai bukti utama (tanpa TensorFlow dia jatuh ke heuristik, cek `ml_mode` dulu),
-angka heat strip sebagai "24 jam penuh" (API hanya menyimpan 60 tik terakhir), dan klaim
-akurasi lapangan (labelnya dari simulator).
+Empat hal yang jangan didemokan: video CCTV asli (butuh kredensial Google Drive yang tidak ada
+di repo), panel peramalan sebagai keluaran LSTM (cek `ml_mode` dulu, di mesin ini masih
+fallback heuristik), angka heat strip sebagai "24 jam penuh" (API hanya menyimpan 60 tik
+terakhir), dan klaim akurasi lapangan (labelnya dari simulator).
 
 ## 10. Kalau mau mengubah sesuatu
 
@@ -249,8 +285,11 @@ akurasi lapangan (labelnya dari simulator).
 
 ## 12. Yang belum selesai
 
-Berkas lomba belum ada satu pun: ringkasan dua halaman, deck presentasi sekitar 15 slide, dan
-pernyataan orisinalitas. Ini prioritas berikutnya.
+Berkas lomba masih jadi prioritas pertama dan masih kosong: ringkasan dua halaman, deck
+presentasi, dan pernyataan orisinalitas. Template deck resmi IRDSC 2026 sudah ada di Canva
+(13 halaman) dan identitas tim sudah masuk, tetapi sebagian besar halaman masih placeholder.
+Bahan pendukungnya sudah tersedia di `docs/pitch/` dan `docs/evidence/d2/`, termasuk tangkapan
+layar dan angka yang sudah diverifikasi.
 
 Repo masih perlu dipastikan publik atau privat, dan halaman detail per simpang belum ada
 (klik simpang baru membuka dock, belum ada halaman sendiri). Hijau per pendekat tidak
@@ -258,6 +297,11 @@ tersedia dari simulator, jadi tabel fase memakai fase bottleneck plus baris agre
 mengatakannya apa adanya. Heat strip terisi dari 60 tik terakhir, bukan 24 jam. Replay lama
 masih menggambarkan empat simpang sementara dataset v4 punya enam, jadi tampilan
 rekomendasi lama dan analitik v4 belum sepenuhnya sejajar.
+
+Di mesin lokal ini, dua hal membuat demo belum memakai model penuh: TensorFlow dan
+`ultralytics` belum terpasang di `.venv`, sehingga peramalan jalan sebagai heuristik dan
+inferensi YOLO langsung nonaktif. Pilihannya memasang keduanya (unduhannya besar) atau
+menjalankan lewat Docker Compose yang sudah menyiapkan semuanya di dalam image.
 
 ## 13. Istilah
 
