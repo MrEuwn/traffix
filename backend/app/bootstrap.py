@@ -8,6 +8,7 @@ from app.runtime_status import runtime_status
 from core.config import settings
 from core.logger import get_logger
 from core.paths import resolve_asset_path
+from ml.forecast.runtime import feature_store
 from ml.model_loader import try_load_models
 from ml.registry import registry
 from sim.dataset_loader import (
@@ -55,19 +56,23 @@ async def startup_integrations() -> None:
 
     if settings.ml_auto_load:
         if try_load_models():
-            runtime_status.set_ml_mode("loaded")
+            runtime_status.set_ml_mode("lstm")
             system_logger.info("ML artifacts loaded successfully")
         elif settings.ml_allow_fallback:
             _load_lstm_config_only()
             registry.set_fallback_mode(True)
-            runtime_status.set_ml_mode("fallback")
+            runtime_status.set_ml_mode("heuristic_fallback")
             system_logger.warning(
-                "ML Keras artifacts missing; using dataset/heuristic fallback",
+                "ML Keras artifacts missing; serving the labelled moving-average heuristic",
             )
         else:
             runtime_status.set_ml_mode("disabled")
     else:
         runtime_status.set_ml_mode("disabled")
+
+    if runtime_status.dataset_ready:
+        # Build forecast feature windows once, before the first tick needs them.
+        feature_store.ensure_loaded()
 
     if settings.simulation_auto_start and runtime_status.dataset_ready:
         await tick_engine.start()

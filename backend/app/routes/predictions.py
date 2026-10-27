@@ -34,6 +34,12 @@ def _serialize_prediction(result: object) -> dict[str, object]:
         "confidence_score": result.confidence_score,
         "prediction_timestamp": result.prediction_timestamp,
         "source": result.source,
+        "unit": result.unit,
+        "current_volume": result.current_volume,
+        "issue_time_wib": result.issue_time_wib,
+        "target_time_wib": result.target_time_wib,
+        "expected_mae": result.expected_mae,
+        "replay_split": result.replay_split,
     }
 
 

@@ -43,7 +43,7 @@ class RuntimeStatus:
         """Update ML integration mode label.
 
         Args:
-            mode: One of loaded, fallback, disabled, or error.
+            mode: One of lstm, heuristic_fallback, or disabled.
         """
         with self._lock:
             self.ml_mode = mode
