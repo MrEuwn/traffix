@@ -114,6 +114,9 @@ docs/                        schema, audit notes, planning handout
 Python 3.11 or newer. Node 20.19 or newer, which is what Vite 8 wants.
 
 ```bash
+git clone https://github.com/MrEuwn/traffix.git
+cd traffix
+
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt  # or backend/requirements.txt for the API only
