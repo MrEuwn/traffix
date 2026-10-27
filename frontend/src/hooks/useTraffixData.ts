@@ -1,10 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useQueries, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, unwrap } from "../lib/api";
 import type {
   BottleneckPerIntersection,
   BottleneckResponse,
   Intersection,
+  CctvFramesResponse,
+  DetectionEvidence,
+  ForecastEvaluationResponse,
+  ForecastSeries,
+  LiveInferenceResult,
   ModelEvaluationResponse,
   Prediction,
   Recommendation,
@@ -100,58 +105,6 @@ export const useWeatherByIntersection = (intersectionId: string) =>
     refetchInterval: 30000,
     enabled: !!intersectionId,
   });
-
-export const useCameraByIntersection = (intersectionId: string) =>
-  useQuery({
-    queryKey: ["camera", intersectionId],
-    queryFn: () =>
-      api
-        .get("/api/v1/cameras")
-        .then(unwrap<{ count: number; cameras: any[] }>)
-        .then((d) =>
-          d.cameras.find((c: any) => c.intersection_id === intersectionId),
-        ),
-    refetchInterval: 5000,
-    enabled: !!intersectionId,
-  });
-
-export const useCameraByVideo = (videoUrl: string | null) =>
-  useQuery({
-    queryKey: ["camera-by-video", videoUrl],
-    queryFn: () => {
-      if (!videoUrl) return null;
-      let filename = videoUrl.split("/").pop() || "";
-      filename = filename.replace("converted_detected_", "");
-      return api
-        .get(`/api/v1/cameras/by-video/${filename}`)
-        .then(unwrap<any>)
-        .catch(() => null);
-    },
-    refetchInterval: POLL,
-    enabled: !!videoUrl,
-    retry: false,
-  });
-
-export const useAllCamerasByVideo = (videoUrls: (string | null)[]) => {
-  const queries = useQueries({
-    queries: videoUrls.map((url) => ({
-      queryKey: ["camera-by-video", url],
-      queryFn: () => {
-        if (!url) return null;
-        let filename = url.split("/").pop() || "";
-        filename = filename.replace("converted_detected_", "");
-        return api
-          .get(`/api/v1/cameras/by-video/${filename}`)
-          .then(unwrap<any>)
-          .catch(() => null);
-      },
-      refetchInterval: POLL,
-      enabled: !!url,
-      retry: false,
-    })),
-  });
-  return queries.map((q) => q.data).filter(Boolean);
-};
 
 export const useSimulationControls = () => {
   const qc = useQueryClient();
@@ -256,6 +209,50 @@ export const useModelEvaluation = () =>
     queryKey: ["model-evaluation"],
     queryFn: () => api.get("/api/v1/model/evaluation").then(unwrap<ModelEvaluationResponse>),
     refetchInterval: ANALYTICS_POLL,
+  });
+
+/** Evaluasi D2 tugas utama: LSTM vs baseline per horizon + status runtime. */
+export const useForecastEvaluation = () =>
+  useQuery({
+    queryKey: ["forecast-evaluation"],
+    queryFn: () =>
+      api.get("/api/v1/model/evaluation/forecast").then(unwrap<ForecastEvaluationResponse>),
+    refetchInterval: ANALYTICS_POLL,
+  });
+
+export const useForecastSeries = (horizon: string, intersection: string | null) =>
+  useQuery({
+    queryKey: ["forecast-series", horizon, intersection],
+    queryFn: () =>
+      api
+        .get(`/api/v1/model/evaluation/forecast/${horizon}/series`, {
+          params: { step: 5, ...(intersection ? { intersection } : {}) },
+        })
+        .then(unwrap<ForecastSeries>),
+    staleTime: Infinity,
+  });
+
+export const useDetectionEvidence = () =>
+  useQuery({
+    queryKey: ["detection-evidence"],
+    queryFn: () => api.get("/api/v1/model/evaluation/detection").then(unwrap<DetectionEvidence>),
+    staleTime: 60_000,
+  });
+
+export const useCctvFrames = () =>
+  useQuery({
+    queryKey: ["cctv-frames"],
+    queryFn: () => api.get("/api/v1/cameras/frames").then(unwrap<CctvFramesResponse>),
+    staleTime: 60_000,
+  });
+
+/** Jalankan YOLO sekarang pada satu frame rekaman (inferensi nyata di backend). */
+export const useLiveInference = () =>
+  useMutation({
+    mutationFn: (frameId: string) =>
+      api
+        .post(`/api/v1/cameras/frames/${encodeURIComponent(frameId)}/infer`, null, { timeout: 60_000 })
+        .then(unwrap<LiveInferenceResult>),
   });
 
 // Notifikasi dari perubahan intersection state
