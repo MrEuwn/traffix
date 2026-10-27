@@ -17,6 +17,8 @@ import { BottleneckPanel } from "../components/dashboard/BottleneckPanel";
 import { HistoryStrip } from "../components/dashboard/HistoryStrip";
 import { SegmentTable } from "../components/dashboard/SegmentTable";
 import { AuditTrail, type AuditEntry } from "../components/dashboard/AuditTrail";
+import { ForecastPanel } from "../components/dashboard/ForecastPanel";
+import { CctvReplayPanel } from "../components/dashboard/CctvReplayPanel";
 import { fmtInt, fmtNum } from "../lib/format";
 import { weatherLabel, wibClock, wibHm } from "../components/dashboard/format";
 import { useAuth } from "../lib/AuthContext";
@@ -154,8 +156,20 @@ export const Dashboard = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <StatusPill
-            tone={status?.ml_ready ? "ok" : "idle"}
-            label={status?.ml_mode ?? "ML memuat"}
+            tone={
+              status?.forecaster?.mode === "lstm"
+                ? "ok"
+                : status?.forecaster?.mode === "heuristic_fallback"
+                  ? "warn"
+                  : "idle"
+            }
+            label={
+              status?.forecaster?.mode === "lstm"
+                ? "Peramal: LSTM"
+                : status?.forecaster?.mode === "heuristic_fallback"
+                  ? "Peramal: heuristik (fallback)"
+                  : "ML memuat"
+            }
             icon="chart"
           />
           <StatusPill
@@ -164,8 +178,8 @@ export const Dashboard = () => {
             icon="play"
           />
           <StatusPill
-            tone={status?.dataset_ready ? "ok" : "idle"}
-            label="Dataset v4"
+            tone={status?.dataset_ready ? "info" : "idle"}
+            label="Replay sintetis v4"
             icon="layers"
           />
           <SeedBadge />
@@ -259,6 +273,11 @@ export const Dashboard = () => {
         </div>
 
         <div className="flex flex-col gap-3">
+          {/* ── Prakiraan volume (model D2 utama) ── */}
+          {targetId && (
+            <ForecastPanel intersectionId={targetId} name={targetName} forecaster={status?.forecaster} />
+          )}
+
           {/* ── (3) Waktu lampu ── */}
           <SignalTimingCard />
 
@@ -273,6 +292,9 @@ export const Dashboard = () => {
           <AuditTrail entries={entries} />
         </div>
       </div>
+
+      {/* ── Kamera: replay rekaman CCTV + deteksi YOLOv8 ── */}
+      <CctvReplayPanel />
 
       {/* ── (5) Tabel ruas ── */}
       <SegmentTable />
