@@ -1,4 +1,4 @@
-/* Traffix Ops — lapisan dasar. Tipografi: Inter (UI) + JetBrains Mono (angka/id).
+/* Traffix — lapisan dasar. Tipografi: Inter (UI) + JetBrains Mono (angka/id).
    Dimuat lewat <link> di index.html (preconnect), bukan @import, supaya tidak memblokir render.
    Semua angka memakai tabular-nums supaya kolom tidak bergerak saat replay 1 detik. */
 

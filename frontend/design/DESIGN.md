@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Traffix Ops
+name: Traffix
 description: Control-room grade interface for AI traffic bottleneck diagnosis. Dark-first, dense, restrained — one accent colour, semantic status only.
 colors:
   background: "#0B0F14"
@@ -300,7 +300,7 @@ components:
 
 ## Overview
 
-Traffix Ops is a traffic-control-room console: an operator watches it on a large monitor
+Traffix is a traffic control room console: an operator watches it on a large monitor
 in a dim room and must answer three questions in seconds — where is the bottleneck, why,
 and what do I do next. The interface therefore behaves like an instrument panel, not a
 marketing site. Density is a feature; decoration is a cost.

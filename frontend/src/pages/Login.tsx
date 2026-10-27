@@ -51,7 +51,7 @@ export const LoginPage = () => {
               <Icon name="activity" size={16} />
             </span>
             <span className="text-title-sm font-semibold tracking-tight text-ink">
-              Traffix<span className="text-primary"> Ops</span>
+              Traffix
             </span>
           </div>
 

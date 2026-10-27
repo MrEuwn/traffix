@@ -17,7 +17,7 @@ const ThemeContext = createContext<ThemeContextType>({
 export const useTheme = () => useContext(ThemeContext);
 
 /* ── Token maps ── */
-/* Lama (dipakai file yang belum dirombak) + baru (Stitch "Traffix Ops — Control Room",
+/* Lama (dipakai file yang belum dirombak) + baru (Stitch "Traffix — Control Room",
    dipakai lewat tailwind.config.js sebagai rgb(var(--c-*)) supaya opacity modifier tetap jalan). */
 const stichDark = {
   "--c-base": "11 15 20",

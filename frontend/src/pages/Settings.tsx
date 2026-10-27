@@ -92,7 +92,7 @@ export const Settings = () => {
         <h1 className="text-title-md font-semibold tracking-tight text-ink">Pengaturan</h1>
         <p className="max-w-2xl text-body text-ink-soft">
           Status runtime, kendali simulasi, preferensi tampilan, dan keterbukaan sumber data
-          Traffix Ops.
+          Traffix.
         </p>
       </header>
 
