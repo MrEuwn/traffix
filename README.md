@@ -257,7 +257,9 @@ scraper needs Playwright browsers.
 
 ## Documentation
 
-- `docs/SCHEMA-v4.md`: frozen contract: nine causes, priority rules, forbidden
+- `docs/PETA-PROYEK-END-TO-END.md`: orientation doc. How the pieces connect, what is
+  finished, how to demo it, and what is still open.
+- `docs/SCHEMA-v4.md`: frozen contract. Nine causes, priority rules, forbidden
   features, API shapes.
 - `backend/ml/bottleneck/model_card.md`: split protocol, metrics, error analysis,
   limitations.
