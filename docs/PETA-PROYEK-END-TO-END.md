@@ -168,7 +168,7 @@ Aturan satuan, dicampur = salah dan juri akan menanyakannya:
 | F1 per kelas | lampu_mati 1,0000 · perbaikan_jalan 0,9652 · banjir 0,9549 · kendaraan_berat 0,9511 · volume_puncak 0,9375 · normal 0,9241 · kecelakaan 0,8487 · hujan 0,6259 · keramaian_event 0,4204 | sama |
 | dataset v4 | 302.400 baris, 51 kolom | `data/data_synthetic/v4/` |
 | kapasitas total | 3.982 kendaraan | `/api/v1/segments/summary` |
-| fitur paling berpengaruh | waktu tunggu 0,451 · kecepatan 0,368 · pangsa kendaraan berat 0,153 · jam 0,127 · jumlah kendaraan 0,116 | `metrics.json` |
+| fitur paling berpengaruh | waktu tunggu 0,4213 · pangsa kendaraan berat 0,1604 · kecepatan 0,1144 · jumlah kendaraan 0,0645 · jam 0,0645 | `metrics.json` |
 | deteksi YOLO | mAP50 0,9256 · F1 0,8755 pada validasi 100 gambar Kaggle (satu kelas `car`), tanpa set uji independen | `docs/pitch/D2_METRICS_BRIEF.md`, `/api/v1/model/evaluation/detection` |
 
 Angka di tabel ini pernah bergeser setelah model dilatih ulang, jadi jangan hafal angkanya:
