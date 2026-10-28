@@ -10,7 +10,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PORT="${PORT:-8010}"
-CF="${CLOUDFLARED:-$LOCALAPPDATA/hermes/cache/scratch/cloudflared.exe}"
+CF="${CLOUDFLARED:-$LOCALAPPDATA/hermes/tools/cloudflared.exe}"
 LOG_DIR="${DEMO_LOG_DIR:-$LOCALAPPDATA/hermes/cache/scratch}"
 mkdir -p "$LOG_DIR"
 BE_LOG="$LOG_DIR/demo-backend.log"
