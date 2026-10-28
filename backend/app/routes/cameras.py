@@ -121,11 +121,20 @@ async def list_frames(request: Request) -> StandardSuccessResponse:
     description="JPEG of a recorded frame, with YOLO boxes drawn (`annotated=true`) or raw.",
 )
 def get_frame_image(frame_id: str, annotated: bool = Query(default=True)) -> FileResponse:
-    """Serve a catalogued frame; ids not in the catalogue are 404."""
-    path = frame_service.image_path(frame_id, annotated)
+    """Serve a catalogued frame; ids not in the catalogue are 404.
+
+    `annotated=true` asks for the rendered version with boxes. If that render is not on
+    disk (the folder is gitignored and only rebuilt by run_yolo_frames.py), the raw frame
+    is served and `X-Frame-Variant: source` says so, instead of failing with 404.
+    """
+    path, variant = frame_service.image(frame_id, annotated)
     if path is None:
         raise HTTPException(status_code=404, detail="Frame not found")
-    return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "public, max-age=3600"})
+    return FileResponse(
+        path,
+        media_type="image/jpeg",
+        headers={"Cache-Control": "public, max-age=3600", "X-Frame-Variant": variant or ""},
+    )
 
 
 @router.post(

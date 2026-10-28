@@ -45,16 +45,25 @@ class FrameService:
             return None
         return next((f for f in catalogue["frames"] if f["frame_id"] == frame_id), None)
 
-    def image_path(self, frame_id: str, annotated: bool) -> Path | None:
-        """Resolve only paths listed in the catalogue (no user-controlled paths)."""
+    def image(self, frame_id: str, annotated: bool) -> tuple[Path | None, str | None]:
+        """Resolve only paths listed in the catalogue (no user-controlled paths).
+
+        Returns `(path, variant)`. When the requested variant is not on disk the other
+        one is served instead, so a repo without the annotated render still works;
+        `variant` tells the caller which file was actually sent.
+        """
         record = self.frame(frame_id)
         if record is None:
-            return None
-        path = repo_root() / (record["annotated_frame"] if annotated else record["source_frame"])
-        if not annotated and not path.exists():
-            # The backend image ships only annotated frames; fall back to them.
-            path = repo_root() / record["annotated_frame"]
-        return path if path.exists() else None
+            return None, None
+        order = ("annotated_frame", "source_frame") if annotated else ("source_frame", "annotated_frame")
+        for key in order:
+            path = repo_root() / record[key]
+            if path.exists():
+                return path, ("annotated" if key == "annotated_frame" else "source")
+        return None, None
+
+    def image_path(self, frame_id: str, annotated: bool) -> Path | None:
+        return self.image(frame_id, annotated)[0]
 
     def _model_settings(self) -> tuple[Path, int, str]:
         """Weights, imgsz and mode of the stored detections, so live == precomputed."""
