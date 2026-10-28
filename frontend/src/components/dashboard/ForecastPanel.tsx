@@ -83,7 +83,7 @@ export const ForecastPanel = ({
                 </p>
                 <p className="text-micro text-ink-muted">kend/jam · {hm(p.target_time_wib)}</p>
                 {p.expected_mae != null && (
-                  <p className="num mt-0.5 text-micro text-ink-muted" title="MAE LSTM pada replay v4 hari 7">
+                  <p className="num mt-0.5 text-micro text-ink-muted" title="MAE uji LSTM, hari 7 replay v4">
                     ±{fmtInt(p.expected_mae)} galat tipikal
                   </p>
                 )}
@@ -99,7 +99,7 @@ export const ForecastPanel = ({
         </div>
         <p className="text-micro text-ink-muted">
           {source === "lstm"
-            ? "Masukan: 41 fitur dari jendela riwayat replay sintetis v4. Galat tipikal = MAE uji transfer pada replay v4, bukan selang keyakinan."
+            ? "Masukan: 41 fitur dari jendela riwayat replay sintetis v4. Galat tipikal = MAE uji LSTM pada hari 7 (data tak terlihat saat latih), bukan selang keyakinan."
             : "Model tidak dimuat: angka ini rata-rata volume 15 menit terakhir (baseline D2), bukan keluaran LSTM."}
           {forecaster && source === "lstm" && (
             <>

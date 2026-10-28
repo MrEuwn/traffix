@@ -30,7 +30,7 @@ export interface Prediction {
   current_volume: number | null;
   issue_time_wib: string | null;
   target_time_wib: string | null;
-  /** MAE LSTM pada replay v4 hari 7 (dari artefak evaluasi); null untuk heuristik. */
+  /** MAE uji LSTM yang melayani (hari 7 replay v4, artefak evaluasi); null untuk heuristik. */
   expected_mae: number | null;
   /** Peran hari replay ini di evaluasi D2: latih (in-sample), validasi, atau uji. */
   replay_split: "latih" | "validasi" | "uji" | null;
