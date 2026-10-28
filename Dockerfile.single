@@ -1,0 +1,69 @@
+# Traffix in ONE container (frontend + backend), for single-app hosts such as Dokploy.
+# FastAPI serves the built SPA and the API from the same origin, so no proxy and no CORS.
+#
+#   docker build -f Dockerfile.single -t traffix:single .
+#   docker run -p 8000:8000 traffix:single            # http://localhost:8000
+#
+# WITH_YOLO=false (default here) keeps the image and RAM small enough for a 2 GB / 1 CPU
+# host: the camera panel still shows the stored detections, only "Jalankan YOLO sekarang"
+# (live inference) is disabled. Build with --build-arg WITH_YOLO=true to enable it
+# (+~1 GB image, +~400 MB RAM).
+
+FROM node:22-alpine AS frontend
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ .
+ENV VITE_API_URL=""
+RUN npm run build
+
+FROM python:3.12-slim
+ARG WITH_YOLO=false
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DEFAULT_TIMEOUT=120 \
+    PIP_RETRIES=10 \
+    TF_CPP_MIN_LOG_LEVEL=2 \
+    YOLO_CONFIG_DIR=/tmp/ultralytics \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    PORT=8000 \
+    FRONTEND_DIST_PATH=/app/frontend_dist \
+    CORS_ORIGINS=* \
+    APP_ENV=production \
+    ML_AUTO_LOAD=true \
+    ML_ALLOW_FALLBACK=true \
+    SIMULATION_AUTO_START=true \
+    SIM_INTERSECTIONS=6 \
+    REPLAY_START_TICK=9000 \
+    CAMERA_INPUT_ENABLED=false
+
+RUN if [ "$WITH_YOLO" = "true" ]; then \
+      apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \
+      && rm -rf /var/lib/apt/lists/*; \
+    fi
+
+WORKDIR /app/backend
+COPY backend/requirements.txt backend/requirements-yolo.txt ./
+RUN pip install -r requirements.txt \
+    && if [ "$WITH_YOLO" = "true" ]; then \
+         pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu \
+         && pip install -r requirements-yolo.txt; \
+       fi
+
+WORKDIR /app
+COPY . .
+COPY --from=frontend /app/dist /app/frontend_dist
+
+RUN useradd --create-home --uid 10001 traffix \
+    && mkdir -p /app/backend/artifacts /app/backend/data /app/backend/logs \
+    && chown -R traffix:traffix /app/backend/artifacts /app/backend/data /app/backend/logs
+USER traffix
+WORKDIR /app/backend
+
+EXPOSE 8000
+HEALTHCHECK --interval=15s --timeout=5s --start-period=90s --retries=5 \
+  CMD python -c "import os,urllib.request; urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\",\"8000\")}/health', timeout=4)" || exit 1
+
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]
