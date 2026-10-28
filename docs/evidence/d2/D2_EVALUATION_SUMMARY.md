@@ -99,7 +99,7 @@ Cocok dengan metrics.json tersimpan: True.
 ## Pendukung: YOLOv8
 
 Metrik **validasi** tercatat (bukan uji, tidak direproduksi di run ini): mAP50 0.9256, mAP50-95 0.5324, P/R Ultralytics 0.955/0.813, F1 (IoU≥0,5, conf 0,25) 0.8755 pada 100 gambar / 493 objek.
-Detektor demo kamera: `yolo pipeline/model/yolov8m_coco.pt` (YOLOv8m pretrained COCO (Ultralytics), tidak dilatih ulang oleh tim; lisensi AGPL-3.0), kelas car, motorcycle, bus, truck, imgsz 1280. Inferensi nyata pada 123 frame CCTV replay, rata-rata kotak per frame pagi 6.04 (model tim 0.94), siang 20.08 (model tim 3.38), malam 3.29 (model tim 0.76); 392.62 ms/frame (CPU). Tanpa label acuan — bukan ukuran akurasi.
+Detektor demo kamera: `yolo pipeline/model/yolov8m_inatrc.pt` (YOLOv8m COCO di-fine-tune tim pada InaTRC (CCTV tol Indonesia, CC BY 4.0); uji InaTRC: AP50 0,967, F1 0,926 — lihat inatrc_slicing_eval.json), kelas gol1_non_truk, gol2_truk_2_gandar, gol3_truk_3_gandar, gol4_truk_4_gandar, gol5_truk_5plus_gandar, imgsz 640. Inferensi nyata pada 123 frame CCTV replay, rata-rata kotak per frame pagi 3.9 (model tim 0.94), siang 19.29 (model tim 3.38), malam 1.71 (model tim 0.76); 126.32 ms/frame (CPU). Tanpa label acuan — bukan ukuran akurasi.
 
 ## Gambar
 

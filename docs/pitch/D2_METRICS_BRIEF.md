@@ -20,7 +20,7 @@ Uji transfer LSTM hybrid -> replay v4 tanpa latih ulang (bukti pergeseran domain
 
 - Penyebab bottleneck (9 kelas, label simulator), hari 7: macro-F1 0.8475 · balanced acc 0.8317 vs rule-based 0.1757 / majority 0.071 (macro-F1). Direproduksi: True.
 - YOLOv8 model tim (`best.pt`, 1 kelas 'car'), **validasi** 100 gambar Kaggle: mAP50 0.9256, F1 0.8755 — tidak ada set uji independen; pada CCTV tol model ini melewatkan sebagian besar kendaraan kecil/jauh.
-- Demo kamera memakai YOLOv8m pretrained COCO (bukan dilatih tim), kelas mobil/motor/bus/truk: rata-rata 7.64 kotak per frame vs 1.34 untuk model tim pada 123 frame yang sama — keluaran model tanpa label acuan, bukan akurasi.
+- Demo kamera memakai YOLOv8m pretrained COCO (bukan dilatih tim), kelas mobil/motor/bus/truk: rata-rata 5.99 kotak per frame vs 1.34 untuk model tim pada 123 frame yang sama — keluaran model tanpa label acuan, bukan akurasi.
 
 ## Klaim yang TIDAK boleh dibuat
 
