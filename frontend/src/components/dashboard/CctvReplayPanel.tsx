@@ -14,7 +14,17 @@ const PERIODS: { value: Period; label: string }[] = [
   { value: "malam", label: "Malam" },
 ];
 const STEP_MS = 2500;
-const CLASS_LABEL: Record<string, string> = { car: "mobil", motorcycle: "motor", bus: "bus", truck: "truk" };
+const CLASS_LABEL: Record<string, string> = {
+  car: "mobil",
+  motorcycle: "motor",
+  bus: "bus",
+  truck: "truk",
+  gol1_non_truk: "Gol. I",
+  gol2_truk_2_gandar: "Gol. II",
+  gol3_truk_3_gandar: "Gol. III",
+  gol4_truk_4_gandar: "Gol. IV",
+  gol5_truk_5plus_gandar: "Gol. V",
+};
 
 /** Kotak deteksi hasil inferensi langsung, digambar di atas frame mentah. */
 const BoxOverlay = ({ result }: { result: LiveInferenceResult }) => (
@@ -102,7 +112,7 @@ export const CctvReplayPanel = () => {
   return (
     <Card pad={false}>
       <PanelHead
-        title="Kamera CCTV · deteksi kendaraan YOLOv8m"
+        title="Kamera CCTV · deteksi kendaraan YOLOv8"
         sub="Rekaman CCTV publik Bina Marga, tol Jakarta–Tangerang · bukan simpang simulasi"
         icon="car"
         right={
@@ -179,7 +189,10 @@ export const CctvReplayPanel = () => {
               ["Direkam", frame.recorded_at_wib ?? "—"],
               ["Cuaca (Open-Meteo)", frame.temperature_c != null ? `${fmtNum(frame.temperature_c, 1)} °C · hujan ${fmtNum(frame.precipitation_mm ?? 0, 1)} mm` : "—"],
               ["Rata-rata confidence", frame.mean_confidence != null ? fmtNum(frame.mean_confidence, 2) : "—"],
-              ["Detektor", `YOLOv8m COCO · ${data.model?.imgsz} px · conf ≥ ${data.model?.conf_threshold}`],
+              [
+                "Detektor",
+                `${data.model?.weights.split("/").pop()?.replace(".pt", "")} · ${data.model?.mode === "sliced" ? "sliced 3×3" : "full frame"} · ${data.model?.imgsz} px · conf ≥ ${data.model?.conf_threshold}`,
+              ],
               ["Bobot", `${data.model?.weights.split("/").pop()} · ${data.model?.sha256.slice(0, 10)}…`],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3 border-b border-line/60 pb-1 last:border-0">

@@ -1,0 +1,30 @@
+# Build context for Dockerfile.single (BuildKit reads <Dockerfile>.dockerignore).
+# Same as .dockerignore, except the frontend sources are needed for the SPA build stage.
+.git
+.github
+.venv
+**/__pycache__
+**/.pytest_cache
+**/.env
+**/.env.*
+!**/.env.example
+.env.docker
+frontend/node_modules
+frontend/dist
+frontend/screenshots
+design
+docs
+Traffix.id-main
+Traffix_D2_*.md
+**/*.ipynb
+**/*.zip
+LSTM Training
+yolo pipeline/visualization
+yolo pipeline/dataset
+yolo pipeline/runs
+data/external
+data/data_process/traffix_lstm_ready.csv
+inference_data/data_video/video_input
+backend/data/videos
+backend/artifacts/drive_cache
+*.log

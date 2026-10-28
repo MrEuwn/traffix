@@ -454,6 +454,7 @@ export interface CctvFramesResponse {
     ultralytics_version: string;
     conf_threshold: number;
     imgsz: number;
+    mode?: "full" | "sliced";
   };
   team_model?: { weights: string; classes: string[]; imgsz: number };
   caveats?: string[];

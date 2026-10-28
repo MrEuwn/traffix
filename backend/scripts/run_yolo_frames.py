@@ -37,24 +37,25 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
 MODEL_DIR = ROOT / "yolo pipeline" / "model"
-DEMO_WEIGHTS = MODEL_DIR / "yolov8m_coco.pt"
+DEMO_WEIGHTS = MODEL_DIR / "yolov8m_inatrc.pt"
+DEMO_DESCRIPTION = ("YOLOv8m COCO di-fine-tune tim pada InaTRC (CCTV tol Indonesia, CC BY 4.0); "
+                    "uji InaTRC: AP50 0,967, F1 0,926 — lihat inatrc_slicing_eval.json")
 TEAM_WEIGHTS = MODEL_DIR / "best.pt"
 TEAM_IMGSZ = 640  # the size the team model was trained and validated at
 FRAMES = ROOT / "inference_data" / "data_video" / "frames"
 METADATA = ROOT / "inference_data" / "data_video" / "metadata" / "video_weather_data.csv"
 OUT_DIR = ROOT / "backend" / "ml" / "detection" / "artifacts"
 PERIODS = ("pagi", "siang", "malam")
-VEHICLE_NAMES = ("car", "motorcycle", "bus", "truck")
+PALETTE = [(255, 160, 0), (0, 200, 0), (0, 165, 255), (255, 0, 255), (0, 255, 255)]
+SHORT_LABEL = {"gol1_non_truk": "G1", "gol2_truk_2_gandar": "G2", "gol3_truk_3_gandar": "G3",
+               "gol4_truk_4_gandar": "G4", "gol5_truk_5plus_gandar": "G5"}
+
+sys.path.insert(0, str(ROOT / "backend"))
+from app.services.detector import detect, vehicle_class_ids  # noqa: E402  (shared with the API)
 
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def vehicle_class_ids(names: dict[int, str]) -> list[int] | None:
-    """COCO-style models: keep only vehicle classes. Single-class models: keep all."""
-    ids = [i for i, n in names.items() if n in VEHICLE_NAMES]
-    return ids if len(names) > 1 and ids else None
 
 
 def load_metadata() -> dict[str, dict]:
@@ -86,8 +87,11 @@ def clean(value):
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--weights", type=Path, default=DEMO_WEIGHTS)
+    parser.add_argument("--description", default=DEMO_DESCRIPTION, help="human-readable model provenance")
     parser.add_argument("--conf", type=float, default=0.25, help="confidence threshold (Ultralytics default 0.25)")
     parser.add_argument("--imgsz", type=int, default=1280, help="inference size; 1280 upsamples the 640x480 frames")
+    parser.add_argument("--mode", choices=("full", "sliced"), default="full",
+                        help="full frame, or SAHI-style full frame + 3x3 overlapping tiles")
     args = parser.parse_args()
 
     for weights in (args.weights, TEAM_WEIGHTS):
@@ -109,30 +113,34 @@ def main() -> int:
 
     model = YOLO(str(args.weights))
     classes = vehicle_class_ids(model.names)
+    class_names = [model.names[i] for i in classes] if classes else list(model.names.values())
+    palette = {name: PALETTE[i % len(PALETTE)] for i, name in enumerate(class_names)}
+
+    def draw(image, boxes):
+        out = image.copy()
+        for b in boxes:
+            x0, y0, x1, y1 = (int(v) for v in b["xyxy"])
+            color = palette.get(b["class"], (255, 160, 0))
+            cv2.rectangle(out, (x0, y0), (x1, y1), color, 1)
+            cv2.putText(out, f"{SHORT_LABEL.get(b['class'], b['class'])} {b['confidence']:.2f}", (x0, max(8, y0 - 2)),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 1, cv2.LINE_AA)
+        return out
     team = YOLO(str(TEAM_WEIGHTS))
     metadata = load_metadata()
     records = []
     for frame in frames:
         period = frame.parent.name
+        img = cv2.imread(str(frame))
         t0 = time.perf_counter()
-        result = model.predict(str(frame), conf=args.conf, imgsz=args.imgsz, classes=classes,
-                               verbose=False, device="cpu")[0]
+        boxes = detect(model, img, mode=args.mode, imgsz=args.imgsz, conf=args.conf)
         elapsed_ms = (time.perf_counter() - t0) * 1000
         team_result = team.predict(str(frame), conf=args.conf, imgsz=TEAM_IMGSZ, verbose=False, device="cpu")[0]
-        boxes = [
-            {
-                "xyxy": [round(float(v), 1) for v in box.xyxy[0].tolist()],
-                "confidence": round(float(box.conf[0]), 4),
-                "class": result.names[int(box.cls[0])],
-            }
-            for box in result.boxes
-        ]
         out_path = OUT_DIR / "frames" / period / frame.name
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        cv2.imwrite(str(out_path), result.plot(line_width=1, font_size=8), [cv2.IMWRITE_JPEG_QUALITY, 85])
+        cv2.imwrite(str(out_path), draw(img, boxes), [cv2.IMWRITE_JPEG_QUALITY, 85])
         video = frame.stem.rsplit("_frame_", 1)[0]
-        height, width = result.orig_shape
-        by_class = {name: sum(b["class"] == name for b in boxes) for name in VEHICLE_NAMES}
+        height, width = img.shape[:2]
+        by_class = {name: sum(b["class"] == name for b in boxes) for name in class_names}
         records.append({
             "frame_id": frame.stem,
             "period": period,
@@ -162,12 +170,12 @@ def main() -> int:
         "model": {
             "weights": str(args.weights.relative_to(ROOT)),
             "sha256": sha256(args.weights),
-            "description": "YOLOv8m pretrained COCO (Ultralytics), tidak dilatih ulang oleh tim; "
-                           "lisensi AGPL-3.0",
-            "classes": [model.names[i] for i in classes] if classes else list(model.names.values()),
+            "description": args.description,
+            "classes": class_names,
             "ultralytics_version": ultralytics.__version__,
             "conf_threshold": args.conf,
             "imgsz": args.imgsz,
+            "mode": args.mode,
             "device": "cpu",
         },
         "team_model": {
@@ -203,7 +211,7 @@ def main() -> int:
             },
             "mean_vehicle_count": mean(r["vehicle_count"] for r in records),
             "mean_team_model_count": mean(r["team_model_vehicle_count"] for r in records),
-            "by_class_total": {n: sum(r["by_class"].get(n, 0) for r in records) for n in VEHICLE_NAMES},
+            "by_class_total": {n: sum(r["by_class"].get(n, 0) for r in records) for n in class_names},
             "mean_inference_ms": mean(r["inference_ms"] for r in records),
         },
         "frames": records,

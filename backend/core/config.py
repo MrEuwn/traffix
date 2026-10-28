@@ -204,6 +204,12 @@ class Settings(BaseSettings):
         description="Path to the latest YOLO vehicle count CSV output",
     )
 
+    # Single-container deploy (Dokploy): serve the built frontend from this app
+    frontend_dist_path: str | None = Field(
+        default=None,
+        description="Directory with the built frontend (index.html); unset = API only",
+    )
+
     # Simulation
     simulation_auto_start: bool = Field(
         default=True,

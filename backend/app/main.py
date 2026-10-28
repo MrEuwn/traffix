@@ -2,13 +2,14 @@
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 import time
 from typing import Any
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.api import api_router
@@ -241,13 +242,18 @@ def create_app() -> FastAPI:
         )
         return _with_trace_headers(response, request)
 
+    frontend_dist = _frontend_dist()
+
     @app.get(
         "/",
         response_model=StandardSuccessResponse,
         tags=["System"],
         summary="Welcome",
+        include_in_schema=frontend_dist is None,
     )
-    async def root(request: Request) -> JSONResponse:
+    async def root(request: Request):
+        if frontend_dist is not None:
+            return FileResponse(frontend_dist / "index.html")
         """Return API welcome metadata.
 
         Args:
@@ -300,7 +306,34 @@ def create_app() -> FastAPI:
             request_id=request.state.request_id,
         )
 
+    if frontend_dist is not None:
+        # Single-container deploy: serve the built SPA from the same origin as the API.
+        # Registered last so every API, docs and health route wins over the fallback.
+        @app.get("/{path:path}", include_in_schema=False)
+        async def spa(path: str):
+            if path.split("/", 1)[0] in _API_PREFIXES:
+                raise StarletteHTTPException(status_code=404, detail="Not Found")
+            candidate = (frontend_dist / path).resolve()
+            if candidate.is_file() and candidate.is_relative_to(frontend_dist):
+                return FileResponse(candidate)
+            return FileResponse(frontend_dist / "index.html")
+
     return app
+
+
+_API_PREFIXES = {"api", "docs", "redoc", "openapi.json", "health"}
+
+
+def _frontend_dist() -> Path | None:
+    """Built frontend directory when FRONTEND_DIST_PATH points at one, else None."""
+    configured = settings.frontend_dist_path
+    if not configured:
+        return None
+    path = Path(configured).resolve()
+    if not (path / "index.html").is_file():
+        system_logger.warning("FRONTEND_DIST_PATH set but no index.html at %s", path)
+        return None
+    return path
 
 
 app = create_app()
