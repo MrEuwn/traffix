@@ -193,11 +193,17 @@ def main() -> int:
             "metadata": str(METADATA.relative_to(ROOT)),
         },
         "caveats": [
-            "Detektor demo adalah YOLOv8m pretrained COCO, bukan model yang dilatih tim; model tim (best.pt, 1 kelas) "
-            "melewatkan sebagian besar kendaraan kecil di CCTV tol sehingga hanya dipakai sebagai pembanding.",
+            *([
+                "Detektor: YOLOv8m di-fine-tune pada InaTRC (CCTV tol Indonesia, CC BY 4.0). Di set uji InaTRC "
+                "F1 0,93 (presisi 0,91, recall 0,94); kamera Jasa Marga ini tidak ada di data latih.",
+            ] if "inatrc" in args.weights.name else [
+                f"Detektor: {args.weights.name} — {args.description}.",
+            ]),
+            "Model tim awal (best.pt, 1 kelas, Kaggle) hanya dipakai sebagai pembanding: ia melewatkan sebagian besar "
+            "kendaraan kecil di CCTV tol.",
             "Tidak ada label acuan untuk frame CCTV ini: jumlah kotak adalah keluaran model, bukan ukuran akurasi.",
-            "Kendaraan yang sangat jauh atau saling menutupi di antrean masih bisa terlewat; sepeda motor kecil paling sulit.",
-            "Frame malam: silau lampu menurunkan deteksi dan papan petunjuk terang kadang terbaca sebagai bus.",
+            "Frame berkabut, melawan cahaya, dan malam masih melewatkan antrean jauh; logo atau papan terang kadang "
+            "terbaca sebagai kendaraan.",
         ],
         "summary": {
             "frames": len(records),

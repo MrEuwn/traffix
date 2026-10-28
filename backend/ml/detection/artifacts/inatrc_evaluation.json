@@ -20,16 +20,37 @@
     "provenance": "observasi — frame CCTV jalan tol Indonesia (2022) dengan label manual dari penyusun dataset"
   },
   "training": {
-    "base": "yolo pipeline/model/yolov8m_coco.pt",
-    "epochs_max": 10,
-    "imgsz": 640,
-    "batch": 8,
-    "freeze_layers": 0,
+    "stage1": {
+      "run": "yolo pipeline/runs/inatrc_yolov8m",
+      "start": "yolo pipeline/model/yolov8m_coco.pt (COCO)",
+      "freeze_layers": 10,
+      "epochs_max": 15,
+      "imgsz": 640,
+      "batch": 8,
+      "lr0": "default 0.01",
+      "best_epoch": 15,
+      "val_map50": 0.8004,
+      "val_map50_95": 0.6243,
+      "epochs_run": 15
+    },
+    "stage2": {
+      "run": "yolo pipeline/runs/inatrc_yolov8m_ft",
+      "start": "stage1 last.pt",
+      "freeze_layers": 0,
+      "epochs_max": 10,
+      "imgsz": 640,
+      "batch": 8,
+      "lr0": 0.0005,
+      "best_epoch": 10,
+      "val_map50": 0.803,
+      "val_map50_95": 0.6307,
+      "epochs_run": 10
+    },
     "seed": 42,
-    "patience": 5,
-    "device": "mps",
+    "device": "mps (Apple M1 Pro)",
     "deterministic": false,
-    "selection": "epoch terbaik menurut mAP50-95 validasi"
+    "patience": 5,
+    "selection": "epoch terbaik menurut mAP50-95 validasi; bobot dipakai = best.pt tahap 2"
   },
   "test": {
     "finetuned_5_classes": {
