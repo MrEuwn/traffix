@@ -1,0 +1,62 @@
+{
+  "split": "InaTRC test (325 frame)",
+  "match": "IoU>=0.5, satu kelas kendaraan",
+  "results": [
+    {
+      "mode": "full",
+      "imgsz": 640,
+      "ap50": 0.8504,
+      "operating_conf": 0.25,
+      "precision": 0.7892,
+      "recall": 0.8108,
+      "f1": 0.7998,
+      "tp": 2953,
+      "fp": 789,
+      "fn": 689,
+      "n_ground_truth": 3642,
+      "weights": "yolo pipeline/model/yolov8m_coco.pt"
+    },
+    {
+      "mode": "sliced",
+      "imgsz": 640,
+      "ap50": 0.8117,
+      "operating_conf": 0.25,
+      "precision": 0.5524,
+      "recall": 0.8852,
+      "f1": 0.6803,
+      "tp": 3224,
+      "fp": 2612,
+      "fn": 418,
+      "n_ground_truth": 3642,
+      "weights": "yolo pipeline/model/yolov8m_coco.pt"
+    },
+    {
+      "mode": "full",
+      "imgsz": 640,
+      "ap50": 0.967,
+      "operating_conf": 0.25,
+      "precision": 0.907,
+      "recall": 0.9448,
+      "f1": 0.9255,
+      "tp": 3441,
+      "fp": 353,
+      "fn": 201,
+      "n_ground_truth": 3642,
+      "weights": "yolo pipeline/model/yolov8m_inatrc.pt"
+    },
+    {
+      "mode": "sliced",
+      "imgsz": 640,
+      "ap50": 0.9424,
+      "operating_conf": 0.25,
+      "precision": 0.7506,
+      "recall": 0.9761,
+      "f1": 0.8487,
+      "tp": 3555,
+      "fp": 1181,
+      "fn": 87,
+      "n_ground_truth": 3642,
+      "weights": "yolo pipeline/model/yolov8m_inatrc.pt"
+    }
+  ]
+}

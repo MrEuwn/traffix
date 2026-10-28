@@ -56,11 +56,11 @@ class FrameService:
             path = repo_root() / record["annotated_frame"]
         return path if path.exists() else None
 
-    def _model_settings(self) -> tuple[Path, int, list[str] | None]:
-        """Weights, imgsz and classes of the stored detections, so live == precomputed."""
+    def _model_settings(self) -> tuple[Path, int, str]:
+        """Weights, imgsz and mode of the stored detections, so live == precomputed."""
         model = (self.catalogue() or {}).get("model", {})
         weights = repo_root() / model["weights"] if model.get("weights") else DEFAULT_WEIGHTS
-        return weights, int(model.get("imgsz", 1280)), model.get("classes")
+        return weights, int(model.get("imgsz", 1280)), str(model.get("mode", "full"))
 
     def live_available(self) -> tuple[bool, str | None]:
         weights, _, _ = self._model_settings()
@@ -83,30 +83,23 @@ class FrameService:
         source = repo_root() / record["source_frame"]
         if not source.exists():
             raise RuntimeError("frame mentah tidak dibundel di image ini")
-        weights, imgsz, class_names = self._model_settings()
+        import cv2
+
+        from app.services.detector import detect
+
+        weights, imgsz, mode = self._model_settings()
         with self._lock:
             if self._model is None:
                 from ultralytics import YOLO
 
                 self._model = YOLO(str(weights))
-            classes = None
-            if class_names:
-                classes = [i for i, n in self._model.names.items() if n in class_names]
             t0 = time.perf_counter()
-            result = self._model.predict(str(source), conf=conf, imgsz=imgsz, classes=classes,
-                                         verbose=False, device="cpu")[0]
+            boxes = detect(self._model, cv2.imread(str(source)), mode=mode, imgsz=imgsz, conf=conf)
             elapsed = (time.perf_counter() - t0) * 1000
-        boxes = [
-            {
-                "xyxy": [round(float(v), 1) for v in box.xyxy[0].tolist()],
-                "confidence": round(float(box.conf[0]), 4),
-                "class": result.names[int(box.cls[0])],
-            }
-            for box in result.boxes
-        ]
         return {
             "frame_id": frame_id,
             "mode": "live",
+            "inference_mode": mode,
             "conf_threshold": conf,
             "vehicle_count": len(boxes),
             "inference_ms": round(elapsed, 1),

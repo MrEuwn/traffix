@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-10-27T17:31:44+00:00",
+  "command": "python backend/scripts/train_yolo_inatrc.py",
+  "dataset": {
+    "name": "InaTRC — Indonesia Toll Road Vehicle Classification Dataset",
+    "citation": "Chasanah U. et al., Mendeley Data v1 (2025), doi:10.17632/kddgphck3b.1",
+    "license": "CC BY 4.0",
+    "split": {
+      "train": 2600,
+      "validation": 325,
+      "test": 325
+    },
+    "classes": [
+      "gol1_non_truk",
+      "gol2_truk_2_gandar",
+      "gol3_truk_3_gandar",
+      "gol4_truk_4_gandar",
+      "gol5_truk_5plus_gandar"
+    ],
+    "provenance": "observasi — frame CCTV jalan tol Indonesia (2022) dengan label manual dari penyusun dataset"
+  },
+  "training": {
+    "base": "yolo pipeline/model/yolov8m_coco.pt",
+    "epochs_max": 10,
+    "imgsz": 640,
+    "batch": 8,
+    "freeze_layers": 0,
+    "seed": 42,
+    "patience": 5,
+    "device": "mps",
+    "deterministic": false,
+    "selection": "epoch terbaik menurut mAP50-95 validasi"
+  },
+  "test": {
+    "finetuned_5_classes": {
+      "map50": 0.8117,
+      "map50_95": 0.621,
+      "precision": 0.7524,
+      "recall": 0.7616,
+      "per_class_map50": {
+        "gol1_non_truk": 0.9753,
+        "gol2_truk_2_gandar": 0.9449,
+        "gol3_truk_3_gandar": 0.8451,
+        "gol4_truk_4_gandar": 0.5335,
+        "gol5_truk_5plus_gandar": 0.7596
+      }
+    },
+    "finetuned_as_single_vehicle_class": {
+      "map50": 0.9845,
+      "map50_95": 0.7028,
+      "precision": 0.9573,
+      "recall": 0.9424,
+      "per_class_map50": {
+        "gol1_non_truk": 0.9845
+      }
+    }
+  },
+  "weights": "yolo pipeline/model/yolov8m_inatrc.pt",
+  "baseline": "lihat inatrc_slicing_eval.json (python backend/scripts/eval_detector_slicing.py)",
+  "removed_note": "Baseline COCO dari Ultralytics val(single_cls, classes) = mAP50 0,119 dihapus: bug filter kelas, bukan kinerja model."
+}
