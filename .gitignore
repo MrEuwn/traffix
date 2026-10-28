@@ -247,3 +247,12 @@ yolo pipeline/model/yolov8m_coco.pt
 # Claude implementation prompts / scratch guides
 Traffix_D2_Claude_Code_Implementation_Prompt_v2_Docker.md
 
+
+# Third-party datasets fetched by scripts (not redistributed here)
+data/external/
+yolo pipeline/runs/
+
+# Fine-tuned model weights (large binary >50MB)
+yolo pipeline/model/*.pt
+!yolo pipeline/model/best.pt
+
