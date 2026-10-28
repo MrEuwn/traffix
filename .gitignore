@@ -256,3 +256,7 @@ yolo pipeline/runs/
 yolo pipeline/model/*.pt
 !yolo pipeline/model/best.pt
 
+
+# Extracted / temporary frames
+backend/ml/detection/artifacts/frames/
+
