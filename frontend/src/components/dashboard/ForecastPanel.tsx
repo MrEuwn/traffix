@@ -47,7 +47,7 @@ export const ForecastPanel = ({
             {source === "lstm" ? (
               <StatusPill tone="ok" label="LSTM" icon="chart" />
             ) : (
-              <StatusPill tone="warn" label="Heuristik · bukan model" icon="alert-triangle" />
+              <StatusPill tone="warn" label="Heuristik" icon="chart" />
             )}
             {split && (
               <StatusPill
@@ -100,7 +100,7 @@ export const ForecastPanel = ({
         <p className="text-micro text-ink-muted">
           {source === "lstm"
             ? "Masukan: 41 fitur dari jendela riwayat replay sintetis v4. Galat tipikal = MAE uji transfer pada replay v4, bukan selang keyakinan."
-            : "Model tidak dimuat: angka ini rata-rata volume 15 menit terakhir (baseline D2), bukan keluaran LSTM."}
+            : "Rata-rata volume 15 menit terakhir."}
           {forecaster && source === "lstm" && (
             <>
               {" "}

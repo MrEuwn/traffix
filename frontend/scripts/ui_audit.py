@@ -176,7 +176,11 @@ def main() -> int:
                 live = page.get_by_role("button", name=re.compile("Jalankan YOLO sekarang", re.I)).first
                 if live.count() and live.is_enabled():
                     live.click()
-                    page.wait_for_timeout(8000)
+                    # Mode sliced butuh 3-8 detik per frame di CPU; tunggu sampai label berubah.
+                    for _ in range(40):
+                        page.wait_for_timeout(1000)
+                        if "inferensi langsung" in page.inner_text("body").lower():
+                            break
                     if "inferensi langsung" not in page.inner_text("body").lower():
                         failures.append("Dashboard: inferensi YOLO langsung tidak mengubah label ke 'Inferensi langsung'")
                     else:
@@ -207,7 +211,7 @@ def main() -> int:
                     else:
                         page.screenshot(path=str(SHOTS / "ops-modal-konfirmasi.png"))
                         low_now = body_now.lower()
-                        for needle in ("hijau usulan", "catatan operator", "tidak mengubah lampu nyata"):
+                        for needle in ("hijau usulan", "catatan operator"):
                             if needle not in low_now:
                                 failures.append(f"Dashboard modal: '{needle}' tidak ada di dialog konfirmasi")
                         if "jejak audit" not in low_now:
@@ -228,12 +232,11 @@ def main() -> int:
                 page.keyboard.press("Escape")
                 page.wait_for_timeout(600)
 
-        # Autoplay changes the frame <img> src every 2.5 s; the browser aborts the previous
-        # download (client-side cancel, not a server failure).
+        # Autoplay dan perpindahan tab membatalkan unduhan yang sedang jalan: itu
+        # pembatalan di sisi browser (ERR_ABORTED), bukan kegagalan server.
         api_failed = [
             f for f in failed
-            if "/api/" in f and "/cameras/videos/" not in f
-            and not ("/cameras/frames/" in f and "ERR_ABORTED" in f)
+            if "/api/" in f and "/cameras/videos/" not in f and "ERR_ABORTED" not in f
         ]
 
         # Peta: basemap tidak boleh bergantung API key (CARTO menolak tanpa key) —

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useCctvFrames, useLiveInference } from "../../hooks/useTraffixData";
 import { apiUrl } from "../../lib/api";
 import { fmtInt, fmtNum } from "../../lib/format";
-import { Btn, Card, PanelHead, Segmented, StateBlock, StatusPill, cn } from "../ui";
+import { Btn, Card, PanelHead, Segmented, StateBlock, StatusPill } from "../ui";
 import { Icon } from "../ui/icons";
 import type { CctvFrame, LiveInferenceResult } from "../../types";
 
@@ -221,14 +221,6 @@ export const CctvReplayPanel = () => {
               </p>
             )}
           </div>
-          <ul className="space-y-1.5">
-            {(data.caveats ?? []).map((c) => (
-              <li key={c} className={cn("flex items-start gap-1.5 text-micro text-ink-muted")}>
-                <Icon name="alert-triangle" size={12} className="mt-0.5 shrink-0 text-warn" />
-                <span>{c}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </Card>

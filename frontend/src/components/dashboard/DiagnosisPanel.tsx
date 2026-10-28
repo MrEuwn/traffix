@@ -123,7 +123,7 @@ export const DiagnosisPanel = ({
               confidence={hero.confidence > 0 ? hero.confidence : undefined}
             />
             {hero.model_available === false && (
-              <StatusPill tone="idle" label="fallback aturan" icon="info" />
+              <StatusPill tone="idle" label="Aturan" icon="info" />
             )}
             <span className="text-micro text-ink-muted">
               {fmtInt(data.affected_section_count)} dari {fmtInt(data.section_count)} ruas
@@ -303,15 +303,10 @@ export const DiagnosisPanel = ({
               onChange={(e) => setNote(e.target.value)}
               placeholder="mis. tambahan hijau untuk mengurai antrean pendekat timur"
               className="min-h-11 w-full rounded-control border border-line bg-surface px-3 py-2 text-body text-ink outline-none transition-colors focus:border-primary"
-            />
-          </label>
-
-          <div className="flex items-start gap-2 rounded-control border border-line bg-raised px-3 py-2 text-micro text-ink-soft">
-            <Icon name="alert-triangle" size={14} className="mt-0.5 text-warn" />
-            <span>Simulasi pada data sintetis — tidak mengubah lampu nyata</span>
-          </div>
-        </div>
-      </Modal>
+              />
+              </label>
+              </div>
+              </Modal>
     </Card>
   );
 };

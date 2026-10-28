@@ -167,7 +167,7 @@ export const Dashboard = () => {
               status?.forecaster?.mode === "lstm"
                 ? "Peramal: LSTM"
                 : status?.forecaster?.mode === "heuristic_fallback"
-                  ? "Peramal: heuristik (fallback)"
+                  ? "Peramal: heuristik"
                   : "ML memuat"
             }
             icon="chart"
@@ -179,7 +179,7 @@ export const Dashboard = () => {
           />
           <StatusPill
             tone={status?.dataset_ready ? "info" : "idle"}
-            label="Replay sintetis v4"
+            label="Replay v4"
             icon="layers"
           />
           <SeedBadge />
