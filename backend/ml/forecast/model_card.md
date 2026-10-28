@@ -97,7 +97,8 @@ horizon), dengan CI 95% bootstrap blok 60 menit untuk selisih MAE:
 - `ml/forecast/runtime.py` membangun jendela fitur dari replay dengan fungsi yang sama.
   Jendela berakhir di menit replay saat ini dan tidak pernah membaca menit sesudahnya.
 - API mengembalikan `source: "lstm"`, waktu terbit dan target, `expected_mae` (MAE uji
-  transfer pada replay v4, bukan selang keyakinan), dan `replay_split` (latih/validasi/uji).
+  LSTM ini pada hari 7: 365 / 578 / 704 kend/jam, bukan selang keyakinan), dan
+  `replay_split` (latih/validasi/uji).
 - `GET /api/v1/model/status` membandingkan sha256 file yang dimuat dengan file yang dievaluasi.
 - Tanpa model: rata-rata 15 menit terakhir dengan label `heuristic`.
 

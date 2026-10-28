@@ -23,7 +23,7 @@ logger = get_logger("system")
 DETECTION_DIR = Path(__file__).resolve().parents[2] / "ml" / "detection" / "artifacts"
 DETECTIONS_PATH = DETECTION_DIR / "detections.json"
 EVIDENCE_PATH = DETECTION_DIR / "yolo_evidence.json"
-DEFAULT_WEIGHTS = repo_root() / "yolo pipeline" / "model" / "yolov8m_coco.pt"
+DEFAULT_WEIGHTS = repo_root() / "yolo pipeline" / "model" / "yolov8m_inatrc.pt"
 
 
 class FrameService:

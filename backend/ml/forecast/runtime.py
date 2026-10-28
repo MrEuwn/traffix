@@ -129,15 +129,19 @@ def seq_len_for(config: dict, horizon: str) -> int:
 
 
 def load_expected_errors() -> dict[str, float]:
-    """LSTM MAE per horizon measured on day 7 of the v4 replay — the data the app runs.
+    """Test-day MAE per horizon of the served LSTM (trained and tested on the v4 replay).
 
     Empty when the evaluation artefact is absent; the API then reports no error band.
     """
     if not EVALUATION_PATH.exists():
         return {}
     payload = json.loads(EVALUATION_PATH.read_text(encoding="utf-8"))
-    transfer = payload.get("transfer_v4", {}).get("horizons", {})
-    return {h: float(v["lstm"]["mae"]) for h, v in transfer.items()}
+    out = {}
+    for horizon, data in payload.get("horizons", {}).items():
+        lstm = next((r for r in data.get("comparison", []) if r["model"] == "lstm"), None)
+        if lstm:
+            out[horizon] = float(lstm["test"]["mae"])
+    return out
 
 
 feature_store = ReplayFeatureStore()

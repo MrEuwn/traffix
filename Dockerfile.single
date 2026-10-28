@@ -37,7 +37,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     SIMULATION_AUTO_START=true \
     SIM_INTERSECTIONS=6 \
     REPLAY_START_TICK=9000 \
-    CAMERA_INPUT_ENABLED=false
+    CAMERA_INPUT_ENABLED=false \
+    HYBRID_TRAFFIC_DATASET_PATH=../data/data_synthetic/v4/live_replay_7d.csv.gz \
+    FEATURE_COLUMNS_PATH=../data/data_process/feature_columns.json
 
 RUN if [ "$WITH_YOLO" = "true" ]; then \
       apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 \

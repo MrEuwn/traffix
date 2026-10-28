@@ -184,8 +184,8 @@ class Settings(BaseSettings):
         description="Path to the synthetic traffic simulation dataset",
     )
     hybrid_traffic_dataset_path: str = Field(
-        default="../data/data_synthetic/hybrid_traffic_7d.csv",
-        description="Path to the hybrid traffic CSV dataset",
+        default="../data/data_synthetic/v4/live_replay_7d.csv.gz",
+        description="Replay dataset (v4, 6 intersections) — also the forecaster's input history",
     )
     feature_columns_path: str = Field(
         default="../data/data_process/feature_columns.json",
