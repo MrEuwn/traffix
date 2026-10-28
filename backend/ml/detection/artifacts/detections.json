@@ -13,8 +13,9 @@
     ],
     "ultralytics_version": "8.4.190",
     "conf_threshold": 0.25,
-    "imgsz": 1280,
-    "device": "cpu"
+    "imgsz": 640,
+    "device": "cpu",
+    "mode": "sliced"
   },
   "team_model": {
     "weights": "yolo pipeline/model/best.pt",
@@ -35,7 +36,8 @@
     "Detektor demo adalah YOLOv8m pretrained COCO, bukan model yang dilatih tim; model tim (best.pt, 1 kelas) melewatkan sebagian besar kendaraan kecil di CCTV tol sehingga hanya dipakai sebagai pembanding.",
     "Tidak ada label acuan untuk frame CCTV ini: jumlah kotak adalah keluaran model, bukan ukuran akurasi.",
     "Kendaraan yang sangat jauh atau saling menutupi di antrean masih bisa terlewat; sepeda motor kecil paling sulit.",
-    "Frame malam: silau lampu menurunkan deteksi dan papan petunjuk terang kadang terbaca sebagai bus."
+    "Frame malam: silau lampu menurunkan deteksi dan papan petunjuk terang kadang terbaca sebagai bus.",
+    "Kotak tersimpan di berkas ini dihasilkan dengan mode full @1280 px; inferensi langsung di panel CCTV memakai mode sliced @640 px (grid 3x3 tumpang tindih 25% + NMS) yang menangkap lebih banyak kendaraan kecil, dengan risiko lebih banyak kotak palsu."
   ],
   "summary": {
     "frames": 123,
